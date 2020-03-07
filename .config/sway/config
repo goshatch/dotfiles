@@ -17,9 +17,10 @@ set $right l
 set $term alacritty
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
-set $menu "rofi -show combi -combi-modi 'run#drun'"
-set $emoji "rofi -show emoji -modi emoji"
-set $calc "rofi -show calc -modi calc -no-show-match -no-sort -calc-command"
+# set $menu "rofi -show combi -combi-modi 'run#drun'"
+set $menu "wofi --show drun"
+# set $emoji "rofi -show emoji -modi emoji"
+# set $calc "rofi -show calc -modi calc -no-show-match -no-sort -calc-command"
 
 set $ws0 0
 set $ws1 1
@@ -122,8 +123,8 @@ bindsym $mod+w kill
 
 # start your launcher
 bindsym $mod+space exec $menu
-bindsym $mod+period exec $emoji
-bindsym $mod+c exec $calc
+# bindsym $mod+period exec $emoji
+# bindsym $mod+c exec $calc
 
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
