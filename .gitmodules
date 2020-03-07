@@ -1,0 +1,6 @@
+[submodule ".tmux"]
+	path = .tmux
+	url = https://github.com/gpakosz/.tmux
+[submodule "doom-emacs"]
+	path = doom-emacs
+	url = https://github.com/hlissner/doom-emacs
