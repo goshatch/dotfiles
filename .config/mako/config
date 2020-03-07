@@ -1,0 +1,12 @@
+background-color=#1d1d1d
+text-color=#ebdbb2
+
+default-timeout=10000
+ignore-timeout=1
+
+font=IBM Plex Sans 10
+
+border-size=1
+border-color=#444444
+border-radius=5
+padding=8
