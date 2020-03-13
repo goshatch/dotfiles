@@ -29,7 +29,7 @@ Set the font. I like =Source Code Pro= from Adobe.
 [[https://github.com/be5invis/Iosevka][Iosevka]] is nice too!
 
 #+BEGIN_SRC emacs-lisp
-(setq doom-font (font-spec :family "Iosevka" :size 13))
+(setq doom-font (font-spec :family "Iosevka" :size 26))
 #+END_SRC
 
 Set emoji font
@@ -473,7 +473,9 @@ Add the relevant directory to the load-path.
 (eval-when-compile
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
   (require 'use-package))
-(use-package mu4e)
+(use-package mu4e
+  :config
+  (remove-hook 'mu4e-main-mode-hook 'evil-collection-mu4e-update-main-view))
 #+END_SRC
 
 Use OfflineIMAP to fetch mail
@@ -499,7 +501,16 @@ Configure accounts
 And SMTP
 
 #+BEGIN_SRC emacs-lisp
-(setq smtpmail-default-smtp-server "smtp.fastmail.com"
+(require 'smtpmail)
+
+(setq message-send-mail-function 'smtpmail-send-it
+      starttls-use-gnutls t
+      smtpmail-starttls-credentials
+      '(("smtp.fastmail.com" 587 nil nil))
+      smtpmail-auth-credentials
+      (expand-file-name "~/.authinfo.gpg")
+      smtpmail-default-smtp-server "smtp.fastmail.com"
       smtpmail-smtp-server "smtp.fastmail.com"
-      smtpmail-smtp-service 465)
+      smtpmail-smtp-service 587
+      smtpmail-debug-info t)
 #+END_SRC

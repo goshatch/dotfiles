@@ -3,7 +3,7 @@
 
 ;; (setq doom-font (font-spec :family "Source Code Pro" :size 13))
 
-(setq doom-font (font-spec :family "Iosevka" :size 13))
+(setq doom-font (font-spec :family "Iosevka" :size 26))
 
 (setq doom-unicode-font
       (if IS-MAC
@@ -254,7 +254,9 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 (eval-when-compile
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
   (require 'use-package))
-(use-package mu4e)
+(use-package mu4e
+  :config
+  (remove-hook 'mu4e-main-mode-hook 'evil-collection-mu4e-update-main-view))
 
 (setq +mu4e-backend 'offlineimap)
 
@@ -268,6 +270,15 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
     (mu4e-compose-signature . "https://gueorgui.net"))
   t)
 
-(setq smtpmail-default-smtp-server "smtp.fastmail.com"
+(require 'smtpmail)
+
+(setq message-send-mail-function 'smtpmail-send-it
+      starttls-use-gnutls t
+      smtpmail-starttls-credentials
+      '(("smtp.fastmail.com" 587 nil nil))
+      smtpmail-auth-credentials
+      (expand-file-name "~/.authinfo.gpg")
+      smtpmail-default-smtp-server "smtp.fastmail.com"
       smtpmail-smtp-server "smtp.fastmail.com"
-      smtpmail-smtp-service 465)
+      smtpmail-smtp-service 587
+      smtpmail-debug-info t)
