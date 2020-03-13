@@ -23,8 +23,10 @@ switch (uname)
     set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir=(brew --prefix openssl@1.1)"
   case Linux
     set -x QT_STYLE_OVERRIDE Adwaita-Dark
-    set -x MOZ_ENABLE_WAYLAND 1
+    # set -x MOZ_ENABLE_WAYLAND 1
     alias open="xdg-open"
 end
+
+status --is-interactive; and source (rbenv init -|psub)
 
 bass_init
