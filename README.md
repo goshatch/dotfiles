@@ -9,5 +9,10 @@ Always a work in progress.
 In the home directory:
 
 ```bash
-$ git clone --recurse-submodules https://github.com/gueorgui/dotfiles .
+$ git init .
+$ git remote add origin git@github.com:gueorgui/dotfiles.git
+$ git fetch
+$ git checkout -f master
+$ git submodule update --init --remote .emacs.d
+$ git submodule update --init --remote .tmux
 ```
