@@ -1,0 +1,98 @@
+#!/bin/env ruby
+# frozen_string_literal: true
+
+# A pomodoro script inspired by Cory Driscoll's Perl version:
+# https://github.com/drisc/dotfiles/blob/master/scripts/pomodoro.pl
+# Depends on `notify-send`.
+module Pomodoro
+  class Cycle
+    attr_reader :time
+
+    def initialize
+      set_time
+    end
+
+    def message
+      "#{verb} for #{time} minutes"
+    end
+
+    def set_time
+      @time = 25
+    end
+
+    def verb
+      'Work'
+    end
+
+    def icon
+      '/usr/share/icons/Adwaita/64x64/apps/utilities-terminal-symbolic.symbolic.png'
+    end
+
+    def run
+      puts message
+      system('notify-send', '-i', icon, 'Pomodoro', message)
+      (@time * 60).downto(0) { sleep(1) }
+    end
+
+    def count
+      1
+    end
+  end
+
+  class RestCycle < Cycle
+    def verb
+      'Rest'
+    end
+
+    def icon
+      '/usr/share/icons/Adwaita/64x64/emblems/emblem-favorite-symbolic.symbolic.png'
+    end
+
+    def set_time
+      @time = 5
+    end
+
+    def count
+      0
+    end
+  end
+
+  class LongRestCycle < RestCycle
+    def set_time
+      @time = 15
+    end
+  end
+
+  class Timer
+    def initialize
+      @cycle_count = 0
+      @cycles = reset_cycles
+    end
+
+    def reset_cycles
+      cycles = []
+      4.times do |i|
+        cycles << Cycle.new
+        cycles << RestCycle.new unless i == 3
+      end
+      cycles << LongRestCycle.new
+    end
+
+    def start
+      begin
+        loop do
+          @cycles.each do |cycle|
+            cycle.run
+            @cycle_count += cycle.count
+          end
+        end
+      rescue SystemExit, Interrupt
+        puts "\n\nFinished! #{@cycle_count} Pomodoros completed."
+        exit
+      end
+    end
+  end
+end
+
+p = Pomodoro::Timer.new
+p.start
