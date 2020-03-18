@@ -25,6 +25,7 @@ switch (uname)
     set -x QT_STYLE_OVERRIDE Adwaita-Dark
     # set -x MOZ_ENABLE_WAYLAND 1
     alias open="xdg-open"
+    alias pbcopy="xclip"
 end
 
 status --is-interactive; and source (rbenv init -|psub)
