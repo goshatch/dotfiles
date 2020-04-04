@@ -5,6 +5,7 @@
 # https://github.com/drisc/dotfiles/blob/master/scripts/pomodoro.pl
 # Depends on `notify-send`.
 module Pomodoro
+  # A base timer cycle, by default representing work
   class Cycle
     attr_reader :time
 
@@ -39,6 +40,7 @@ module Pomodoro
     end
   end
 
+  # A short rest cycle that happens after every pomodoro
   class RestCycle < Cycle
     def verb
       'Rest'
@@ -57,12 +59,14 @@ module Pomodoro
     end
   end
 
+  # A long rest that happens after 4 pmodoros
   class LongRestCycle < RestCycle
     def set_time
       @time = 15
     end
   end
 
+  # The Pomodoro timer runs a series of cycles and outputs stats on exit.
   class Timer
     def initialize
       @cycle_count = 0
@@ -71,25 +75,23 @@ module Pomodoro
 
     def reset_cycles
       cycles = []
-      4.times do |i|
+      4.times do |iteration|
         cycles << Cycle.new
-        cycles << RestCycle.new unless i == 3
+        cycles << RestCycle.new unless iteration == 3
       end
       cycles << LongRestCycle.new
     end
 
     def start
-      begin
-        loop do
-          @cycles.each do |cycle|
-            cycle.run
-            @cycle_count += cycle.count
-          end
+      loop do
+        @cycles.each do |cycle|
+          cycle.run
+          @cycle_count += cycle.count
         end
-      rescue SystemExit, Interrupt
-        puts "\n\nFinished! #{@cycle_count} Pomodoros completed."
-        exit
       end
+    rescue SystemExit, Interrupt
+      puts "\n\nFinished! #{@cycle_count} Pomodoros completed."
+      exit
     end
   end
 end
