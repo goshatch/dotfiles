@@ -2,7 +2,7 @@
 # VERSION: 3.0
 SETUVAR CALIBRE_USE_DARK_PALETTE:1
 SETUVAR EDITOR:nvim
-SETUVAR QT_STYLE_OVERRIDE:Adwaita\x2dDark
+SETUVAR --export QT_STYLE_OVERRIDE:Adwaita\x2dDark
 SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
