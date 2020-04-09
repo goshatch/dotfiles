@@ -258,27 +258,74 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   :config
   (remove-hook 'mu4e-main-mode-hook 'evil-collection-mu4e-update-main-view))
 
-(setq +mu4e-backend 'offlineimap)
+(setq mu4e-maildir "~/.mail")
+(setq mu4e-sent-messages-behavior 'sent)
 
-(set-email-account! "Fastmail"
-  '((mu4e-sent-folder       . "/Fastmail/Sent")
-    (mu4e-drafts-folder     . "/Fastmail/Drafts")
-    (mu4e-trash-folder      . "/Fastmail/Trash")
-    (mu4e-refile-folder     . "/Fastmail/Archive")
-    (smtpmail-smtp-user     . "gt@gueorgui.net")
-    (user-mail-address      . "gt@gueorgui.net")
-    (mu4e-compose-signature . "https://gueorgui.net"))
-  t)
+(setq mu4e-contexts
+      `(, (make-mu4e-context
+           :name "personal"
+           :match-func (lambda (msg)
+                         (when msg
+                           (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+           :vars '((user-mail-address . "gt@gueorgui.net")
+                   (mu4e-trash-folder . "/fastmail/Trash")
+                   (mu4e-refile-folder . "/fastmail/Archive")
+                   (mu4e-sent-folder . "/fastmail/Sent")
+                   (mu4e-drafts-folder . "/fastmail/Drafts")
+                   (mu4e-compose-signature . "https://gueorgui.net")))
+          , (make-mu4e-context
+             :name "aps"
+             :match-func (lambda (msg)
+                           (when msg
+                             (string-prefix-p "/aps" (mu4e-message-field msg :maildir))))
+             :vars '((user-mail-address . "gueorgui@possible.space")
+                     (mu4e-trash-folder . "/aps/[Gmail]/Trash")
+                     (mu4e-refile-folder . "/aps/[Gmail]/All Mail")
+                     (mu4e-sent-folder . "/aps/[Gmail]/Sent Mail")
+                     (mu4e-drafts-folder . "/aps/[Gmail]/Drafts")
+                     (mu4e-compose-signature . "Gueorgui Tcherednitchenko
+½ at A Possible Space
+https://a.possible.space
+gueorgui@possible.space
++44 7958 273997")))
+          ))
 
-(require 'smtpmail)
+(defun gt/visit-inbox ()
+  (interactive)
+  (=mu4e)
 
-(setq message-send-mail-function 'smtpmail-send-it
-      starttls-use-gnutls t
-      smtpmail-starttls-credentials
-      '(("smtp.fastmail.com" 587 nil nil))
-      smtpmail-auth-credentials
-      (expand-file-name "~/.authinfo.gpg")
-      smtpmail-default-smtp-server "smtp.fastmail.com"
-      smtpmail-smtp-server "smtp.fastmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-debug-info t)
+(global-set-key (kbd "C-c m") 'gt/visit-inbox)
+
+(setq
+ mu4e-headers-skip-duplicates t
+ mu4e-view-show-images t
+ mu4e-view-show-addresses t
+ mu4e-compose-format-flowed nil
+ mu4e-date-format "%y/%m/%d"
+ mu4e-headers-date-format "%Y/%m/%d"
+ mu4e-change-filenames-when-moving t
+ mu4e-attachments-dir "~/Downloads")
+
+(setq mu4e-get-mail-command "mbsync -a")
+
+(fset 'gt/move-to-trash "mTrash")
+(define-key mu4e-headers-mode-map (kbd "d") 'gt/move-to-trash)
+(define-key mu4e-view-mode-map (kbd "d") 'gt/move-to-trash)
+
+(setq message-send-mail-function 'message-send-mail-with-sendmail)
+(setq message-sendmail-extra-arguments '("--read-envelope-from"))
+(setq message-sendmail-f-is-evil 't)
+(setq sendmail-program "msmtp")
+
+(require 'mu4e-contrib)
+(setq mu4e-html2text-command 'mu4e-shr2text
+      shr-color-visible-luminance-min 60
+      shr-color-visible-distance-min 5
+      shr-use-fonts nil
+      shr-use-colors nil)
+(advice-add #'shr-colorize-region
+            :around (defun shr-no-colourise-region (&rest ignore)))
+
+(add-to-list 'mu4e-view-actions
+             '("html in browser" . mu4e-action-view-in-browser)
+             t)
