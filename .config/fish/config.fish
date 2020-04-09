@@ -13,6 +13,8 @@ alias vim="nvim"
 alias g="git"
 alias be="bundle exec"
 alias mux="tmuxinator"
+alias ls="exa"
+alias cat="bat"
 
 set -x FZF_DEFAULT_COMMAND "rg --files --follow"
 set -x GOPATH $HOME/go
