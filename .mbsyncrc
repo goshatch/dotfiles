@@ -1,0 +1,49 @@
+IMAPAccount fastmail
+Host imap.fastmail.com
+Port 993
+User gt@gueorgui.net
+PassCmd "pass email/fastmail/personal/mbsync"
+SSLType IMAPS
+SSLVersions TLSv1.2
+
+IMAPStore fastmail-remote
+Account fastmail
+
+MaildirStore fastmail-local
+Path ~/.mail/fastmail/
+Inbox ~/.mail/fastmail/INBOX
+SubFolders Verbatim
+
+Channel fastmail
+Master :fastmail-remote:
+Slave :fastmail-local:
+Patterns *
+Expunge None
+CopyArrivalDate yes
+Sync All
+Create Slave
+SyncState *
+
+IMAPAccount aps
+Host imap.gmail.com
+Port 993
+Timeout 60
+User gueorgui@possible.space
+PassCmd "pass email/gmail/aps/mbsync"
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore aps-remote
+Account aps
+
+MaildirStore aps-local
+Path ~/.mail/aps/
+Inbox ~/.mail/aps/Inbox
+SubFolders Verbatim
+
+Channel aps
+Master :aps-remote:
+Slave :aps-local:
+Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Drafts" "[Gmail]/All Mail"
+Create Both
+SyncState *
