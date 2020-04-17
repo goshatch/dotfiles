@@ -15,6 +15,7 @@ alias be="bundle exec"
 alias mux="tmuxinator"
 alias ls="exa"
 alias cat="bat"
+alias more="bat"
 
 set -x FZF_DEFAULT_COMMAND "rg --files --follow"
 set -x GOPATH $HOME/go
