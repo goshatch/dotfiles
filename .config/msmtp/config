@@ -1,0 +1,27 @@
+# Set default values for all following accounts.
+defaults
+auth           on
+protocol       smtp
+tls            on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        ~/.msmtp.log
+
+# Fastmail
+account        fastmail
+host           smtp.fastmail.com
+port           465
+tls_starttls   off
+from           gt@gueorgui.net
+user           gt@gueorgui.net
+passwordeval   pass email/fastmail/personal/msmtp
+
+# APS
+account        aps
+host           smtp.gmail.com
+port           587
+tls_starttls   on
+from           gueorgui@possible.space
+user           gueorgui@possible.space
+passwordeval   pass email/gmail/aps/msmtp
+
+account default : fastmail
