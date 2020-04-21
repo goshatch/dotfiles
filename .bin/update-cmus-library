@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# See: https://github.com/cmus/cmus/issues/233#issuecomment-396195503
+
+cmus-remote -C clear
+cmus-remote -C "add ~/Music"
+cmus-remote -C "update-cache -f"
