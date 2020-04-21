@@ -63,7 +63,7 @@ client.urgent           $bg0hard $bg0hard $fg1 $reddark $reddark
 #output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 output * bg ~/Dropbox/Pictures/sussex.jpg fill
 
-# output DP-1 scale 2
+output eDP-1 scale 2
 output DP-1 pos 0 0 res 1920x1080
 output LVDS-1 pos 277 1080 res 1366x768
 #
