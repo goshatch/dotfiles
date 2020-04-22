@@ -1,0 +1,6 @@
+[Unit]
+Description=Queued mail delivery service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.bin/msmtp-runqueue.sh
