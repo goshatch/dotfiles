@@ -55,4 +55,8 @@
   required = true
 [merge]
   conflictstyle = diff3
+[sendmail]
+  smtpserver = /usr/bin/msmtp
+  smtpserveroption = -a
+  smtpserveroption = fastmail
 
