@@ -1,5 +1,7 @@
-- ~/Downloads
-- ~/*/.cache
+- /home/*/Downloads
+- /home/**/.cache
 - /etc/ssl
 - /tmp
+- /run/media
+- /var/cache
 ! /proc

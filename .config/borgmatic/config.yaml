@@ -6,7 +6,16 @@ location:
   source_directories:
     - /home
     - /etc
-    - /var/log/syslog*
+    - /bin
+    - /sbin
+    - /lib
+    - /lib64
+    - /opt
+    - /root
+    - /run
+    - /sys
+    - /usr
+    - /var
 
     # Paths to local or remote repositories (required). Tildes are expanded. Multiple
     # repositories are backed up to in sequence. See ssh_command for SSH options like
