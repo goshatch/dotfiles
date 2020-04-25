@@ -1,8 +1,0 @@
-rofi.dpi: 144
-rofi.font: Iosevka 14
-rofi.location: 6
-rofi.width: 100
-rofi.lines: 8
-rofi.bw: 0
-rofi.yoffset: 0
-rofi.theme: /usr/share/rofi/themes/Arc-Dark.rasi
