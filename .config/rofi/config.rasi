@@ -4,7 +4,6 @@ configuration {
   font: "Iosevka 13";
   location: 6;
   width: 100;
-  lines: 8;
   bw: 0;
   yoffset: 0;
   modi: "combi,calc:qalc +u8 -nocurrencies";
