@@ -1,3 +1,5 @@
+P sh
+R /
 - /home/*/Downloads
 - /home/**/.cache
 - /etc/ssl

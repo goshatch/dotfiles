@@ -88,7 +88,7 @@ location:
 
     # Exclude directories that contain a CACHEDIR.TAG file. See
     # http://www.brynosaurus.com/cachedir/spec.html for details. Defaults to false.
-    # exclude_caches: true
+  exclude_caches: true
 
     # Exclude directories that contain a file with the given filenames. Defaults to not
     # set.
