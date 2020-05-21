@@ -20,6 +20,7 @@ alias more="bat"
 set -x FZF_DEFAULT_COMMAND "rg --files --follow"
 set -x GOPATH $HOME/go
 set -x PATH $GOPATH/bin $HOME/.bin $HOME/.yarn/bin $HOME/.config/yarn/global/node_modules/.bin $HOME/.rbenv/bin $PATH
+set -x EMACSPATH $PATH
 
 switch (uname)
   case Darwin

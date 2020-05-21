@@ -1,11 +1,11 @@
 configuration {
   dpi: 144;
-  theme: "Arc-Dark";
+  theme: "gruvbox-dark";
   font: "Iosevka 13";
   location: 6;
   width: 100;
   bw: 0;
   yoffset: 0;
-  modi: "combi,calc:qalc +u8 -nocurrencies";
+  modi: "drun,window,calc:qalc +u8 -nocurrencies";
   combi-modi: "window,drun";
 }

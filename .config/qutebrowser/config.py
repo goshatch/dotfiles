@@ -13,4 +13,9 @@ c.content.pdfjs = True
 c.fonts.default_family = 'Iosevka'
 c.fonts.default_size = '10pt'
 
-config.source('nord-qutebrowser.py')
+# Theme
+config.source('gruvbox-dark-soft.py')
+
+# Password manager
+config.bind(',p', 'spawn --userscript qute-bitwarden --totp')
+config.bind(',pa', 'spawn --userscript qute-pass')

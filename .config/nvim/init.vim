@@ -5,6 +5,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 Plug 'nanotech/jellybeans.vim'
 Plug 'lifepillar/vim-solarized8'
 Plug 'ajh17/Spacegray.vim'
+Plug 'morhetz/gruvbox'
 " Languages support
 Plug 'sheerun/vim-polyglot'
 " Linting
@@ -38,8 +39,7 @@ set termguicolors
 " Show line numbers
 set number
 " Theme
-colorscheme spacegray
-let g:airline_theme='jellybeans'
+colorscheme gruvbox
 
 " Leader
 let mapleader = ','
