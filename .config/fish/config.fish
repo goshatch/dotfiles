@@ -35,3 +35,4 @@ end
 status --is-interactive; and source (rbenv init -|psub)
 
 bass_init
+eval (direnv hook fish)
