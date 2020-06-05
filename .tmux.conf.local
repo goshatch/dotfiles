@@ -39,6 +39,7 @@ tmux_conf_new_session_prompt=false
 
 
 # -- display -------------------------------------------------------------------
+# This uses the colours from the Gruvbox theme
 
 # RGB 24-bit colour support (tmux >= 2.2), possible values are:
 #  - true
