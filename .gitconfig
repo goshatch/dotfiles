@@ -3,7 +3,8 @@
   email = gt@gueorgui.net
 [alias]
   st = status -sb
-  ci = commit -av
+  ci = commit -v
+  s = stage
   br = branch
   co = checkout
   df = diff
