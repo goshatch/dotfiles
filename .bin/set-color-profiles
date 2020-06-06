@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Laptop display
+dispwin -d2 "/home/gueorgui/.local/share/icc/NE156QUM-N66 #2 2020-05-27 22-11 0.2957x 0.3276y 2.2 M-S XYZLUT+MTX.icc"
+
+# External display (LG Ultrafine 5K)
+dispwin -d1 "/home/gueorgui/.local/share/icc/UltraFine #1 2020-05-27 22-02 0.3436x 0.3541y S XYZLUT+MTX.icc"
+dispwin -d3 "/home/gueorgui/.local/share/icc/UltraFine #1 2020-05-27 22-02 0.3436x 0.3541y S XYZLUT+MTX.icc"
