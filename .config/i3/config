@@ -31,9 +31,28 @@ font pango:Iosevka 10
 # screen before suspend. Use loginctl lock-session to lock your screen.
 set $i3lock i3lock -c 1d2021
 exec --no-startup-id xss-lock --transfer-sleep-lock -- $i3lock --nofork
+
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
+
+# Sound control
+exec --no-startup-id pasystray
+
+# Notifications daemon
+exec --no-startup-id dunst
+
+# Dropobox
+exec --no-startup-id dropbox
+
+# Compose key
+exec --no-startup-id setxkbmap -option compose:ralt
+
+# Use colour profiles
+# Internal monitor: icc-e836c67609a303da8524fcdf32763c33
+# LG Ultrafine 5K: icc-0f67033965dc8344e594c98b314366ae
+exec --no-startup-id xiccd
+exec --no-startup-id ~/.bin/set-color-profiles
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -259,8 +278,3 @@ client.focused          $yellow $yellow $darkgray $purple $darkgray
 client.focused_inactive $darkgray $darkgray $yellow $purple $darkgray
 client.unfocused        $darkgray $darkgray $yellow $purple $darkgray
 client.urgent           $red $red $white $red $red
-
-# Start Polybar
-# exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec_always --no-startup-id nm-applet
-exec_always --no-startup-id dunst
