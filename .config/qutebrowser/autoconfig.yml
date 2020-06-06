@@ -9,14 +9,26 @@ settings:
   content.notifications:
     https://merveilles.town: true
     https://www.reddit.com: false
+  downloads.location.directory:
+    global: /home/gueorgui/Downloads
   fonts.default_family:
     global: Iosevka
   fonts.default_size:
     global: 10pt
   fonts.downloads:
     global: default_size default_family
-  downloads.location.directory:
-    global: /home/gueorgui/Downloads
+  fonts.web.family.cursive:
+    global: null
+  fonts.web.family.fixed:
+    global: Source Code Pro, "JoyPixels", "Twitter Color Emoji"
+  fonts.web.family.sans_serif:
+    global: Bitstream Vera Sans, "JoyPixels", "Twitter Color Emoji"
+  fonts.web.family.serif:
+    global: Bitstream Vera Serif, "JoyPixels", "Twitter Color Emoji"
+  fonts.web.family.standard:
+    global: Bitstream Vera Serif, "JoyPixels", "Twitter Color Emoji"
+  fonts.web.size.default:
+    global: 16
   url.searchengines:
     global:
       DEFAULT: https://duckduckgo.com/?q={}
