@@ -32,6 +32,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'ap/vim-css-color'
 " http://editorconfig.org
 Plug 'editorconfig/editorconfig-vim'
+" VimWiki
+Plug 'vimwiki/vimwiki'
 call plug#end()
 
 " True colours in term
@@ -42,7 +44,8 @@ set number
 colorscheme gruvbox
 
 " Leader
-let mapleader = ','
+"let mapleader = ','
+let mapleader = ' '
 
 " Esc with double j
 imap jj <Esc>
@@ -125,7 +128,8 @@ let g:airline#extensions#ale#enabled = 1
 " Fuzzy finder
 " Install `fzf` with brew first
 " https://github.com/junegunn/fzf.vim
-nnoremap <C-p> :Files<CR>
+nnoremap <Leader><Space> :Files<CR>
+nnoremap <Leader>p :Rg<CR>
 nnoremap <Leader>b :Buffers<CR>
 nnoremap <Leader>h :History<CR>
 nnoremap <Leader>t :BTags<CR>
