@@ -43,8 +43,10 @@ set number
 " Theme
 colorscheme gruvbox
 
+set nocompatible
+syntax on
+
 " Leader
-"let mapleader = ','
 let mapleader = ' '
 
 " Esc with double j
@@ -159,4 +161,8 @@ let g:EditorConfig_disable_rules = ['trim_trailing_whitespace']
 " Nerd Commenter
 " Align line-wise comment delimiters flush left instead of following code indentation
 let g:NERDDefaultAlign = 'left'
+
+" VimWiki
+" Use Markdown instead of VimWiki syntax
+let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
 
