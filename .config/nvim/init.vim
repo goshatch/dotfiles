@@ -52,10 +52,27 @@ let mapleader = ' '
 " Esc with double j
 imap jj <Esc>
 
+" REMINDER:
+" This is how mapping works in Vim https://stackoverflow.com/a/3776182
+" map = map key sequence to command
+" noremap = map but not recursively
+" prefix (n = normal, v = visual, etc) indicates mode
+
+" Open in the current directgory
 nmap <leader>ew :e <C-R>=expand('%:h').'/'<cr>
 nmap <leader>es :sp <C-R>=expand('%:h').'/'<cr>
 nmap <leader>ev :vsp <C-R>=expand('%:h').'/'<cr>
 nmap <leader>et :tabe <C-R>=expand('%:h').'/'<cr>
+
+" Fuzzy finder
+" Install `fzf` first
+" https://github.com/junegunn/fzf.vim
+nnoremap <Leader><Space> :Files<CR>
+nnoremap <Leader>p :Rg<CR>
+nnoremap <Leader>b :Buffers<CR>
+nnoremap <Leader>h :History<CR>
+nnoremap <Leader>t :BTags<CR>
+nnoremap <Leader>T :Tags<CR>
 
 " Auto indent
 filetype plugin indent on
@@ -126,16 +143,6 @@ let g:ale_sign_column_always = 1
 let g:airline#extensions#ale#enabled = 1
 
 "nmap <F6> <Plug>(ale_fix)
-
-" Fuzzy finder
-" Install `fzf` with brew first
-" https://github.com/junegunn/fzf.vim
-nnoremap <Leader><Space> :Files<CR>
-nnoremap <Leader>p :Rg<CR>
-nnoremap <Leader>b :Buffers<CR>
-nnoremap <Leader>h :History<CR>
-nnoremap <Leader>t :BTags<CR>
-nnoremap <Leader>T :Tags<CR>
 
 " Coc (completion)
 " https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
