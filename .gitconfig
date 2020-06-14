@@ -22,6 +22,8 @@
   whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
   quotepath = false
   precomposeunicode = true
+[commit]
+  template = ~/.gitmessage
 [color]
   ui = auto
 [color "branch"]
@@ -38,7 +40,6 @@
   added = yellow
   changed = green
   untracked = cyan
-
 [branch]
   autosetuprebase = always
 [filter "media"]
