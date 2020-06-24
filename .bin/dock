@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Move the relevant workspaces back to the external monitor
+autorandr docked
+
+for W in 1 2 3 4 5; do
+  i3-msg "workspace $W; move workspace to output DP-1"
+done
+
+# Set colour profiles
+~/.bin/set-color-profiles

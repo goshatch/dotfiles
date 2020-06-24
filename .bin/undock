@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Move the relevant workspaces to the builtin laptop display
+for DP in DP-0 DP-1; do
+  xrandr --output $DP --off
+done
+
+autorandr laptop
+
+for W in $(seq 1 10); do
+  i3-msg "workspace $W; move workspace to output DP-2"
+done
+
+# Set colour profiles
+~/.bin/set-color-profiles
