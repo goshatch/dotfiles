@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+INTERNAL="DP-2"
+EXTERNAL=("DP-0" "DP-1")
+source displays.`hostname`
+
+if type autorandr 2>/dev/null; then
+  autorandr laptop
+fi
+
 # Move the relevant workspaces to the builtin laptop display
-for DP in DP-0 DP-1; do
-  xrandr --output $DP --off
+for W in $(seq 1 10); do
+  i3-msg "workspace $W; move workspace to output $INTERNAL"
 done
 
-autorandr laptop
-
-for W in $(seq 1 10); do
-  i3-msg "workspace $W; move workspace to output DP-2"
+for DP in $EXTERNAL; do
+  xrandr --output $DP --off
 done
 
 # Set colour profiles

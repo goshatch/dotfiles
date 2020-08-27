@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Move the relevant workspaces back to the external monitor
-autorandr docked
+INTERNAL="DP-2"
+EXTERNAL=("DP-0" "DP-1")
+source displays.`hostname`
+source xrandr.`hostname`
 
+if type autorandr 2>/dev/null; then
+  autorandr docked
+fi
+
+# Move the relevant workspaces back to the external monitor
 for W in 1 2 3 4 5; do
-  i3-msg "workspace $W; move workspace to output DP-1"
+  i3-msg "workspace $W; move workspace to output ${EXTERNAL[0]}"
 done
 
 # Set colour profiles
