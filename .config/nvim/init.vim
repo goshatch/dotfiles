@@ -26,14 +26,24 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 " NerdCommenter
 Plug 'scrooloose/nerdcommenter'
+" NerdTree
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 " GitGutter
 Plug 'airblade/vim-gitgutter'
 " CSS colours preview
 Plug 'ap/vim-css-color'
 " http://editorconfig.org
 Plug 'editorconfig/editorconfig-vim'
-" VimWiki
+" VimWiki + Zettelkasten + TaskWarrior
 Plug 'vimwiki/vimwiki'
+Plug 'michal-h21/vim-zettel'
+Plug 'powerman/vim-plugin-AnsiEsc'
+Plug 'blindFS/vim-taskwarrior'
+Plug 'majutsushi/tagbar'
+Plug 'tbabej/taskwiki'
+" StyledComponents
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 call plug#end()
 
 " True colours in term
@@ -73,6 +83,11 @@ nnoremap <Leader>b :Buffers<CR>
 nnoremap <Leader>h :History<CR>
 nnoremap <Leader>t :BTags<CR>
 nnoremap <Leader>T :Tags<CR>
+
+nnoremap <Leader>n :NERDTreeToggle<CR>
+nnoremap <Leader>nn :NERDTreeFind<CR>
+
+nnoremap <Leader>tt :TagbarToggle<CR>
 
 " Auto indent
 filetype plugin indent on
@@ -119,10 +134,16 @@ function! StripTrailingWhitespaces()
 endfunction
 autocmd BufWritePre * :call StripTrailingWhitespaces()
 
+" Automatically create directories on save if needed
+augroup Mkdir
+  autocmd!
+  autocmd BufWritePre * call mkdir(expand("<afile>:p:h"), "p")
+augroup END
+
 " ALE (Linting)
 " https://github.com/w0rp/ale
-nmap <silent> [c <Plug>(ale_previous_wrap)
-nmap <silent> ]c <Plug>(ale_next_wrap)
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:ale_sign_error = 'X'
 let g:ale_sign_warning = '!'
 let g:ale_fixers = {
@@ -169,7 +190,19 @@ let g:EditorConfig_disable_rules = ['trim_trailing_whitespace']
 " Align line-wise comment delimiters flush left instead of following code indentation
 let g:NERDDefaultAlign = 'left'
 
-" VimWiki
+" VimWiki (+ VimZettel, + TaskWiki)
 " Use Markdown instead of VimWiki syntax
 let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+let g:taskwiki_markup_syntax = "markdown"
+nnoremap <Leader><Enter> :VimwikiToggleListItem<CR>
 
+" Change format of default Zettel file name
+let g:zettel_format = '%y%m%d-%H%M-%title'
+
+" Keymaps
+nnoremap <Leader>zn :ZettelNew<space>
+nnoremap <Leader>zo :ZettelOpen<CR>
+nnoremap <Leader>zb :ZettelBackLinks<CR>
+nnoremap <Leader>zi :ZettelInbox<CR>
+nnoremap <Leader>zgl :ZettelGenerateLinks<CR>
+nnoremap <Leader>zgt :ZettelGenerateTags<CR>
