@@ -45,8 +45,17 @@ exec --no-startup-id dunst
 # Dropobox
 exec --no-startup-id dropbox
 
-# Compose key
-exec --no-startup-id setxkbmap -option compose:ralt
+# Syncthing
+exec --no-startup-id qsyncthingtray
+
+# Bluetooth
+exec --no-startup-id blueman-applet
+
+# Clipmenu
+exec --no-startup-id clipmenud
+
+# Wallpaper
+exec --no-startup-id "feh --bg-fill ~/Dropbox/Pictures/SouthDownsWallpaper.jpg"
 
 # Use colour profiles
 # Internal monitor: icc-e836c67609a303da8524fcdf32763c33
@@ -60,10 +69,6 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
-
-# Control monitor brightness
-bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
-bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 10
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -80,6 +85,8 @@ bindsym $mod+Shift+q kill
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 bindsym $mod+d exec --no-startup-id rofi -show combi
+bindsym $mod+c exec --no-startup-id CM_LAUNCHER=rofi clipmenu
+bindsym $mod+x exec --no-startup-id rofi -show calc -modi calc:qalc -no-show-match -no-sort
 
 # change focus
 bindsym $mod+$left focus left
@@ -145,7 +152,7 @@ set $ws9 "9"
 set $ws10 "10"
 
 set $external DP-0
-set $builtin DP-2
+set $builtin eDP-1
 
 # Stacked layout by default
 workspace_layout stacking
@@ -225,6 +232,8 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+bindsym $mod+m move workspace to output $builtin
+
 # Theme
 
 # Set primary Gruvbox colours:
@@ -237,6 +246,7 @@ set $purple #b16286
 set $aqua #689d68
 set $gray #a89984
 set $darkgray #1d2021
+set $white #ffffff
 
 # start of bar section
 bar {
@@ -250,8 +260,8 @@ bar {
         # workspaces section
         #                    border  backgr. text
         focused_workspace    $aqua $aqua $darkgray
-        inactive_workspace   $darkgray $darkgray $yellow
-        active_workspace     $darkgray $darkgray $yellow
+        inactive_workspace   $bg $bg $yellow
+        active_workspace     $bg $bg $yellow
         urgent_workspace     $red $red $bg
     }
     tray_output $builtin
@@ -274,7 +284,10 @@ bar {
 
 # yellow gruvbox
 # class                 border|backgr|text|indicator|child_border
-client.focused          $yellow $yellow $darkgray $purple $darkgray
-client.focused_inactive $darkgray $darkgray $yellow $purple $darkgray
-client.unfocused        $darkgray $darkgray $yellow $purple $darkgray
+#client.focused          $yellow $yellow $darkgray $purple $darkgray
+#client.focused_inactive $darkgray $darkgray $yellow $purple $darkgray
+#client.unfocused        $darkgray $darkgray $yellow $purple $darkgray
+client.focused          $darkgray $darkgray $yellow $purple $darkgray
+client.focused_inactive $darkgray $darkgray $gray $purple $darkgray
+client.unfocused        $darkgray $darkgray $gray $purple $darkgray
 client.urgent           $red $red $white $red $red

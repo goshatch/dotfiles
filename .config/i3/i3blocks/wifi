@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Copyright (C) 2014 Alexander Keller <github@nycroth.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -31,16 +31,16 @@ QUALITY=$(grep $INTERFACE /proc/net/wireless | awk '{ print int($3 * 100 / 70) }
 
 #------------------------------------------------------------------------
 
-echo $QUALITY% # full text
-echo $QUALITY% # short text
+echo " $QUALITY%" # full text
+echo " $QUALITY%" # short text
 
 # color
-if [[ $QUALITY -ge 80 ]]; then
-    echo ""
-elif [[ $QUALITY -lt 80 ]]; then
-    echo ""
-elif [[ $QUALITY -lt 60 ]]; then
-    echo ""
-elif [[ $QUALITY -lt 40 ]]; then
-    echo ""
-fi
+#if [[ $QUALITY -ge 80 ]]; then
+#    echo ""
+#elif [[ $QUALITY -lt 80 ]]; then
+#    echo ""
+#elif [[ $QUALITY -lt 60 ]]; then
+#    echo ""
+#elif [[ $QUALITY -lt 40 ]]; then
+#    echo ""
+#fi

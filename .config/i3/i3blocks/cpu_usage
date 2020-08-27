@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 # Source: http://askubuntu.com/a/450136
 
 URGENT_VALUE=90
@@ -30,8 +30,8 @@ if [[ "${PREV_TOTAL}" != "" ]] && [[ "${PREV_IDLE}" != "" ]]; then
   let "DIFF_IDLE=$IDLE-$PREV_IDLE"
   let "DIFF_TOTAL=$TOTAL-$PREV_TOTAL"
   let "DIFF_USAGE=(1000*($DIFF_TOTAL-$DIFF_IDLE)/$DIFF_TOTAL+5)/10"
-  echo "${DIFF_USAGE}%"
-  echo "${DIFF_USAGE}%"
+  echo " ${DIFF_USAGE}% "
+  echo " ${DIFF_USAGE}% "
   echo ""
 else
   echo "?"
