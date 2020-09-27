@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+xrandr --delmonitor LGUltrafine5K
+xrandr --output DP-2 --off
+xrandr --output DP-1 --off

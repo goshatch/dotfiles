@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+INTERNAL="eDP-1"
+EXTERNAL=("LGUltrafine5K, DP-1, DP-2")

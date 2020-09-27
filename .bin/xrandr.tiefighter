@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+xrandr --addmode DP-1 2560x2880
+xrandr --output DP-1 --mode 2560x2880 --right-of eDP-1 --output DP-2 --mode 2560x2880 --right-of DP-1
+xrandr --setmonitor LGUltrafine5K 5120/600x2880/340+3840+0 DP-1,DP-2

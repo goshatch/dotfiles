@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+INTERFACE="wlp0s20f3"
+IP=`ip address show dev $INTERFACE scope global | awk '/inet / {split($2,var,"/"); print var[1]}' | awk 'NR==1{print $1}'`
+
+echo "$IP rentify.test www.rentify.test admin.rentify.test api.rentify.test help.rentify.test" > /etc/hosts.dnsmasq
+sudo systemctl restart dnsmasq
+
+echo -e "\e[92m↯\e[39m \e[37mCurrent IP of \e[97m$INTERFACE\e[37m is \e[1m\e[96m$IP\e[37m\e[21m, update your wifi DNS settings on mobile to point to it!"
