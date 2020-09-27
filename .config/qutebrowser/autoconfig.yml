@@ -6,9 +6,13 @@
 
 config_version: 2
 settings:
+  content.media_capture:
+    https://meet.jit.si: true
   content.notifications:
     https://merveilles.town: true
     https://www.reddit.com: false
+  content.register_protocol_handler:
+    https://mail.google.com?extsrc=mailto&url=%25s: false
   downloads.location.directory:
     global: /home/gueorgui/Downloads
   fonts.default_family:

@@ -9,13 +9,15 @@ if type autorandr 2>/dev/null; then
   autorandr laptop
 fi
 
+for DP in $EXTERNAL; do
+  xrandr --output $DP --off
+done
+
+source xrandr.undock.`hostname`
+
 # Move the relevant workspaces to the builtin laptop display
 for W in $(seq 1 10); do
   i3-msg "workspace $W; move workspace to output $INTERNAL"
-done
-
-for DP in $EXTERNAL; do
-  xrandr --output $DP --off
 done
 
 # Set colour profiles

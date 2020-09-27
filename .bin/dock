@@ -15,5 +15,9 @@ for W in 1 2 3 4 5; do
   i3-msg "workspace $W; move workspace to output ${EXTERNAL[0]}"
 done
 
+# Restart notifications
+killall dunst
+i3-msg "exec --no-startup-id dunst"
+
 # Set colour profiles
 ~/.bin/set-color-profiles
