@@ -38,10 +38,6 @@ Plug 'editorconfig/editorconfig-vim'
 " VimWiki + Zettelkasten + TaskWarrior
 Plug 'vimwiki/vimwiki'
 Plug 'michal-h21/vim-zettel'
-Plug 'powerman/vim-plugin-AnsiEsc'
-Plug 'blindFS/vim-taskwarrior'
-Plug 'majutsushi/tagbar'
-Plug 'tbabej/taskwiki'
 " StyledComponents
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 call plug#end()
@@ -193,7 +189,6 @@ let g:NERDDefaultAlign = 'left'
 " VimWiki (+ VimZettel, + TaskWiki)
 " Use Markdown instead of VimWiki syntax
 let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
-let g:taskwiki_markup_syntax = "markdown"
 nnoremap <Leader><Enter> :VimwikiToggleListItem<CR>
 
 " Change format of default Zettel file name
@@ -206,3 +201,6 @@ nnoremap <Leader>zb :ZettelBackLinks<CR>
 nnoremap <Leader>zi :ZettelInbox<CR>
 nnoremap <Leader>zgl :ZettelGenerateLinks<CR>
 nnoremap <Leader>zgt :ZettelGenerateTags<CR>
+
+" Bring back old fzf popup position
+let g:fzf_layout = { 'down': '40%' }
