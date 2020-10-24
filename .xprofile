@@ -3,7 +3,6 @@ export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
 ibus-daemon -drx
 setxkbmap -option compose:ralt,ctrl:nocaps
-~/.bin/set-color-profiles
 
 export CALIBRE_USE_DARK_PALETTE=1
 export QT_STYLE_OVERRIDE=Adwaita-Dark

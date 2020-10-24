@@ -1,23 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "Setting displays..."
 INTERNAL="DP-2"
 EXTERNAL=("DP-0" "DP-1")
-source displays.`hostname`
-source xrandr.`hostname`
+source displays.`cat /etc/hostname`
 
-if type autorandr 2>/dev/null; then
-  autorandr docked
-fi
+echo "Running xrandr..."
+source xrandr.`cat /etc/hostname`
 
+#if type autorandr 2>/dev/null; then
+#  autorandr docked
+#fi
+
+echo "Moving workspaces to external monitor..."
 # Move the relevant workspaces back to the external monitor
-for W in 1 2 3 4 5; do
+for W in 1 2 3 4; do
   i3-msg "workspace $W; move workspace to output ${EXTERNAL[0]}"
 done
 
+echo "Restarting notifications daemon..."
 # Restart notifications
 killall dunst
 i3-msg "exec --no-startup-id dunst"
 
+echo "Setting colour profiles..."
 # Set colour profiles
-~/.bin/set-color-profiles
+dispwin -d1 "/home/gueorgui/.local/share/icc/UltraFine #1 2020-05-27 22-02 0.3436x 0.3541y S XYZLUT+MTX.icc"
+dispwin -d2 "/home/gueorgui/.local/share/icc/UltraFine #1 2020-05-27 22-02 0.3436x 0.3541y S XYZLUT+MTX.icc"
+dispwin -d3 "/home/gueorgui/.local/share/icc/UltraFine #1 2020-05-27 22-02 0.3436x 0.3541y S XYZLUT+MTX.icc"
+
+echo "Setting wallpaper..."
+feh --bg-fill ~/Sync/Pictures/SouthDownsWallpaper.jpg
+
+echo "Docked!"

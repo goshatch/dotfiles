@@ -115,6 +115,10 @@ element.selected.normal {
     text-color:       @selected-normal-foreground;
 }
 
+element-icon {
+    size: 1.65ch;
+}
+
 element.selected.urgent {
     background-color: @selected-urgent-background;
     text-color:       @selected-urgent-foreground;

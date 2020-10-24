@@ -3,22 +3,20 @@ set -euo pipefail
 
 INTERNAL="DP-2"
 EXTERNAL=("DP-0" "DP-1")
-source displays.`hostname`
+source displays.`cat /etc/hostname`
 
-if type autorandr 2>/dev/null; then
-  autorandr laptop
-fi
+#if type autorandr 2>/dev/null; then
+#  autorandr laptop
+#fi
 
-for DP in $EXTERNAL; do
-  xrandr --output $DP --off
-done
-
-source xrandr.undock.`hostname`
+source xrandr.undock.`cat /etc/hostname`
 
 # Move the relevant workspaces to the builtin laptop display
 for W in $(seq 1 10); do
   i3-msg "workspace $W; move workspace to output $INTERNAL"
 done
 
+feh --bg-fill ~/Sync/Pictures/SouthDownsWallpaper.jpg
+
 # Set colour profiles
-~/.bin/set-color-profiles
+dispwin -d1 "/home/gueorgui/.local/share/icc/NE156QUM-N66 #2 2020-05-27 22-11 0.2957x 0.3276y 2.2 M-S XYZLUT+MTX.icc"

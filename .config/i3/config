@@ -46,7 +46,7 @@ exec --no-startup-id dunst
 exec --no-startup-id dropbox
 
 # Syncthing
-exec --no-startup-id qsyncthingtray
+exec --no-startup-id syncthing-gtk
 
 # Bluetooth
 exec --no-startup-id blueman-applet
@@ -55,7 +55,7 @@ exec --no-startup-id blueman-applet
 exec --no-startup-id clipmenud
 
 # Wallpaper
-exec --no-startup-id "feh --bg-fill ~/Dropbox/Pictures/SouthDownsWallpaper.jpg"
+exec --no-startup-id "feh --bg-fill ~/Sync/Pictures/SouthDownsWallpaper.jpg"
 
 # Use colour profiles
 # Internal monitor: icc-e836c67609a303da8524fcdf32763c33
@@ -69,6 +69,10 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Screen brightness controls
+bindsym XF86MonBrightnessUp exec xbacklight -inc 5
+bindsym XF86MonBrightnessDown exec xbacklight -dec 5
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -151,8 +155,9 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
+set $code HDMI-0
 set $external DP-0
-set $builtin eDP-1
+set $builtin DP-2
 
 # Stacked layout by default
 workspace_layout stacking
@@ -187,10 +192,10 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
-workspace $ws1 output $external
-workspace $ws2 output $external
-workspace $ws3 output $external
-workspace $ws4 output $external
+workspace $ws1 output $code
+workspace $ws2 output $code
+workspace $ws3 output $code
+workspace $ws4 output $code
 workspace $ws5 output $external
 workspace $ws6 output $builtin
 workspace $ws7 output $builtin
@@ -264,7 +269,7 @@ bar {
         active_workspace     $bg $bg $yellow
         urgent_workspace     $red $red $bg
     }
-    tray_output $builtin
+    # tray_output $builtin
 }
 # end of bar section
 
