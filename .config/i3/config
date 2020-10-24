@@ -157,7 +157,7 @@ set $ws10 "10"
 
 set $code HDMI-0
 set $external DP-0
-set $builtin DP-2
+set $builtin LVDS1
 
 # Stacked layout by default
 workspace_layout stacking

@@ -18,7 +18,7 @@ set $term alacritty
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
 # set $menu "rofi -show combi -combi-modi 'run#drun'"
-set $menu "wofi --show drun"
+set $menu "rofi -show combi"
 # set $emoji "rofi -show emoji -modi emoji"
 # set $calc "rofi -show calc -modi calc -no-show-match -no-sort -calc-command"
 
@@ -47,8 +47,8 @@ set $purplelight #d3869b
 set $white #ffffff
 set $black #000000
 
-# font pango:Iosevka 9
-font pango:"Noto Sans" 9
+font pango:Iosevka 9
+# font pango:"Noto Sans" 9
 
 
 # class                 border  backgr. text    indicator child_border
@@ -122,7 +122,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+w kill
 
 # start your launcher
-bindsym $mod+space exec $menu
+bindsym $mod+d exec $menu
 # bindsym $mod+period exec $emoji
 # bindsym $mod+c exec $calc
 
