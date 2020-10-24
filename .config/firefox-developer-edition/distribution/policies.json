@@ -1,0 +1,30 @@
+{
+  "policies": {
+    "DisableFirefoxAccounts": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableProfileRefresh": true,
+    "DisableTelemetry": true,
+    "DontCheckDefaultBrowser": true,
+    "EnableTrackingProtection": { "Value": true, "Locked": false },
+    "NewTabPage": false,
+    "Proxy": { "Mode": "none", "Locked": false },
+    "WebsiteFilter": {
+      "Block": [
+        "*://*.twitter.com/*",
+        "*://*.merveilles.town/*",
+        "*://*.facebook.com/*",
+        "*://*.instagram.com/*",
+        "*://*.reddit.com/*",
+        "*://*.theguardian.com/*",
+        "*://*.feedbin.com/*",
+        "*://*.nytimes.com/*",
+        "*://*.livejournal.com/*",
+        "*://*.meduza.io/*",
+        "*://*.theverge.com/*",
+        "*://*daringfireball.net/*"
+      ],
+      "Exceptions": []
+    }
+  }
+}
