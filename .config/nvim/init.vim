@@ -5,6 +5,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 Plug 'nanotech/jellybeans.vim'
 Plug 'lifepillar/vim-solarized8'
 Plug 'ajh17/Spacegray.vim'
+Plug 'cormacrelf/vim-colors-github'
 Plug 'morhetz/gruvbox'
 " Languages support
 Plug 'sheerun/vim-polyglot'
@@ -40,6 +41,10 @@ Plug 'vimwiki/vimwiki'
 Plug 'michal-h21/vim-zettel'
 " StyledComponents
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+" Dash support
+Plug 'rizzatti/dash.vim'
+" Auto fold RSpec examples
+Plug 'rlue/vim-fold-rspec'
 call plug#end()
 
 " True colours in term
@@ -63,6 +68,9 @@ imap jj <Esc>
 " map = map key sequence to command
 " noremap = map but not recursively
 " prefix (n = normal, v = visual, etc) indicates mode
+
+" Clear search pattern highlight by hitting ESC
+nnoremap <ESC> :noh<RETURN><ESC>
 
 " Open in the current directgory
 nmap <leader>ew :e <C-R>=expand('%:h').'/'<cr>
@@ -105,7 +113,8 @@ set lazyredraw
 
 " This is for faster syntax highlight in ruby files:
 " https://stackoverflow.com/a/16920294
-set re=1
+" set re=1
+" Commented this out for better performance in TypeScript 2020/12/03
 
 " Another tweak for Ruby
 let g:ruby_path = system('echo $HOME/.rbenv/shims')
@@ -185,10 +194,17 @@ let g:EditorConfig_disable_rules = ['trim_trailing_whitespace']
 " Nerd Commenter
 " Align line-wise comment delimiters flush left instead of following code indentation
 let g:NERDDefaultAlign = 'left'
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
 
 " VimWiki (+ VimZettel, + TaskWiki)
 " Use Markdown instead of VimWiki syntax
 let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+let g:zettelkasten = '~/vimwiki/zettel/'
 nnoremap <Leader><Enter> :VimwikiToggleListItem<CR>
 
 " Change format of default Zettel file name
@@ -201,6 +217,12 @@ nnoremap <Leader>zb :ZettelBackLinks<CR>
 nnoremap <Leader>zi :ZettelInbox<CR>
 nnoremap <Leader>zgl :ZettelGenerateLinks<CR>
 nnoremap <Leader>zgt :ZettelGenerateTags<CR>
+
+" RSpec folding
+let g:fold_rspec_foldenable = 0     " disables folding (toggle with `zi`)
+let g:fold_rspec_foldlevel = 2      " sets initial open/closed state of all folds (open unless nested more than two levels deep)
+let g:fold_rspec_foldclose = 'all'  " closes folds automatically when the cursor is moved out of them (only applies to folds deeper than 'foldlevel')
+let g:fold_rspec_foldminlines = 3   " disables closing of folds containing two lines or fewer
 
 " Bring back old fzf popup position
 let g:fzf_layout = { 'down': '40%' }
