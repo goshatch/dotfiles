@@ -16,6 +16,8 @@ alias mux="tmuxinator"
 alias ls="exa"
 alias cat="bat"
 alias more="bat"
+alias dc="docker-compose"
+alias dcr="docker-compose run"
 
 set -x FZF_DEFAULT_COMMAND "rg --files --follow"
 set -x GOPATH $HOME/go
@@ -24,7 +26,7 @@ set -x EMACSPATH $PATH
 
 switch (uname)
   case Darwin
-    set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir=(brew --prefix openssl@1.1)"
+    set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir=/usr/local/opt/openssl@1.1"
   case Linux
     set -x QT_STYLE_OVERRIDE Adwaita-Dark
     # set -x MOZ_ENABLE_WAYLAND 1
