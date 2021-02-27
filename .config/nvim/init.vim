@@ -20,6 +20,7 @@ Plug 'wincent/ferret'
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 " Git
 Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
 " Eunuch
 Plug 'tpope/vim-eunuch'
 " Airline
@@ -30,8 +31,6 @@ Plug 'scrooloose/nerdcommenter'
 " NerdTree
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-" GitGutter
-Plug 'airblade/vim-gitgutter'
 " CSS colours preview
 Plug 'ap/vim-css-color'
 " http://editorconfig.org
