@@ -18,6 +18,8 @@
   ign = ls-files -o -i --exclude-standard
   unstage = reset HEAD --
   find = grep -2 -n --heading
+  # Mark a repo as trusted
+  trust = "!mkdir -p .git/safe"
 [core]
   whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
   quotepath = false
