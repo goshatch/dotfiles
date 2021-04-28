@@ -16,12 +16,12 @@ alias mux="tmuxinator"
 alias ls="exa"
 alias cat="bat"
 alias more="bat"
-alias dc="docker-compose"
-alias dcr="docker-compose run"
+alias dc="docker compose"
+alias dcu="docker compose up -d"
+alias dcr="docker compose run"
 
 set -x FZF_DEFAULT_COMMAND "rg --files --follow"
 set -x GOPATH $HOME/go
-set -x PATH $GOPATH/bin $HOME/.bin $HOME/.yarn/bin $HOME/.config/yarn/global/node_modules/.bin $HOME/.rbenv/bin $PATH
 set -x EMACSPATH $PATH
 
 switch (uname)
@@ -38,3 +38,7 @@ status --is-interactive; and source (rbenv init -|psub)
 
 bass_init
 eval (direnv hook fish)
+
+# This is needed to give priority to per project binstubs in a Rails project over system-wide rbenv-installed gems.
+# A project directory must be marked as trusted with `git trust` first.
+set -x PATH $HOME/.bin .git/safe/../../bin $GOPATH/bin $HOME/.emacs.d/bin $HOME/.yarn/bin $HOME/.config/yarn/global/node_modules/.bin $HOME/.rbenv/bin $PATH
