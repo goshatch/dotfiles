@@ -20,14 +20,13 @@ Plug 'wincent/ferret'
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 " Git
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'airblade/vim-gitgutter'
 " Eunuch
 Plug 'tpope/vim-eunuch'
 " Airline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-" NerdCommenter
-Plug 'scrooloose/nerdcommenter'
 " NerdTree
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -35,15 +34,16 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ap/vim-css-color'
 " http://editorconfig.org
 Plug 'editorconfig/editorconfig-vim'
-" VimWiki + Zettelkasten + TaskWarrior
-Plug 'vimwiki/vimwiki'
-Plug 'michal-h21/vim-zettel'
 " StyledComponents
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 " Dash support
 Plug 'rizzatti/dash.vim'
 " Auto fold RSpec examples
 Plug 'rlue/vim-fold-rspec'
+" Ruby on Rails support
+Plug 'tpope/vim-rails'
+" (Un)commenting
+Plug 'tpope/vim-commentary'
 call plug#end()
 
 " True colours in term
@@ -91,6 +91,10 @@ nnoremap <Leader>n :NERDTreeToggle<CR>
 nnoremap <Leader>nn :NERDTreeFind<CR>
 
 nnoremap <Leader>tt :TagbarToggle<CR>
+
+nnoremap <Leader>gg :Git<CR>
+nnoremap <Leader>gd :Gdiff<CR>
+nnoremap <Leader>gb :Gblame<CR>
 
 " Auto indent
 filetype plugin indent on
@@ -189,33 +193,6 @@ set clipboard=unnamed
 " Exclude Fugitive and SCP editing
 let g:EditorConfig_exclude_patterns = ['fugitive://.\*', 'scp://.\*']
 let g:EditorConfig_disable_rules = ['trim_trailing_whitespace']
-
-" Nerd Commenter
-" Align line-wise comment delimiters flush left instead of following code indentation
-let g:NERDDefaultAlign = 'left'
-" Add spaces after comment delimiters by default
-let g:NERDSpaceDelims = 1
-" Allow commenting and inverting empty lines (useful when commenting a region)
-let g:NERDCommentEmptyLines = 1
-" Enable trimming of trailing whitespace when uncommenting
-let g:NERDTrimTrailingWhitespace = 1
-
-" VimWiki (+ VimZettel, + TaskWiki)
-" Use Markdown instead of VimWiki syntax
-let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
-let g:zettelkasten = '~/vimwiki/zettel/'
-nnoremap <Leader><Enter> :VimwikiToggleListItem<CR>
-
-" Change format of default Zettel file name
-let g:zettel_format = '%y%m%d-%H%M-%title'
-
-" Keymaps
-nnoremap <Leader>zn :ZettelNew<space>
-nnoremap <Leader>zo :ZettelOpen<CR>
-nnoremap <Leader>zb :ZettelBackLinks<CR>
-nnoremap <Leader>zi :ZettelInbox<CR>
-nnoremap <Leader>zgl :ZettelGenerateLinks<CR>
-nnoremap <Leader>zgt :ZettelGenerateTags<CR>
 
 " RSpec folding
 let g:fold_rspec_foldenable = 0     " disables folding (toggle with `zi`)
