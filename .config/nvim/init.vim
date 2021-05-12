@@ -42,8 +42,17 @@ Plug 'rizzatti/dash.vim'
 Plug 'rlue/vim-fold-rspec'
 " Ruby on Rails support
 Plug 'tpope/vim-rails'
+Plug 'tpope/vim-endwise'
+" Clojure support
+Plug 'Olical/conjure', { 'tag': 'v4.3.1' }
 " (Un)commenting
 Plug 'tpope/vim-commentary'
+" Advanced project management
+Plug 'tpope/vim-projectionist'
+" Complementary pairs of mappings
+Plug 'tpope/vim-unimpaired'
+" Help remembering key mappings
+Plug 'liuchengxu/vim-which-key'
 call plug#end()
 
 " True colours in term
@@ -58,6 +67,7 @@ syntax on
 
 " Leader
 let mapleader = ' '
+nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 
 " Esc with double j
 imap jj <Esc>
@@ -83,18 +93,28 @@ nmap <leader>et :tabe <C-R>=expand('%:h').'/'<cr>
 nnoremap <Leader><Space> :Files<CR>
 nnoremap <Leader>p :Rg<CR>
 nnoremap <Leader>b :Buffers<CR>
-nnoremap <Leader>h :History<CR>
+nnoremap <Leader>HH :History<CR>
+nnoremap <Leader>HS :History/<CR>
+nnoremap <Leader>HC :History:<CR>
 nnoremap <Leader>t :BTags<CR>
 nnoremap <Leader>T :Tags<CR>
+nnoremap <Leader>w :Windows<CR>
+nnoremap <Leader>m :Marks<CR>
 
 nnoremap <Leader>n :NERDTreeToggle<CR>
 nnoremap <Leader>nn :NERDTreeFind<CR>
 
 nnoremap <Leader>tt :TagbarToggle<CR>
 
-nnoremap <Leader>gg :Git<CR>
+nnoremap <Leader>gg :vertical Git<CR>
 nnoremap <Leader>gd :Gdiff<CR>
-nnoremap <Leader>gb :Gblame<CR>
+nnoremap <Leader>gb :Git blame<CR>
+nnoremap <Leader>gf :GFiles<CR>
+nnoremap <Leader>gc :Commits<CR>
+nnoremap <Leader>gC :BCommits<CR>
+
+nnoremap <Leader>cc :Commentary<CR>
+vnoremap <Leader>cc :Commentary<CR>
 
 " Auto indent
 filetype plugin indent on
@@ -113,6 +133,12 @@ set cursorline
 " ================= Speed stuff =====================
 set ttyfast
 set lazyredraw
+
+" Improve fugitive-vim performance
+" https://github.com/tpope/vim-fugitive/issues/1176
+if has('mac')
+  set shell=/bin/bash
+endif
 
 " This is for faster syntax highlight in ruby files:
 " https://stackoverflow.com/a/16920294
@@ -160,6 +186,7 @@ let g:ale_fixers = {
      \ 'scss': ['prettier', 'stylelint'],
      \ 'css': ['prettier', 'stylelint'],
      \ 'ruby': ['rubocop'],
+     \ 'clojure': ['clj-kondo', 'joker'],
      \}
 
 " Fix files automatically on save
@@ -199,6 +226,18 @@ let g:fold_rspec_foldenable = 0     " disables folding (toggle with `zi`)
 let g:fold_rspec_foldlevel = 2      " sets initial open/closed state of all folds (open unless nested more than two levels deep)
 let g:fold_rspec_foldclose = 'all'  " closes folds automatically when the cursor is moved out of them (only applies to folds deeper than 'foldlevel')
 let g:fold_rspec_foldminlines = 3   " disables closing of folds containing two lines or fewer
+
+" Rails projections using RSpec instead
+let g:rails_projections = {
+      \  'app/*.rb': {
+      \     'alternate': 'spec/{}_spec.rb',
+      \     'type': 'source'
+      \   },
+      \  'spec/*_spec.rb': {
+      \     'alternate': 'app/{}.rb',
+      \     'type': 'test'
+      \   }
+      \}
 
 " Bring back old fzf popup position
 let g:fzf_layout = { 'down': '40%' }
