@@ -6,7 +6,7 @@ end
 
 function bass_init
   bass export EDITOR=nvim
-  bass source ~/.nvm/nvm.sh
+#  bass source ~/.nvm/nvm.sh
 end
 
 alias vim="nvim"
@@ -36,9 +36,10 @@ end
 
 status --is-interactive; and source (rbenv init -|psub)
 
+# This is needed to give priority to per project binstubs in a Rails project over system-wide rbenv-installed gems.
+# A project directory must be marked as trusted with `git trust` first.
+set -x PATH $HOME/.bin .git/safe/../../bin $HOME/.cargo/bin $GOPATH/bin $HOME/.emacs.d/bin $HOME/.yarn/bin $HOME/.config/yarn/global/node_modules/.bin $HOME/.rbenv/bin $PATH
+
 bass_init
 eval (direnv hook fish)
 
-# This is needed to give priority to per project binstubs in a Rails project over system-wide rbenv-installed gems.
-# A project directory must be marked as trusted with `git trust` first.
-set -x PATH $HOME/.bin .git/safe/../../bin $GOPATH/bin $HOME/.emacs.d/bin $HOME/.yarn/bin $HOME/.config/yarn/global/node_modules/.bin $HOME/.rbenv/bin $PATH
