@@ -63,3 +63,5 @@
   smtpserveroption = -a
   smtpserveroption = fastmail
 
+[github]
+	user = gueorgui
