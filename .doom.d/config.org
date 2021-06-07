@@ -1,0 +1,200 @@
+#+TITLE: Gueorgui's Literate Doom Emacs Config
+
+* Identity
+Some functionality uses this to identify you, e.g. GPG configuration, email clients, file templates, and snippets.
+
+#+begin_src emacs-lisp :tangle yes
+(setq user-full-name "Gueorgui Tcherednitchenko"
+      user-mail-address "gt@gueorgui.net")
+#+end_src
+* Some sensible defaults
+We want to raise the ~undo-limit~ to 80Mb, use granular undo, and replace ~...~ with a unicode ellipse.
+#+begin_src emacs-lisp :tangle yes
+(setq undo-limit 80000000
+      evil-want-fine-undo t
+      truncate-string-ellipsis "…")
+#+end_src
+
+* User Interface
+** Typography
+Let's provide a base font size, from which all others will be calculated.
+
+#+begin_src emacs-lisp :tangle yes
+(defvar gt/base-font-size 13
+  "The base font size from which all others are calculated")
+#+end_src
+
+Setting up the default font faces:
+
+#+begin_src emacs-lisp :tangle yes
+(setq doom-font
+      (font-spec :family "Iosevka" :size gt/base-font-size))
+(setq doom-variable-pitch-font
+      (font-spec :family "IBM Plex Sans" :size gt/base-font-size))
+(setq doom-big-font
+      (font-spec :family "Iosevka" :size (+ gt/base-font-size 5)))
+#+end_src
+
+If we are on a Mac, use the Apple emoji font; otherwise (on Linux) use the Twitter Color Emoji font.
+
+#+begin_src emacs-lisp :tangle yes
+(setq doom-unicode-font
+      (if IS-MAC
+          (font-spec :family "Apple Color Emoji")
+        (font-spec :family "Twitter Color Emoji"))
+      )
+#+end_src
+
+Specify a font for CJK text, for better performance.
+
+#+begin_src emacs-lisp :tangle yes
+(dolist (charset '(kana han cjk-misc bopomofo))
+  (set-fontset-font
+   (frame-parameter nil 'font)
+   charset
+   (font-spec :family "Noto Sans CJK TC" :size gt/base-font-size)))
+#+end_src
+
+~TODO:~ Have a different config for Mac and Linux:
+- On macOS, use the beautiful system fonts
+- On Linux, use Noto Sans CJK
+
+Add a little more line height:
+
+#+begin_src emacs-lisp :tangle yes
+(setq-default line-spacing 0.1)
+#+end_src
+
+** Theme
+We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi theme]] by Protesilaos Stavrou, with some slight customisations:
+
+#+begin_src emacs-lisp :tangle yes
+(setq modus-themes-subtle-line-numbers t
+      modus-themes-mode-line 'borderless-accented-3d
+      modus-themes-bold-constructs t
+      modus-themes-paren-match 'subtle-bold
+      modus-themes-region 'bg-only
+      modus-themes-syntax 'yellow-comments)
+
+(setq doom-theme 'modus-vivendi)
+#+end_src
+
+** Some small tweaks
+*** Frame title
+Set the frame title to the name of the current projectile project:
+
+#+begin_src emacs-lisp :tangle yes
+(setq frame-title-format '((:eval (projectile-project-name)) "@emacs"))
+#+end_src
+
+*** ~TODO~: tab-bar-mode
+I miss the way Vim tab works, and it seems like tab-bar-mode is a good solution to implement something like this.
+
+Links: [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Tab-Bars.html][documentation]], [[https://www.rousette.org.uk/archives/using-the-tab-bar-in-emacs/][BSAG blog post]].
+
+- Enable by default
+- Set vim mappings to target this instead of workspace tabs
+
+#+begin_src emacs-lisp :tangle no
+;; gt -> tab-bar-switch-to-next-tab
+;; gT -> tab-bar-switch-to-prev-tab
+(tab-bar-mode 1)
+#+end_src
+
+*** Preview buffers in ivy
+
+#+begin_src emacs-lisp :tangle yes
+(setq +ivy-buffer-preview t)
+#+end_src
+
+*** Use hydra for navigation
+
+#+begin_src emacs-lisp :tangle yes
+(setq ivy-read-action-function #'ivy-hydra-read-action)
+#+end_src
+
+*** Split windows to the right and down by default
+
+#+begin_src emacs-lisp :tangle yes
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+#+end_src
+
+*** Projectile tweaks
+Automatically find projects in ~$HOME/repos~
+
+#+begin_src emacs-lisp :tangle yes
+(setq projectile-project-search-path '("~/repos"))
+#+end_src
+
+Default action on opening a project is dired
+
+#+begin_src emacs-lisp :tangle yes
+(setq projectile-switch-project-action #'projectile-dired)
+#+end_src
+
+Recognize Rails/RSpec projects
+
+#+begin_src emacs-lisp :tangle yes
+(after! projectile
+  (projectile-register-project-type
+   'rails-rspec '("Gemfile" "app" "lib" "db" "config" "spec")
+   :project-file "Gemfile"
+   :compile "bundle exec rails server"
+   :src-dir "lib/"
+   :test "bundle exec rspec"
+   :test-dir "spec/"
+   :test-suffix "_spec")
+  )
+#+end_src
+** Custom keybindings
+Some convenience from Vim:
+
+#+begin_src emacs-lisp :tangle yes
+(setq evil-escape-key-sequence "jj"
+      evil-escape-delay 0.3)
+#+end_src
+
+Use j/k to move up/down in visual lines
+
+#+begin_src emacs-lisp :tangle yes
+(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+#+end_src
+
+~FIXME~ Vim-style movement in undo-tree
+
+#+begin_src emacs-lisp :tangle yes
+(after! undo-tree
+  (define-key undo-tree-visualizer-mode-map (kbd "j")
+    'undo-tree-visualize-redo)
+  (define-key undo-tree-visualizer-mode-map (kbd "k")
+    'undo-tree-visualize-undo)
+  (define-key undo-tree-visualizer-mode-map (kbd "h")
+    'undo-tree-visualize-switch-branch-left)
+  (define-key undo-tree-visualizer-mode-map (kbd "l")
+    'undo-tree-visualize-switch-branch-right)
+  )
+#+end_src
+* Programming
+Easily jump between the beginning and end of blocks
+
+#+begin_src emacs-lisp :tangle yes
+(global-evil-matchit-mode 1)
+#+end_src
+
+Use ~rjsx-mode~ over ~js2-mode~ for all JS files
+
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+#+end_src
+
+~TODO~: Set up a completion framework for js/rjsx mode.
+
+* Org-mode
+
+For now, just set the working directory.
+
+#+begin_src emacs-lisp :tangle yes
+(setq org-directory "~/org/")
+#+end_src
