@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+if [ -z "$1:-" ]
+then
+    curl "wttr.in?format=4"
+else
+    curl "wttr.in/$1?format=4"
+fi
