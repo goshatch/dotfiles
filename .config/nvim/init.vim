@@ -1,3 +1,8 @@
+call plug#begin()
+Plug 'sheerun/vim-polyglot'
+Plug 'tpope/vim-fugitive'
+call plug#end()
+
 set nocompatible
 
 syntax enable
