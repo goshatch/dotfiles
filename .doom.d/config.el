@@ -179,7 +179,7 @@
 (add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
 
 (after! lsp-mode
-  (setq lsp-solargraph-use-bundler t)
+  (setq lsp-solargraph-use-bundler nil)
   (setq lsp-sorbet-as-add-on t)
   (setq lsp-sorbet-use-bundler t))
 
@@ -523,7 +523,6 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
           (olivetti-mode 1)
           (org-indent-mode -1)
           (setq line-spacing 0.4)
-          (variable-pitch-mode 0)
           (buffer-face-mode)
           (hide-mode-line-mode)
           (vi-tilde-fringe-mode -1)
@@ -535,7 +534,6 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
       (olivetti-mode -1)
       (org-indent-mode 1)
       (setq line-spacing 0.1)
-      (variable-pitch-mode 0)
       (hide-mode-line-mode -1)
       (vi-tilde-fringe-mode 1)
       (set-window-fringes (selected-window) nil) ; Use default width
