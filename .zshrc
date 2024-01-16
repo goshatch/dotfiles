@@ -22,8 +22,12 @@ alias cop="bundle exec rubocop"
 
 export EDITOR=nvim
 
-function conf {
+conf() {
     git --git-dir=$HOME/repos/dotfiles/ --work-tree=$HOME "$@"
+}
+
+uxn() {
+    uxnemu -2x ~/roms/"$1".rom "$@"
 }
 
 export FZF_DEFAULT_COMMAND="rg --files --follow"
@@ -50,4 +54,3 @@ $PLAYDATE_SDK_PATH/bin:\
 $TEX_PATH:\
 $kube_path:\
 $PATH"
-
