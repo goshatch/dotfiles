@@ -47,13 +47,16 @@
 ;; ...or multiple packages
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
-;(unpin! t)
+;(unpin! t
 
 (package! evil-matchit)
 (package! modus-themes)
 (package! olivetti)
 (package! typo)
-(package! nov)
+(package! nov :recipe (:type git
+                       :host nil
+                       :repo "https://depp.brause.cc/nov.el.git"
+                       :files ("*.el")))
 
 (package! lsp-sonarlint)
 ;; NOTE: Use the below if we need a local dev version
@@ -90,6 +93,15 @@
 (package! wc-mode :recipe (:host github
                            :repo "bnbeckwith/wc-mode"
                            :files ("*.el")))
+
+(package! uxntal-mode :recipe (:host github
+                               :repo "xaderfos/uxntal-mode"
+                               :files ("*.el")))
+
+(package! calibredb)
+(package! nov-xwidget :recipe (:host github
+                               :repo "chenyanming/nov-xwidget"
+                               :files ("*.el")))
 
 ;; (package! lsp-ltex)
 

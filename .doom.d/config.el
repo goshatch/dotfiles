@@ -158,6 +158,14 @@
 
 (setq typescript-indent-level 2)
 
+(setq rbenv-show-active-ruby-in-modeline nil)
+(global-rbenv-mode)
+
+(after! lsp-mode
+  (setq lsp-solargraph-use-bundler nil)
+  (setq lsp-sorbet-as-add-on t)
+  (setq lsp-sorbet-use-bundler t))
+
 (defun gt/setup-lsp-ui-peek ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
@@ -169,19 +177,17 @@
 
 (require 'lsp-sonarlint)
 
-(setq rbenv-show-active-ruby-in-modeline nil)
-(global-rbenv-mode)
+(use-package! uxntal-mode)
+(add-hook
+ 'uxntal-mode-hook
+ (lambda ()
+   (setq display-line-numbers t)))
 
 (defun gt/setup-sonarlint-ruby ()
   (require 'lsp-sonarlint-ruby)
   (setq lsp-sonarlint-ruby-enabled t))
 
 (add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
-
-(after! lsp-mode
-  (setq lsp-solargraph-use-bundler nil)
-  (setq lsp-sorbet-as-add-on t)
-  (setq lsp-sorbet-use-bundler t))
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
 
@@ -570,6 +576,60 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
 
 (nconc +org-capture-frame-parameters '((top . 0.5) (left . 0.5)))
 
+(use-package! calibredb
+  :defer t
+  :init
+  (general-auto-unbind-keys)
+  (map! :leader (:desc "calibredb" :n "za" #'calibredb))
+  :config
+  (setq calibredb-root-dir "~/Calibre Library")
+  (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+  (setq calibredb-format-icons-in-terminal t)
+  (setq calibredb-download-dir "~/Downloads")
+  (map! :map calibredb-search-mode-map
+        :n "q"   'calibredb-search-quit
+        :n "n"   'calibredb-virtual-library-next
+        :n "N"   'calibredb-library-next
+        :n "p"   'calibredb-virtual-library-previous
+        :n "P"   'calibredb-library-previous
+        :n "l"   'calibredb-virtual-library-list
+        :n "o"   'calibredb-find-file
+        :n "O"   'calibredb-find-file-other-frame
+        :n "V"   'calibredb-open-file-with-default-tool
+        :n "v"   'calibredb-view
+        :n "d"   'calibredb-remove
+        :n "D"   'calibredb-remove-marked-items
+        :n "m"   'calibredb-mark-and-forward
+        :n "s"   'calibredb-set-metadata-dispatch
+        :n "e"   'calibredb-export-dispatch
+        ;; :n "b"   'calibredb-catalog-bib-dispatch
+        :n "a"   'calibredb-add
+        :n "."   'calibredb-open-dired
+        :n ","   'calibredb-quick-look
+        :n "y"   'calibredb-yank-dispatch
+        :n "u"   'calibredb-unmark-and-forward
+        :n "DEL" 'calibredb-unmark-and-backward
+        :n "s"   'calibredb-set-metadata-dispatch
+        :n "?"   'calibredb-dispatch
+        :n "/"   'calibredb-search-live-filter
+        :n "j" 'calibredb-next-entry
+        :n "k" 'calibredb-previous-entry
+        :n "M-f"   'calibredb-toggle-favorite-at-point
+        :n "M-x"   'calibredb-toggle-archive-at-point
+        :n "M-h"   'calibredb-toggle-highlight-at-point
+        :n "M-n"   'calibredb-show-next-entry
+        :n "M-p"   'calibredb-show-previous-entry
+        :n "R"   'calibredb-search-clear-filter
+        :n "r"   'calibredb-search-refresh-and-clear-filter
+        :n "<backtab>"   'calibredb-toggle-view
+        :n "<tab>"   'calibredb-toggle-view-at-point
+        :n "TAB"   'calibredb-toggle-view-at-point
+        :n "RET" 'calibredb-find-file)
+  (map! :map calibredb-show-mode-map
+        :nie "q" 'calibredb-entry-quit
+        :nie "?" 'calibredb-entry-dispatch
+        :nie "RET" 'calibredb-search-ret))
+
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 (setq nov-text-width 80)
@@ -578,6 +638,13 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
   (face-remap-add-relative 'variable-pitch :family "IBM Plex Serif"
                                            :height 1.2))
 (add-hook 'nov-mode-hook 'my-nov-font-setup)
+
+(use-package! nov-xwidget
+  :demand t
+  :after nov
+  :config
+  (define-key nov-mode-map (kbd "o") 'nov-xwidget-view)
+  (add-hook 'nov-mode-hook 'nov-xwidget-inject-all-files))
 
 (set-irc-server! "sourcehut/oftc"
   `(:port 6697
