@@ -578,14 +578,12 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
 
 (use-package! calibredb
   :defer t
-  :init
-  (general-auto-unbind-keys)
-  (map! :leader (:desc "calibredb" :n "za" #'calibredb))
   :config
   (setq calibredb-root-dir "~/Calibre Library")
   (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
   (setq calibredb-format-icons-in-terminal t)
   (setq calibredb-download-dir "~/Downloads")
+  (map! :map doom-leader-search-map :desc "Search Calibre database" "c" #'calibredb)
   (map! :map calibredb-search-mode-map
         :n "q"   'calibredb-search-quit
         :n "n"   'calibredb-virtual-library-next
