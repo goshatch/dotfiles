@@ -49,44 +49,59 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t
 
-(package! evil-matchit)
+
+;; +--------+
+;; | THEMES |
+;; +--------+
+
 (package! modus-themes)
+;;
+;; Automatic switching between dark/light themes
+(package! auto-dark)
+
+
+;; +-------------+
+;; | PROGRAMMING |
+;; +-------------+
+
+;; Press % to jump between matching tags
+(package! evil-matchit)
+;;
+;; Linter mainly for Javascript projects at work
+(package! lsp-sonarlint)
+;;
+;; Client for Debug Adapter Protocol
+;; https://github.com/emacs-lsp/dap-mode
+(package! dap-mode)
+;;
+;; Syntax highlight for Uxntal.
+;; Maybe a better alternative is https://github.com/non/uxntal-mode,
+;; however there is an issue with that mode's rendering in my config:
+;; https://github.com/non/uxntal-mode/issues/8
+(package! uxntal-mode :recipe (:host github
+                               :repo "xaderfos/uxntal-mode"
+                               :files ("*.el")))
+
+
+;; +---------+
+;; | WRITING |
+;; +---------+
+
+;; For setting up my custom olivetti mode
 (package! olivetti)
 (package! typo)
-(package! nov :recipe (:type git
-                       :host nil
-                       :repo "https://depp.brause.cc/nov.el.git"
-                       :files ("*.el")))
-
-(package! lsp-sonarlint)
-;; NOTE: Use the below if we need a local dev version
-;; (package! lsp-sonarlint :recipe (:local-repo "/Users/gosha/repos/lsp-sonarlint"
-;;                                  :build (:not compile)))
-
-;; websocket is required by org-roam-ui
-(package! websocket)
-(package! org-roam-ui :recipe (:host github
-                               :repo "org-roam/org-roam-ui"
-                               :files ("*.el" "out")))
-
-;; DAP mode
-(package! dap-mode)
-
-;; (package! map :pin "bb50dbaafc0f71743bd9ffd5784258a9fd682c20")
-
+;;
 ;; Russian QWERTY layout
 (package!
   quail-russian-qwerty
   :recipe (:local-repo "/Users/gosha/repos/quail-russian-qwerty"
            :build (:not compile)))
-  ;; :recipe (:host github
-  ;;          :repo "goshatch/quail-russian-qwerty"
-  ;;          :files ("*.el")))
-
-
-;; Automatic dark/light switching
-(package! auto-dark)
-
+;;
+;; GUI for org-roam
+(package! websocket) ;; required by org-roam-ui
+(package! org-roam-ui :recipe (:host github
+                               :repo "org-roam/org-roam-ui"
+                               :files ("*.el" "out")))
 ;; Word count in modeline
 ;; https://github.com/bnbeckwith/wc-mode
 ;; http://bnbeckwith.com/code/word-count-mode.html
@@ -94,15 +109,21 @@
                            :repo "bnbeckwith/wc-mode"
                            :files ("*.el")))
 
-(package! uxntal-mode :recipe (:host github
-                               :repo "xaderfos/uxntal-mode"
-                               :files ("*.el")))
 
+;; +---------+
+;; | READING |
+;; +---------+
+
+;; Browse Calibre database
 (package! calibredb)
+;;
+;; Read epub books
+(package! nov :recipe (:type git
+                       :host nil
+                       :repo "https://depp.brause.cc/nov.el.git"
+                       :files ("*.el")))
+;;
+;; Use webkit to read epub books
 (package! nov-xwidget :recipe (:host github
                                :repo "chenyanming/nov-xwidget"
                                :files ("*.el")))
-
-;; (package! lsp-ltex)
-
-;; (package! doom-modeline :pin "918730eff72e")
