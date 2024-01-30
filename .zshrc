@@ -19,6 +19,8 @@ alias dcr="docker compose run"
 alias psql="pgcli"
 alias lg="lazygit"
 alias cop="bundle exec rubocop"
+alias copm="git diff --name-only | grep '\.rb$' | xargs bundle exec rubocop"
+alias copma="git diff --name-only | grep '\.rb$' | xargs bundle exec rubocop -A"
 
 export EDITOR=nvim
 
