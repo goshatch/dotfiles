@@ -178,10 +178,6 @@
 (require 'lsp-sonarlint)
 
 (use-package! uxntal-mode)
-(add-hook
- 'uxntal-mode-hook
- (lambda ()
-   (setq display-line-numbers t)))
 
 (defun gt/setup-sonarlint-ruby ()
   (require 'lsp-sonarlint-ruby)
@@ -577,13 +573,13 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
 (nconc +org-capture-frame-parameters '((top . 0.5) (left . 0.5)))
 
 (use-package! calibredb
-  :defer t
+  :init
+  (map! :map doom-leader-search-map :desc "Search Calibre database" "c" #'calibredb)
   :config
   (setq calibredb-root-dir "~/Calibre Library")
   (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
   (setq calibredb-format-icons-in-terminal t)
   (setq calibredb-download-dir "~/Downloads")
-  (map! :map doom-leader-search-map :desc "Search Calibre database" "c" #'calibredb)
   (map! :map calibredb-search-mode-map
         :n "q"   'calibredb-search-quit
         :n "n"   'calibredb-virtual-library-next
@@ -642,7 +638,92 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
   :after nov
   :config
   (define-key nov-mode-map (kbd "o") 'nov-xwidget-view)
-  (add-hook 'nov-mode-hook 'nov-xwidget-inject-all-files))
+  (add-hook 'nov-mode-hook 'nov-xwidget-inject-all-files)
+  (setq! nov-xwidget-style-dark "
+    body {
+        writing-mode: horizontal-tb;
+        // background: #000000 !important;
+        color: #eee !important;
+        font-size: 18px !important;
+        text-align: left !important;
+        width: 90% !important;
+        height: 50% !important;
+        position: absolute !important;
+        left: 49% !important;
+        top: 30% !important;
+        transform: translate(-50%, -55%) !important;
+        line-height: 1.5rem !important;
+    }
+    p {
+        text-align: left !important;
+        margin-bottom: 25px !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        /*color: #eee !important;*/
+        border-bottom: 0px solid #eee !important;
+        line-height: 1em;
+    }
+    pre, tr, td, div.warning {
+        font-size: 1em;
+        background: #272c35;
+    }
+    th {
+        font-size: 1em;
+        color: #eee !important;
+    }
+
+    span {
+        font-size: 18px;
+        color: #eee !important;
+    }
+    h1 {
+        color: #ffaf69 !important;
+    }
+    h2 {
+        color: #3fc6b7 !important;
+    }
+    h3 {
+        color: #88d498 !important;
+    }
+    h4 {
+        color: #80c3f0 !important;
+    }
+    h5 {
+        color: #cccccc !important;
+    }
+    h6 {
+        color: #cccccc !important;
+    }
+
+    /* Same font for all tags */
+    a, em, caption, th, tr, td, h1, h2, h3, h4, h5, h6, p, body {
+        font-family: \"IBM Plex Serif\", Georgia,Cambria,\"Times New Roman\",Times,serif !important;
+    }
+    code, pre {
+        font-family: \"PragmataPro Mono\", Iosevka !important;
+        font-size: 0.9rem !important;
+    }
+    :root {
+        color-scheme: dark; /* both supported */
+    }
+
+    body, p.title  {
+        color: #eee !important;
+    }
+
+    body a{
+        color: #809fff !important;
+    }
+
+    body img {
+        max-width: 100% !important;
+        filter: brightness(.8) contrast(1.2);
+    }
+    .programlisting {
+        font-size: 20px;
+    }"))
+
+(setq gt/hostname (car (split-string (system-name) "\\.")))
 
 (set-irc-server! "sourcehut/oftc"
   `(:port 6697
@@ -652,17 +733,17 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
     :realname "Gosha Tcherednitchenko"
     :nickserv-password (lambda (&rest _) (+pass-get-secret "irc/oftc/nickserv"))
     :channels (lambda (&rest _) (+pass-get-secret "irc/oftc/channels"))
-    :sasl-username "gosha/OFTC"
+    :sasl-username "gosha/OFTC@strogino"
     :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
 
 (set-irc-server! "sourcehut/libera"
   `(:port 6697
     :host "chat.sr.ht"
     :use-tls t
-    :nick "yifu"
+    :nick "gosha_"
     :realname "Gosha Tcherednitchenko"
-    :channels ("#emacs" "#sr.ht")
-    :sasl-username "gosha/liberachat"
+    :channels ("#emacs" "#sr.ht" "#uxn" "#lisp")
+    :sasl-username "gosha/liberachat@strogino"
     :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
 
 (setq circe-notifications-alert-style 'message)

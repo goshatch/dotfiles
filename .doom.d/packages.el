@@ -78,10 +78,10 @@
 ;; Maybe a better alternative is https://github.com/non/uxntal-mode,
 ;; however there is an issue with that mode's rendering in my config:
 ;; https://github.com/non/uxntal-mode/issues/8
-(package! uxntal-mode :recipe (:host github
-                               :repo "xaderfos/uxntal-mode"
-                               :files ("*.el")))
-
+(package!
+  uxntal-mode
+  :recipe (:local-repo "/Users/gosha/repos/uxntal-mode"
+           :build (:not compile)))
 
 ;; +---------+
 ;; | WRITING |

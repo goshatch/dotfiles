@@ -179,7 +179,8 @@
        ;;rst               ; ReST in peace
        (ruby +lsp          ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
              +rbenv
-             +rails)
+             +rails
+             +tree-sitter)
        (rust +lsp          ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
              +tree-sitter)
        ;;scala             ; java, but good
