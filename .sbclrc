@@ -1,4 +1,4 @@
 ;; Load Quicklisp
 (let ((quicklisp-init "~/quicklisp/setup.lisp"))
-  (when (file-exists-p quicklisp-init)
+  (when (probe-file quicklisp-init)
     (load quicklisp-init)))
