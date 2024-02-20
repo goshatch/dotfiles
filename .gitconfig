@@ -1,6 +1,7 @@
 [user]
   name = Gosha Tcherednitchenko
   email = git@gosha.net
+	signingKey = /Users/gosha/.ssh/id_rsa.pub
 [alias]
   st = status -sb
   ci = commit -v
@@ -94,3 +95,5 @@
 
 [includeIf "gitdir:~/repos/indeed/"]
   path = .gitconfig-indeed
+[gpg]
+	format = ssh
