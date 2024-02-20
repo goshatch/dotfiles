@@ -304,6 +304,18 @@ Additional LSP configuration
 #+end_src
 
 ** IDE
+*** uxntal
+[[https://github.com/non/uxntal-mode][Github repo]] for this mode.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package! uxntal-mode)
+#+end_src
+
+*** Forth
+#+begin_src emacs-lisp :tangle yes
+(use-package! forth-mode)
+#+end_src
+
 *** Navigation
 Use ~lsp-ui-peek~ for definitions and references.
 
@@ -330,13 +342,6 @@ Use Sonarqube, via [[https://github.com/emacs-lsp/lsp-sonarlint][lsp-sonarlint]]
 
 #+begin_src emacs-lisp :tangle yes
 (require 'lsp-sonarlint)
-#+end_src
-
-**** uxntal
-[[https://github.com/non/uxntal-mode][Github repo]] for this mode.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package! uxntal-mode)
 #+end_src
 
 **** Ruby

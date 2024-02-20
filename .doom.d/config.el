@@ -166,6 +166,10 @@
   (setq lsp-sorbet-as-add-on t)
   (setq lsp-sorbet-use-bundler t))
 
+(use-package! uxntal-mode)
+
+(use-package! forth-mode)
+
 (defun gt/setup-lsp-ui-peek ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
@@ -176,8 +180,6 @@
           (lambda (arg) (call-interactively #'dap-hydra)))
 
 (require 'lsp-sonarlint)
-
-(use-package! uxntal-mode)
 
 (defun gt/setup-sonarlint-ruby ()
   (require 'lsp-sonarlint-ruby)

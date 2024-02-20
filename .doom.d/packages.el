@@ -82,6 +82,10 @@
   uxntal-mode
   :recipe (:local-repo "/Users/gosha/repos/uxntal-mode"
            :build (:not compile)))
+;;
+;; Syntax highlighting and utilities for Forth
+;; https://github.com/larsbrinkhoff/forth-mode
+(package! forth-mode)
 
 ;; +---------+
 ;; | WRITING |
