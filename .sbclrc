@@ -2,3 +2,6 @@
 (let ((quicklisp-init "~/quicklisp/setup.lisp"))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
+
+;; UTF-8 encoding as default
+(setf sb-impl::*default-external-format* :utf-8)
