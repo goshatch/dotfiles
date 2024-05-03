@@ -353,12 +353,10 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
          (current-year (nth 5 parsed-current-date))
          (current-month (nth 4 parsed-current-date))
          (current-day (nth 3 parsed-current-date))
-         (months-old (eq birth-day current-day)))
+         (months-diff (+ (* (- current-year birth-year) 12)
+                         (- current-month birth-month))))
     (if (eq current-day birth-day)
-        (format "%d months"
-                (+
-                 (if (eq current-year birth-year) 0 12)
-                 (- current-month birth-month)))
+        (format "%d months" months-diff)
       (gt/child-age-in-weeks birth-date))))
 
 (defun gt/child-age (birth-date)
@@ -483,7 +481,9 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
 
 (use-package! org
   :config
-  (setq org-hide-emphasis-markers t)
+  (setq org-hide-emphasis-markers t
+        org-preview-latex-default-process 'dvisvgm)
+  (plist-put org-format-latex-options :background "Transparent")
   (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)
 )))
 
