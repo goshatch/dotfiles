@@ -68,7 +68,7 @@
 (package! evil-matchit)
 ;;
 ;; Linter mainly for Javascript projects at work
-(package! lsp-sonarlint)
+;;
 ;;
 ;; Client for Debug Adapter Protocol
 ;; https://github.com/emacs-lsp/dap-mode
@@ -86,13 +86,24 @@
 ;; Syntax highlighting and utilities for Forth
 ;; https://github.com/larsbrinkhoff/forth-mode
 (package! forth-mode)
+;;
+;; LSP server for Tailwind CSS
+;; https://github.com/merrickluo/lsp-tailwindcss
+(package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+;;
+;; A porcelain for Emacs Calc
+;; http://yummymelon.com/devnull/announcing-casual-an-opinionated-porcelain-for-emacs-calc.html
+;; (package! casual)
+;;
+;; NVM Support
+(package! nvm)
 
 ;; +---------+
 ;; | WRITING |
 ;; +---------+
 
 ;; For setting up my custom olivetti mode
-(package! olivetti)
+;; (package! olivetti)
 (package! typo)
 ;;
 ;; Russian QWERTY layout
@@ -131,3 +142,11 @@
 (package! nov-xwidget :recipe (:host github
                                :repo "chenyanming/nov-xwidget"
                                :files ("*.el")))
+
+
+;; +----------+
+;; | STUDYING |
+;; +----------+
+
+;; Connect and sync org to Anki
+(package! anki-editor)

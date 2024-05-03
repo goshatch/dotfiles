@@ -33,14 +33,14 @@ Setting up the default font faces:
 (setq gt/ru-font
       (font-spec :family "Iosevka" :size gt/base-font-size :weight 'normal :spacing 100))
 (setq doom-variable-pitch-font
-      (font-spec :family "SF Pro" :size gt/base-font-size))
+      (font-spec :family "PT Serif" :weight 'regular :height 160 :width 'normal))
 #+end_src
 
 If we are on a Mac, use the Apple emoji font; otherwise (on Linux) use the Twitter Color Emoji font.
 
 #+begin_src emacs-lisp :tangle yes
-(setq doom-unicode-font
-      (if IS-MAC
+(setq doom-symbol-font
+      (if (featurep :system 'macos)
           (font-spec :family "Apple Color Emoji")
         (font-spec :family "Twitter Color Emoji"))
       )
@@ -341,18 +341,18 @@ We want the =dap-hydra= to pop up every time a DAP debugger is stopped on a brea
 Use Sonarqube, via [[https://github.com/emacs-lsp/lsp-sonarlint][lsp-sonarlint]].
 
 #+begin_src emacs-lisp :tangle yes
-(require 'lsp-sonarlint)
+;; (require 'lsp-sonarlint)
 #+end_src
 
 **** Ruby
 Set up Sonarqube for Ruby
 
 #+begin_src emacs-lisp :tangle yes
-(defun gt/setup-sonarlint-ruby ()
-  (require 'lsp-sonarlint-ruby)
-  (setq lsp-sonarlint-ruby-enabled t))
+;; (defun gt/setup-sonarlint-ruby ()
+;;   (require 'lsp-sonarlint-ruby)
+;;   (setq lsp-sonarlint-ruby-enabled t))
 
-(add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
+;; (add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
 #+end_src
 
 **** Javascript/Typescript
@@ -367,20 +367,29 @@ Use ~rjsx-mode~ over ~js2-mode~ for all JS files
 Set up Sonarqube for JS/TS
 
 #+begin_src emacs-lisp :tangle yes
-(setq lsp-sonarlint-modes-enabled
-      (delete-dups
-       (append lsp-sonarlint-modes-enabled '(typescript-mode typescript-tsx-mode rjsx-mode))))
+;; (setq lsp-sonarlint-modes-enabled
+;;       (delete-dups
+;;        (append lsp-sonarlint-modes-enabled '(typescript-mode typescript-tsx-mode rjsx-mode))))
 
-(defun gt/setup-sonarlint-js ()
-(require 'lsp-sonarlint-javascript)
-(setq lsp-sonarlint-javascript-enabled t)
+;; (defun gt/setup-sonarlint-js ()
+;; (require 'lsp-sonarlint-javascript)
+;; (setq lsp-sonarlint-javascript-enabled t)
 
-(require 'lsp-sonarlint-typescript)
-(setq lsp-sonarlint-typescript-enabled t)
-)
+;; (require 'lsp-sonarlint-typescript)
+;; (setq lsp-sonarlint-typescript-enabled t)
+;; )
 
-(dolist (hook '(js2-mode-hook rjsx-mode-hook typescript-mode-hook typescript-tsx-mode-hook))
-  (add-hook hook #'gt/setup-sonarlint-js))
+;; (dolist (hook '(js2-mode-hook rjsx-mode-hook typescript-mode-hook typescript-tsx-mode-hook))
+;;   (add-hook hook #'gt/setup-sonarlint-js))
+#+end_src
+
+Use NVM
+#+begin_src emacs-lisp :tangle yes
+(use-package! nvm)
+#+end_src
+*** Tailwind LSP
+#+begin_src emacs-lisp :tangle yes
+(use-package! lsp-tailwindcss)
 #+end_src
 
 ** Emacs metaprogramming
@@ -397,11 +406,24 @@ Make script files executable when saving
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 #+end_src
+
+Add a porcelain for Calc:
+#+begin_src emacs-lisp :tangle yes
+;; (use-package! casual)
+#+end_src
 * Org-mode
 Set the working directory for Org files.
 
 #+begin_src emacs-lisp :tangle yes
 (setq org-directory "~/org/")
+#+end_src
+
+** Spacing
+Add a blank line before every new heading and plain list items
+
+#+begin_src emacs-lisp :tangle yes
+(setq org-blank-before-new-entry
+      '((heading . t) (plain-list-item . auto)))
 #+end_src
 
 ** TO-DO items
@@ -742,6 +764,27 @@ Bind =C-c j m= globally to creating a new monthly review note from a template.
 
 
 ** Writing
+Disable line numbers in org files and hide the emphasis markers.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package! org
+  :config
+  (setq org-hide-emphasis-markers t)
+  (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)
+)))
+#+end_src
+
+Use ~mixed-pitch-mode~ for org-mode files (disable for now)
+#+begin_src emacs-lisp :tangle yes
+;; (use-package! mixed-pitch
+;;   :hook
+;;   (org-mode . mixed-pitch-mode)
+;;   :config
+;;   (setq! mixed-pitch-set-height gt/base-font-size)
+;;   (setq org-hide-emphasis-markers t)
+;;   (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-drawer))
+#+end_src
+
 Word count:
 #+begin_src emacs-lisp :tangle yes
 (use-package! wc-mode
@@ -774,27 +817,27 @@ Everything else under this heading is basically stolen from [[https://protesilao
 Keep the cursor in the middle of the page (aka typewriter mode):
 
 #+begin_src emacs-lisp :tangle yes
-(use-package! emacs
-  :config
-  (setq-default scroll-preserve-screen-position t)
-  (setq-default scroll-conservatively 1) ; affects `scroll-step'
-  (setq-default scroll-margin 0)
+;; (use-package! emacs
+;;   :config
+;;   (setq-default scroll-preserve-screen-position t)
+;;   (setq-default scroll-conservatively 1) ; affects `scroll-step'
+;;   (setq-default scroll-margin 0)
 
-  (define-minor-mode gt/scroll-centre-cursor-mode
-    "Toggle centred cursor scrolling behaviour."
-    :init-value nil
-    :lighter " S="
-    :global nil
-    (if gt/scroll-centre-cursor-mode
-        (setq-local scroll-margin (* (frame-height) 2)
-                    scroll-conservatively 0
-                    maximum-scroll-margin 0.5)
-      (dolist (local '(scroll-preserve-screen-position
-                       scroll-conservatively
-                       maximum-scroll-margin
-                       scroll-margin))
-        (kill-local-variable `,local))))
-  :bind ("C-c L" . gt/scroll-centre-cursor-mode))
+;;   (define-minor-mode gt/scroll-centre-cursor-mode
+;;     "Toggle centred cursor scrolling behaviour."
+;;     :init-value nil
+;;     :lighter " S="
+;;     :global nil
+;;     (if gt/scroll-centre-cursor-mode
+;;         (setq-local scroll-margin (* (frame-height) 2)
+;;                     scroll-conservatively 0
+;;                     maximum-scroll-margin 0.5)
+;;       (dolist (local '(scroll-preserve-screen-position
+;;                        scroll-conservatively
+;;                        maximum-scroll-margin
+;;                        scroll-margin))
+;;         (kill-local-variable `,local))))
+;;   :bind ("C-c L" . gt/scroll-centre-cursor-mode))
 #+end_src
 
 Custom, ~olivetti-mode~-based focused writing mode.
@@ -804,43 +847,43 @@ Custom, ~olivetti-mode~-based focused writing mode.
 - Enable ~olivetti-mode~
 
 #+begin_src emacs-lisp :tangle yes
-(use-package! olivetti
-  :ensure
-  :diminish
-  :config
-  (setq olivetti-body-width 80)
-  (setq olivetti-minimum-body-width 80)
-  (setq olivetti-recall-visual-line-mode-entry-state t)
+;; (use-package! olivetti
+;;   :ensure
+;;   :diminish
+;;   :config
+;;   (setq olivetti-body-width 80)
+;;   (setq olivetti-minimum-body-width 80)
+;;   (setq olivetti-recall-visual-line-mode-entry-state t)
 
-  (define-minor-mode gt/olivetti-mode
-    "Toggle buffer-local `olivetti-mode' with additional parameters."
-    :init-value nil
-    :global nil
-    (if gt/olivetti-mode
-        (progn
-          (olivetti-mode 1)
-          (org-indent-mode -1)
-          (setq line-spacing 0.4)
-          (buffer-face-mode)
-          (hide-mode-line-mode)
-          (vi-tilde-fringe-mode -1)
-          (set-window-fringes (selected-window) 0 0)
-          (text-scale-increase 1)
-          (display-line-numbers-mode -1)
-          (gt/scroll-centre-cursor-mode)
-          (setq hl-line-range-function 'gt/visual-line-range))
-      (olivetti-mode -1)
-      (org-indent-mode 1)
-      (setq line-spacing 0.1)
-      (hide-mode-line-mode -1)
-      (vi-tilde-fringe-mode 1)
-      (set-window-fringes (selected-window) nil) ; Use default width
-      (text-scale-decrease 1)
-      (gt/scroll-centre-cursor-mode -1)
-      (display-line-numbers-mode)
-      (setq hl-line-range-function nil)))
+;;   (define-minor-mode gt/olivetti-mode
+;;     "Toggle buffer-local `olivetti-mode' with additional parameters."
+;;     :init-value nil
+;;     :global nil
+;;     (if gt/olivetti-mode
+;;         (progn
+;;           (olivetti-mode 1)
+;;           (org-indent-mode -1)
+;;           (setq line-spacing 0.4)
+;;           (buffer-face-mode)
+;;           (hide-mode-line-mode)
+;;           (vi-tilde-fringe-mode -1)
+;;           (set-window-fringes (selected-window) 0 0)
+;;           (text-scale-increase 1)
+;;           (display-line-numbers-mode -1)
+;;           (gt/scroll-centre-cursor-mode)
+;;           (setq hl-line-range-function 'gt/visual-line-range))
+;;       (olivetti-mode -1)
+;;       (org-indent-mode 1)
+;;       (setq line-spacing 0.1)
+;;       (hide-mode-line-mode -1)
+;;       (vi-tilde-fringe-mode 1)
+;;       (set-window-fringes (selected-window) nil) ; Use default width
+;;       (text-scale-decrease 1)
+;;       (gt/scroll-centre-cursor-mode -1)
+;;       (display-line-numbers-mode)
+;;       (setq hl-line-range-function nil)))
 
-  :bind ("C-c o" . gt/olivetti-mode))
+;;   :bind ("C-c o" . gt/olivetti-mode))
 #+end_src
 
 Russian QWERTY layout for writing
@@ -1070,24 +1113,13 @@ Using [[https://github.com/emacs-circe/circe][Circe]], to connect through my bou
 #+begin_src emacs-lisp :tangle yes
 (setq gt/hostname (car (split-string (system-name) "\\.")))
 
-(set-irc-server! "sourcehut/oftc"
-  `(:port 6697
-    :host "chat.sr.ht"
-    :use-tls t
-    :nick "gosha"
-    :realname "Gosha Tcherednitchenko"
-    :nickserv-password (lambda (&rest _) (+pass-get-secret "irc/oftc/nickserv"))
-    :channels (lambda (&rest _) (+pass-get-secret "irc/oftc/channels"))
-    :sasl-username "gosha/OFTC@strogino"
-    :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
-
 (set-irc-server! "sourcehut/libera"
   `(:port 6697
     :host "chat.sr.ht"
     :use-tls t
     :nick "gosha_"
     :realname "Gosha Tcherednitchenko"
-    :channels ("#emacs" "#sr.ht" "#uxn" "#lisp")
+    :channels ("#emacs" "#uxn" "#lisp")
     :sasl-username "gosha/liberachat@strogino"
     :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
 #+end_src

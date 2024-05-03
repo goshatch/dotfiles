@@ -13,10 +13,10 @@
 (setq gt/ru-font
       (font-spec :family "Iosevka" :size gt/base-font-size :weight 'normal :spacing 100))
 (setq doom-variable-pitch-font
-      (font-spec :family "SF Pro" :size gt/base-font-size))
+      (font-spec :family "PT Serif" :weight 'regular :height 160 :width 'normal))
 
-(setq doom-unicode-font
-      (if IS-MAC
+(setq doom-symbol-font
+      (if (featurep :system 'macos)
           (font-spec :family "Apple Color Emoji")
         (font-spec :family "Twitter Color Emoji"))
       )
@@ -179,37 +179,46 @@
 (add-hook 'dap-stopped-hook
           (lambda (arg) (call-interactively #'dap-hydra)))
 
-(require 'lsp-sonarlint)
+;; (require 'lsp-sonarlint)
 
-(defun gt/setup-sonarlint-ruby ()
-  (require 'lsp-sonarlint-ruby)
-  (setq lsp-sonarlint-ruby-enabled t))
+;; (defun gt/setup-sonarlint-ruby ()
+;;   (require 'lsp-sonarlint-ruby)
+;;   (setq lsp-sonarlint-ruby-enabled t))
 
-(add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
+;; (add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
 
-(setq lsp-sonarlint-modes-enabled
-      (delete-dups
-       (append lsp-sonarlint-modes-enabled '(typescript-mode typescript-tsx-mode rjsx-mode))))
+;; (setq lsp-sonarlint-modes-enabled
+;;       (delete-dups
+;;        (append lsp-sonarlint-modes-enabled '(typescript-mode typescript-tsx-mode rjsx-mode))))
 
-(defun gt/setup-sonarlint-js ()
-(require 'lsp-sonarlint-javascript)
-(setq lsp-sonarlint-javascript-enabled t)
+;; (defun gt/setup-sonarlint-js ()
+;; (require 'lsp-sonarlint-javascript)
+;; (setq lsp-sonarlint-javascript-enabled t)
 
-(require 'lsp-sonarlint-typescript)
-(setq lsp-sonarlint-typescript-enabled t)
-)
+;; (require 'lsp-sonarlint-typescript)
+;; (setq lsp-sonarlint-typescript-enabled t)
+;; )
 
-(dolist (hook '(js2-mode-hook rjsx-mode-hook typescript-mode-hook typescript-tsx-mode-hook))
-  (add-hook hook #'gt/setup-sonarlint-js))
+;; (dolist (hook '(js2-mode-hook rjsx-mode-hook typescript-mode-hook typescript-tsx-mode-hook))
+;;   (add-hook hook #'gt/setup-sonarlint-js))
+
+(use-package! nvm)
+
+(use-package! lsp-tailwindcss)
 
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
 
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 
+;; (use-package! casual)
+
 (setq org-directory "~/org/")
+
+(setq org-blank-before-new-entry
+      '((heading . t) (plain-list-item . auto)))
 
 (setq org-log-done 'time)
 
@@ -472,6 +481,20 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
   ("C-c n u" . org-roam-ui-open)
   ("C-c n h" . gt/select-org-roam-instance))
 
+(use-package! org
+  :config
+  (setq org-hide-emphasis-markers t)
+  (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)
+)))
+
+;; (use-package! mixed-pitch
+;;   :hook
+;;   (org-mode . mixed-pitch-mode)
+;;   :config
+;;   (setq! mixed-pitch-set-height gt/base-font-size)
+;;   (setq org-hide-emphasis-markers t)
+;;   (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-drawer))
+
 (use-package! wc-mode
   :config
   (global-set-key "\C-cw" 'wc-mode))
@@ -488,65 +511,65 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
      (progn (beginning-of-visual-line) (point))
      (progn (end-of-visual-line) (point)))))
 
-(use-package! emacs
-  :config
-  (setq-default scroll-preserve-screen-position t)
-  (setq-default scroll-conservatively 1) ; affects `scroll-step'
-  (setq-default scroll-margin 0)
+;; (use-package! emacs
+;;   :config
+;;   (setq-default scroll-preserve-screen-position t)
+;;   (setq-default scroll-conservatively 1) ; affects `scroll-step'
+;;   (setq-default scroll-margin 0)
 
-  (define-minor-mode gt/scroll-centre-cursor-mode
-    "Toggle centred cursor scrolling behaviour."
-    :init-value nil
-    :lighter " S="
-    :global nil
-    (if gt/scroll-centre-cursor-mode
-        (setq-local scroll-margin (* (frame-height) 2)
-                    scroll-conservatively 0
-                    maximum-scroll-margin 0.5)
-      (dolist (local '(scroll-preserve-screen-position
-                       scroll-conservatively
-                       maximum-scroll-margin
-                       scroll-margin))
-        (kill-local-variable `,local))))
-  :bind ("C-c L" . gt/scroll-centre-cursor-mode))
+;;   (define-minor-mode gt/scroll-centre-cursor-mode
+;;     "Toggle centred cursor scrolling behaviour."
+;;     :init-value nil
+;;     :lighter " S="
+;;     :global nil
+;;     (if gt/scroll-centre-cursor-mode
+;;         (setq-local scroll-margin (* (frame-height) 2)
+;;                     scroll-conservatively 0
+;;                     maximum-scroll-margin 0.5)
+;;       (dolist (local '(scroll-preserve-screen-position
+;;                        scroll-conservatively
+;;                        maximum-scroll-margin
+;;                        scroll-margin))
+;;         (kill-local-variable `,local))))
+;;   :bind ("C-c L" . gt/scroll-centre-cursor-mode))
 
-(use-package! olivetti
-  :ensure
-  :diminish
-  :config
-  (setq olivetti-body-width 80)
-  (setq olivetti-minimum-body-width 80)
-  (setq olivetti-recall-visual-line-mode-entry-state t)
+;; (use-package! olivetti
+;;   :ensure
+;;   :diminish
+;;   :config
+;;   (setq olivetti-body-width 80)
+;;   (setq olivetti-minimum-body-width 80)
+;;   (setq olivetti-recall-visual-line-mode-entry-state t)
 
-  (define-minor-mode gt/olivetti-mode
-    "Toggle buffer-local `olivetti-mode' with additional parameters."
-    :init-value nil
-    :global nil
-    (if gt/olivetti-mode
-        (progn
-          (olivetti-mode 1)
-          (org-indent-mode -1)
-          (setq line-spacing 0.4)
-          (buffer-face-mode)
-          (hide-mode-line-mode)
-          (vi-tilde-fringe-mode -1)
-          (set-window-fringes (selected-window) 0 0)
-          (text-scale-increase 1)
-          (display-line-numbers-mode -1)
-          (gt/scroll-centre-cursor-mode)
-          (setq hl-line-range-function 'gt/visual-line-range))
-      (olivetti-mode -1)
-      (org-indent-mode 1)
-      (setq line-spacing 0.1)
-      (hide-mode-line-mode -1)
-      (vi-tilde-fringe-mode 1)
-      (set-window-fringes (selected-window) nil) ; Use default width
-      (text-scale-decrease 1)
-      (gt/scroll-centre-cursor-mode -1)
-      (display-line-numbers-mode)
-      (setq hl-line-range-function nil)))
+;;   (define-minor-mode gt/olivetti-mode
+;;     "Toggle buffer-local `olivetti-mode' with additional parameters."
+;;     :init-value nil
+;;     :global nil
+;;     (if gt/olivetti-mode
+;;         (progn
+;;           (olivetti-mode 1)
+;;           (org-indent-mode -1)
+;;           (setq line-spacing 0.4)
+;;           (buffer-face-mode)
+;;           (hide-mode-line-mode)
+;;           (vi-tilde-fringe-mode -1)
+;;           (set-window-fringes (selected-window) 0 0)
+;;           (text-scale-increase 1)
+;;           (display-line-numbers-mode -1)
+;;           (gt/scroll-centre-cursor-mode)
+;;           (setq hl-line-range-function 'gt/visual-line-range))
+;;       (olivetti-mode -1)
+;;       (org-indent-mode 1)
+;;       (setq line-spacing 0.1)
+;;       (hide-mode-line-mode -1)
+;;       (vi-tilde-fringe-mode 1)
+;;       (set-window-fringes (selected-window) nil) ; Use default width
+;;       (text-scale-decrease 1)
+;;       (gt/scroll-centre-cursor-mode -1)
+;;       (display-line-numbers-mode)
+;;       (setq hl-line-range-function nil)))
 
-  :bind ("C-c o" . gt/olivetti-mode))
+;;   :bind ("C-c o" . gt/olivetti-mode))
 
 (use-package! quail-russian-qwerty)
 
@@ -727,24 +750,13 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
 
 (setq gt/hostname (car (split-string (system-name) "\\.")))
 
-(set-irc-server! "sourcehut/oftc"
-  `(:port 6697
-    :host "chat.sr.ht"
-    :use-tls t
-    :nick "gosha"
-    :realname "Gosha Tcherednitchenko"
-    :nickserv-password (lambda (&rest _) (+pass-get-secret "irc/oftc/nickserv"))
-    :channels (lambda (&rest _) (+pass-get-secret "irc/oftc/channels"))
-    :sasl-username "gosha/OFTC@strogino"
-    :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
-
 (set-irc-server! "sourcehut/libera"
   `(:port 6697
     :host "chat.sr.ht"
     :use-tls t
     :nick "gosha_"
     :realname "Gosha Tcherednitchenko"
-    :channels ("#emacs" "#sr.ht" "#uxn" "#lisp")
+    :channels ("#emacs" "#uxn" "#lisp")
     :sasl-username "gosha/liberachat@strogino"
     :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
 

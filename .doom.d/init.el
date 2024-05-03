@@ -53,7 +53,7 @@
        (window-select      ; visually switch windows
         +numbers)
        workspaces          ; tab emulation, persistence & separate workspaces
-       ;; zen              ; distraction-free coding or writing
+       zen                 ; distraction-free coding or writing
 
        :editor
        (evil +everywhere)  ; come to the dark side, we have cookies
@@ -184,7 +184,7 @@
        (rust +lsp          ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
              +tree-sitter)
        ;;scala             ; java, but good
-       ;;(scheme +guile)   ; a fully conniving family of lisps
+       (scheme +guile)     ; a fully conniving family of lisps
        (sh +tree-sitter)   ; she sells {ba,z,fi}sh shells on the C xor
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
