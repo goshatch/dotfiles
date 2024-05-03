@@ -1,6 +1,6 @@
 [user]
-  name = Gosha Tcherednitchenko
-  email = git@gosha.net
+	name = Gosha Tcherednitchenko
+	email = git@gosha.net
 	signingKey = /Users/gosha/.ssh/id_rsa.pub
 [alias]
   st = status -sb
@@ -24,7 +24,7 @@
   whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
   quotepath = false
   precomposeunicode = true
-  excludesfile = /Users/gosha/.gitignore_global
+	excludesfile = /Users/gosha/.gitignore_global
 [color]
   ui = auto
 [color "branch"]
