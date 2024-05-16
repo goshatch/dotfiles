@@ -154,6 +154,10 @@
 
 (setq auth-sources '("~/.authinfo.gpg"))
 
+(use-package! magit
+  :config
+  (setq magit-log-section-commit-count 20))
+
 (global-evil-matchit-mode 1)
 
 (setq typescript-indent-level 2)
@@ -214,6 +218,8 @@
           'executable-make-buffer-file-executable-if-script-p)
 
 ;; (use-package! casual)
+
+(use-package! feature-mode)
 
 (setq org-directory "~/org/")
 
@@ -484,6 +490,7 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
   (setq org-hide-emphasis-markers t
         org-preview-latex-default-process 'dvisvgm)
   (plist-put org-format-latex-options :background "Transparent")
+  (add-to-list 'org-todo-keyword-faces '("REVW" . +org-todo-onhold))
   (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)
 )))
 
@@ -580,6 +587,62 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
 ;;                        (lsp)))  ; or lsp-deferred
 ;;   :init
 ;;   (setq lsp-ltex-version "16.0.0"))  ; make sure you have set this, see below
+
+(defun gt/insert-anki-card ()
+  "Insert a new Anki note at the bottom of the current subtree."
+  (interactive)
+  (let* ((question (read-string "Question: "))
+         (current-level (org-current-level))
+         (subheading-level (+ 2 current-level))
+         (deck "")
+         (tags "")
+         (last-card-properties (save-excursion
+                                 (save-restriction
+                                   (org-narrow-to-subtree)
+                                   (goto-char (point-max))
+                                   (if (re-search-backward ":ANKI_DECK:" nil t)
+                                       (let ((deck (org-entry-get (point) "ANKI_DECK"))
+                                             (tags (org-entry-get (point) "ANKI_TAGS")))
+                                         (list deck tags))
+                                     (list nil nil)))))
+         (deck (or (nth 0 last-card-properties) ""))
+         (tags (or (nth 1 last-card-properties) "")))
+    (org-insert-subheading nil)
+    (insert (format "%s\n:PROPERTIES:\n:ANKI_DECK: %s\n:ANKI_NOTE_TYPE: Basic\n:ANKI_TAGS: %s\n:END:\n"
+                    question deck tags))
+    (insert (format "%s Front\n%s\n"
+                    (make-string subheading-level ?*) question))
+    (insert (format "%s Back\n"
+                    (make-string subheading-level ?*))))
+  (outline-up-heading 1))
+
+(defun gt/get-anki-tags ()
+  "Collect all unique :ANKI_TAGS: in the current org buffer."
+  (let ((tags '()))
+    (save-restriction
+      (widen)
+      (org-element-map (org-element-parse-buffer) 'node-property
+        (lambda (property)
+          (when (string= (org-element-property :key property) "ANKI_TAGS")
+            (setq tags (append tags (split-string (org-element-property :value property) " "))))))
+      (delete-dups tags))))
+
+(defun gt/anki-tags-autocomplete ()
+  "Autocomplete for :ANKI_TAGS: property."
+  (interactive)
+  (let* ((tags (gt/get-anki-tags))
+         (selected-tags (completing-read-multiple "Select tags: " tags nil t)))
+    (org-set-property "ANKI_TAGS" (mapconcat 'identity selected-tags " "))))
+
+(use-package! anki-editor
+  :config
+  (define-key org-mode-map (kbd "C-c n a a") #'gt/insert-anki-card)
+  (define-key org-mode-map (kbd "C-c n a t") #'gt/anki-tags-autocomplete)
+  (define-key org-mode-map (kbd "C-c n a p") #'anki-editor-push-notes)
+  (which-key-add-key-based-replacements
+    "C-c n a a" "Insert Anki card"
+    "C-c n a t" "Select tags for card"
+    "C-c n a p" "Push cards to Anki"))
 
 (setq org-pomodoro-keep-killed-pomodoro-time t)
 

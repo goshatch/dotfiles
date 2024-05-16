@@ -97,6 +97,9 @@
 ;;
 ;; NVM Support
 (package! nvm)
+;;
+;; A mode for editing Cucumber features
+(package! feature-mode)
 
 ;; +---------+
 ;; | WRITING |
