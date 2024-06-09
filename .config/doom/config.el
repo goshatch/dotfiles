@@ -1,86 +1,41 @@
-#+TITLE: Gosha's Literate Doom Emacs Config
-
-* Identity
-Some functionality uses this to identify you, e.g. GPG configuration, email clients, file templates, and snippets.
-
-#+begin_src emacs-lisp :tangle yes
 (setq user-full-name "Gosha Tcherednitchenko"
       user-mail-address "mail@gosha.net")
-#+end_src
 
-* Some sensible defaults
-We want to raise the ~undo-limit~ to 80Mb, use granular undo, and replace ~...~ with a unicode ellipse.
-#+begin_src emacs-lisp :tangle yes
 (setq undo-limit 80000000
       evil-want-fine-undo t
       truncate-string-ellipsis "…")
-#+end_src
 
-* User Interface
-** Typography
-Let's provide a base font size, from which all others will be calculated.
-
-#+begin_src emacs-lisp :tangle yes
 (defvar gt/base-font-size 13
   "The base font size from which all others are calculated")
-#+end_src
 
-Setting up the default font faces:
-
-#+begin_src emacs-lisp :tangle yes
 (setq doom-font
       (font-spec :family "PragmataPro Mono" :size gt/base-font-size :weight 'normal :spacing 100))
 (setq gt/ru-font
       (font-spec :family "Iosevka" :size gt/base-font-size :weight 'normal :spacing 100))
 (setq doom-variable-pitch-font
       (font-spec :family "PT Serif" :weight 'regular :height 160 :width 'normal))
-#+end_src
 
-If we are on a Mac, use the Apple emoji font; otherwise (on Linux) use the Twitter Color Emoji font.
-
-#+begin_src emacs-lisp :tangle yes
 (setq doom-symbol-font
       (if (featurep :system 'macos)
           (font-spec :family "Apple Color Emoji")
         (font-spec :family "Twitter Color Emoji"))
       )
-#+end_src
 
-Specify a font for CJK text, for better performance — but only in GUI mode.
-
-#+begin_src emacs-lisp :tangle yes
 (if (display-graphic-p)
     (dolist (charset '(kana han cjk-misc bopomofo))
       (set-fontset-font
        (frame-parameter nil 'font)
        charset
        (font-spec :family "Noto Sans CJK TC" :size gt/base-font-size))))
-#+end_src
 
-~TODO:~ Have a different config for Mac and Linux:
-- On macOS, use the beautiful system fonts
-- On Linux, use Noto Sans CJK
-
-Force using the Russian-specific font (Iosevka) for cyrillic text:
-
-#+begin_src emacs-lisp :tangle yes
 (if (display-graphic-p)
     (set-fontset-font
      (frame-parameter nil 'font)
      'cyrillic
      gt/ru-font))
-#+end_src
 
-Add a little more line height:
-
-#+begin_src emacs-lisp :tangle yes
 (setq-default line-spacing 0.1)
-#+end_src
 
-** Theme
-We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi theme]] by Protesilaos Stavrou, with some slight customisations:
-
-#+begin_src emacs-lisp :tangle yes
 (setq modus-themes-bold-constructs t)
 
 (setq modus-themes-common-palette-overrides
@@ -107,25 +62,12 @@ We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi
           auto-dark-light-theme 'modus-operandi)
     (auto-dark-mode t))
   )
-#+end_src
 
-*** Set keyboard shortcut to toggle between light/dark Modus themes.
-
-#+begin_src emacs-lisp :tangle yes
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
-#+end_src
-*** Always use midnight mode when opening a PDF file
 
-#+begin_src emacs-lisp :tangle yes
 (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
-#+end_src
 
-** Some small tweaks
-*** Frame title
-Set the frame title to include the name of the current ~persp-mode~ workspace:
-
-#+begin_src emacs-lisp :tangle yes
 (setq
  frame-title-format
  '("%b — "
@@ -133,20 +75,9 @@ Set the frame title to include the name of the current ~persp-mode~ workspace:
     (format "%s"  persp-last-persp-name))
    " — Emacs"
    ))
-#+end_src
-*** Disable the menu bar
-#+begin_src emacs-lisp :tangle yes
+
 (menu-bar-mode -1)
-#+end_src
 
-*** Vim-style tabs: ~tab-bar-mode~
-I miss the way Vim tabs work, and it seems like ~tab-bar-mode~ is a good solution to implement something like this.
-
-Links: [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Tab-Bars.html][documentation]], [[https://www.rousette.org.uk/archives/using-the-tab-bar-in-emacs/][BSAG blog post]].
-
-Also integrate ~tab-bar-mode~ and ~persp-mode~, as stolen from [[https://github.com/LemonBreezes/.doom.d/blob/master/lisp/persp-mode-tab-bar-integration.el][here]] (originally found [[https://github.com/Bad-ptr/persp-mode.el/issues/122#issuecomment-1224884651][here]]).
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! tab-bar
   :after emacs
   :config
@@ -174,42 +105,18 @@ Also integrate ~tab-bar-mode~ and ~persp-mode~, as stolen from [[https://github.
               (setq tab-bar-closed-tabs (persp-parameter 'tab-bar-closed-tabs))
               (tab-bar--update-tab-bar-lines t)))
   (tab-bar-mode 1))
-#+end_src
 
-*** Preview buffers in ivy
-
-#+begin_src emacs-lisp :tangle yes
 (setq +ivy-buffer-preview t)
-#+end_src
 
-*** Use hydra for navigation
-
-#+begin_src emacs-lisp :tangle yes
 (setq ivy-read-action-function #'ivy-hydra-read-action)
-#+end_src
 
-*** Split windows to the right and down by default
-
-#+begin_src emacs-lisp :tangle yes
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
-#+end_src
-*** Projectile tweaks
-Automatically find projects in ~$HOME/repos~
 
-#+begin_src emacs-lisp :tangle yes
 (setq projectile-project-search-path '("~/repos"))
-#+end_src
 
-Default action on opening a project is dired
-
-#+begin_src emacs-lisp :tangle yes
 (setq projectile-switch-project-action #'projectile-dired)
-#+end_src
 
-Recognize Rails/RSpec projects
-
-#+begin_src emacs-lisp :tangle yes
 (after! projectile
   (projectile-register-project-type
    'rails-rspec '("Gemfile" "app" "lib" "db" "config" "spec")
@@ -220,34 +127,17 @@ Recognize Rails/RSpec projects
    :test-dir "spec/"
    :test-suffix "_spec")
     )
-#+end_src
-*** Vterm
-Send C-c to the terminal
 
-#+begin_src emacs-lisp :tangle yes
 (map! :after vterm
       :map vterm-mode-map
       :ni "C-c" (vterm-send-key (kbd "C-c")))
-#+end_src
 
-** Custom keybindings
-Some convenience from Vim:
-
-#+begin_src emacs-lisp :tangle yes
 (setq evil-escape-key-sequence "jj"
       evil-escape-delay 0.3)
-#+end_src
 
-Use j/k to move up/down in visual lines
-
-#+begin_src emacs-lisp :tangle yes
 (evil-global-set-key 'motion "j" 'evil-next-visual-line)
 (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-#+end_src
 
-~FIXME~ Vim-style movement in undo-tree
-
-#+begin_src emacs-lisp :tangle yes
 (after! undo-tree
   (define-key undo-tree-visualizer-mode-map (kbd "j")
     'undo-tree-visualize-redo)
@@ -258,123 +148,50 @@ Use j/k to move up/down in visual lines
   (define-key undo-tree-visualizer-mode-map (kbd "l")
     'undo-tree-visualize-switch-branch-right)
   )
-#+end_src
 
-An easier way to call =avy-goto-char-timer=:
-
-#+begin_src emacs-lisp :tangle yes
 (setq avy-all-windows t)
 (map! "C-c SPC" #'avy-goto-char-2)
-#+end_src
-* Git
-** Magit
-Authentication for Forge
 
-#+begin_src emacs-lisp :tangle yes
 (setq auth-sources '("~/.authinfo.gpg"))
-#+end_src
 
-Show more recent commits
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! magit
   :config
   (setq magit-log-section-commit-count 20))
-#+end_src
-* Programming
-Easily jump between the beginning and end of blocks
 
-#+begin_src emacs-lisp :tangle yes
 (global-evil-matchit-mode 1)
-#+end_src
 
-For some reason, typescript indent level needs to be manually set
-
-#+begin_src emacs-lisp :tangle yes
 (setq typescript-indent-level 2)
-#+end_src
 
-** Ruby
-Use ~rbenv-mode~ globally, don't show current ruby version in modeline:
+;; (use-package! mise
+;;  :config
+;;  (add-hook 'doom-after-init-hook #'global-mise-mode))
 
-#+begin_src emacs-lisp :tangle yes
-(setq rbenv-show-active-ruby-in-modeline nil)
-(global-rbenv-mode)
-#+end_src
-
-Additional LSP configuration
-
-#+begin_src emacs-lisp :tangle yes
 (after! lsp-mode
   (setq lsp-solargraph-use-bundler nil)
   (setq lsp-sorbet-as-add-on t)
   (setq lsp-sorbet-use-bundler t))
-#+end_src
 
-** IDE
-*** uxntal
-[[https://github.com/non/uxntal-mode][Github repo]] for this mode.
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! uxntal-mode)
-#+end_src
 
-*** Forth
-#+begin_src emacs-lisp :tangle yes
-(use-package! forth-mode)
-#+end_src
-
-*** Navigation
-Use ~lsp-ui-peek~ for definitions and references.
-
-#+begin_src emacs-lisp :tangle yes
 (defun gt/setup-lsp-ui-peek ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
 (add-hook 'lsp-ui-mode-hook #'gt/setup-lsp-ui-peek)
-#+end_src
 
-*** DAP
-Use [[https://emacs-lsp.github.io/dap-mode/][DAP Mode]] for connectling to [[https://microsoft.github.io/debug-adapter-protocol/][Debug Adapter Protocol]] debuggers.
-
-We want the =dap-hydra= to pop up every time a DAP debugger is stopped on a breakpoint.
-
-#+begin_src emacs-lisp :tangle yes
 (add-hook 'dap-stopped-hook
           (lambda (arg) (call-interactively #'dap-hydra)))
-#+end_src
 
-*** Sonarqube
-Use Sonarqube, via [[https://github.com/emacs-lsp/lsp-sonarlint][lsp-sonarlint]].
-
-#+begin_src emacs-lisp :tangle yes
 ;; (require 'lsp-sonarlint)
-#+end_src
 
-**** Ruby
-Set up Sonarqube for Ruby
-
-#+begin_src emacs-lisp :tangle yes
 ;; (defun gt/setup-sonarlint-ruby ()
 ;;   (require 'lsp-sonarlint-ruby)
 ;;   (setq lsp-sonarlint-ruby-enabled t))
 
 ;; (add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
-#+end_src
 
-**** Javascript/Typescript
-Use ~rjsx-mode~ over ~js2-mode~ for all JS files
-
-#+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-#+end_src
 
-~TODO~: Set up a completion framework for js/rjsx mode.
-
-Set up Sonarqube for JS/TS
-
-#+begin_src emacs-lisp :tangle yes
 ;; (setq lsp-sonarlint-modes-enabled
 ;;       (delete-dups
 ;;        (append lsp-sonarlint-modes-enabled '(typescript-mode typescript-tsx-mode rjsx-mode))))
@@ -389,76 +206,30 @@ Set up Sonarqube for JS/TS
 
 ;; (dolist (hook '(js2-mode-hook rjsx-mode-hook typescript-mode-hook typescript-tsx-mode-hook))
 ;;   (add-hook hook #'gt/setup-sonarlint-js))
-#+end_src
 
-Use NVM
-#+begin_src emacs-lisp :tangle yes
-(use-package! nvm)
-#+end_src
-*** Tailwind LSP
-#+begin_src emacs-lisp :tangle yes
 (use-package! lsp-tailwindcss)
-#+end_src
 
-** Emacs metaprogramming
-
-Set the scratch buffer to open in ~lisp-interaction-mode~ by default.
-
-#+begin_src emacs-lisp :tangle yes
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
-#+end_src
-** Conveniences
-Make script files executable when saving
 
-#+begin_src emacs-lisp :tangle yes
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
-#+end_src
 
-Add a porcelain for Calc:
-#+begin_src emacs-lisp :tangle yes
 ;; (use-package! casual)
-#+end_src
 
-Support for Cucumber/Features
-#+begin_src emacs-lisp :tangle yes
 (use-package! feature-mode)
-#+end_src
-* Org-mode
-Set the working directory for Org files.
 
-#+begin_src emacs-lisp :tangle yes
 (setq org-directory "~/org/")
-#+end_src
 
-** Spacing
-Add a blank line before every new heading and plain list items
-
-#+begin_src emacs-lisp :tangle yes
 (setq org-blank-before-new-entry
       '((heading . t) (plain-list-item . auto)))
-#+end_src
 
-** TO-DO items
-Log time items are closed
-
-#+begin_src emacs-lisp :tangle yes
 (setq org-log-done 'time)
-#+end_src
 
-** Agenda
-Build the agenda from work task files
-
-#+begin_src emacs-lisp :tangle yes
 (setq org-agenda-files
       (list (concat org-directory "inbox.org")
             (concat org-directory "work/")
             (concat org-directory "projects/")))
-#+end_src
 
-Global key binding to the default agenda view:
-
-#+begin_src emacs-lisp :tangle yes
 (defun gt/open-agenda ()
   (interactive)
   (org-agenda nil "a"))
@@ -466,22 +237,12 @@ Global key binding to the default agenda view:
 (use-package! org
   :bind
   ("C-c a" . gt/open-agenda))
-#+end_src
 
-Add a hotkey to toggle the log mode in the agenda
-
-#+begin_src emacs-lisp :tangle yes
 (add-hook
  'org-agenda-mode-hook
  (lambda ()
    (define-key org-agenda-mode-map (kbd "C-c C-l") 'org-agenda-log-mode)))
-#+end_src
 
-** Links DWIM
-
-Code lifted from [[https://xenodium.com/emacs-dwim-do-what-i-mean/][Emacs DWIM: do what ✨I✨ mean]].
-
-#+begin_src emacs-lisp :tangle yes
 (defun gt/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."
   (interactive)
@@ -510,42 +271,22 @@ Code lifted from [[https://xenodium.com/emacs-dwim-do-what-i-mean/][Emacs DWIM: 
 (use-package! org
   :bind
   ("C-c l" . gt/org-insert-link-dwim))
-#+end_src
 
-** Roam
-Set the Roam directory as the working directory for Deft.
-
-#+begin_src emacs-lisp :tangle yes
 (setq deft-directory org-roam-directory)
-#+end_src
 
-Enable node link completion everywhere
-
-#+begin_src emacs-lisp :tangle yes
 (setq org-roam-completion-everywhere t)
-#+end_src
 
-Configure Roam buffer to show unlinked references as well
-
-#+begin_src emacs-lisp :tangle yes
 (setq org-roam-mode-section-functions
       (list #'org-roam-backlinks-section
             #'org-roam-reflinks-section
             ;; #'org-roam-unlinked-references-section
             ))
-#+end_src
 
-Use Xwidgets to open UI instead of system browser
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! org-roam-ui
   :init
   (when (featurep 'xwidget-internal)
     (setq org-roam-ui-browser-function #'xwidget-webkit-browse-url)))
-#+end_src
 
-*** Multiple Roam instances
-#+begin_src emacs-lisp :tangle yes
 (defvar gt/org-roam-instances
   '(("Personal" . ("~/org/roam" "~/.emacs.d/.local/cache/org-roam.db"))
     ("Work" . ("~/org/roam-work" "~/.emacs.d/.local/cache/org-roam-work.db")))
@@ -567,21 +308,12 @@ Use Xwidgets to open UI instead of system browser
   (let* ((labels (mapcar 'car gt/org-roam-instances))
          (label (completing-read "Choose org-roam instance: " labels nil t)))
     (gt/set-org-roam-instance label)))
-#+end_src
-*** Journaling
 
-Global hotkey to reach today's daily
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! org-roam
   :bind
   ("C-c j j" . org-roam-dailies-goto-today)
   ("C-c j i" . org-roam-dailies-capture-today))
-#+end_src
 
-Set up a custom default template for dailies
-
-#+begin_src emacs-lisp :tangle yes
 (defun gt/daily-location ()
   (let ((location
          (with-temp-buffer
@@ -657,12 +389,7 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
          :if-new (file+head
                   "%<%Y-%m-%d>.org"
                   "%[~/org/roam/templates/daily-template.org]"))))
-#+end_src
 
-**** Processing mobile capture inbox
-I use the Plain Org app on iOS to capture text on the go. The code below runs whenever a new org-roam daily is created for today, it takes all the trees in the capture inbox and moves them to the top of the newly created daily note.
-
-#+begin_src emacs-lisp :tangle yes
 (setq gt/org-inbox-file (file-name-concat org-directory "inbox.org"))
 
 (defun gt/refile-to-file-headline (file headline)
@@ -700,12 +427,7 @@ I use the Plain Org app on iOS to capture text on the go. The code below runs wh
       (set-buffer daily-buffer))))
 
 (add-hook 'org-roam-dailies-find-file-hook 'gt/org-roam-daily-hook)
-#+end_src
-**** Weekly reviews
 
-Bind =C-c j w= globally to creating a new weekly review note from a template.
-
-#+begin_src emacs-lisp :tangle yes
 (defvar gt/weekly-review-capture-template
   `(("d" "default" entry
      "* %?"
@@ -723,13 +445,7 @@ Bind =C-c j w= globally to creating a new weekly review note from a template.
 (use-package! org-roam
   :bind
   ("C-c j w" . gt/weekly-review-capture))
-#+end_src
 
-**** Monthly reviews
-
-Bind =C-c j m= globally to creating a new monthly review note from a template.
-
-#+begin_src emacs-lisp :tangle yes
 (defvar gt/monthly-review-capture-template
   `(("d" "default" entry
      "* %?"
@@ -747,11 +463,7 @@ Bind =C-c j m= globally to creating a new monthly review note from a template.
 (use-package! org-roam
   :bind
   ("C-c j m" . gt/monthly-review-capture))
-#+end_src
 
-**** org-roam-ui
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! websocket
   :after org-roam)
 
@@ -762,22 +474,14 @@ Bind =C-c j m= globally to creating a new monthly review note from a template.
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
-#+end_src
-*** Keybindings
-#+begin_src emacs-lisp :tangle yes
+
 (use-package! org-roam
   :bind
   ("C-c n n" . org-roam-node-find)
   ("C-c n i" . org-roam-node-insert)
   ("C-c n u" . org-roam-ui-open)
   ("C-c n h" . gt/select-org-roam-instance))
-#+end_src
 
-
-** Writing
-Disable line numbers in org files and hide the emphasis markers.
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! org
   :config
   (setq org-hide-emphasis-markers t
@@ -786,10 +490,7 @@ Disable line numbers in org files and hide the emphasis markers.
   (add-to-list 'org-todo-keyword-faces '("REVW" . +org-todo-onhold))
   (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)
 )))
-#+end_src
 
-Use ~mixed-pitch-mode~ for org-mode files (disable for now)
-#+begin_src emacs-lisp :tangle yes
 ;; (use-package! mixed-pitch
 ;;   :hook
 ;;   (org-mode . mixed-pitch-mode)
@@ -797,40 +498,23 @@ Use ~mixed-pitch-mode~ for org-mode files (disable for now)
 ;;   (setq! mixed-pitch-set-height gt/base-font-size)
 ;;   (setq org-hide-emphasis-markers t)
 ;;   (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-drawer))
-#+end_src
 
-Word count:
-#+begin_src emacs-lisp :tangle yes
 (use-package! wc-mode
   :config
   (global-set-key "\C-cw" 'wc-mode))
 
 ;; NOTE: These are not the same
 (setq doom-modeline-enable-word-count t)
-#+end_src
 
-Enable typo-mode for all =text-mode= buffers
-
-#+begin_src emacs-lisp :tangle yes
 (typo-global-mode 1)
 (add-hook 'text-mode-hook 'typo-mode)
-#+end_src
 
-Highlight visual line instead of actual line (for wrapped text)
-
-#+begin_src emacs-lisp :tangle yes
 (defun gt/visual-line-range ()
   (save-excursion
     (cons
      (progn (beginning-of-visual-line) (point))
      (progn (end-of-visual-line) (point)))))
-#+end_src
 
-Everything else under this heading is basically stolen from [[https://protesilaos.com/codelog/2020-07-16-emacs-focused-editing/][Protesilaos Stavrou]], /also known as Prot/.
-
-Keep the cursor in the middle of the page (aka typewriter mode):
-
-#+begin_src emacs-lisp :tangle yes
 ;; (use-package! emacs
 ;;   :config
 ;;   (setq-default scroll-preserve-screen-position t)
@@ -852,15 +536,7 @@ Keep the cursor in the middle of the page (aka typewriter mode):
 ;;                        scroll-margin))
 ;;         (kill-local-variable `,local))))
 ;;   :bind ("C-c L" . gt/scroll-centre-cursor-mode))
-#+end_src
 
-Custom, ~olivetti-mode~-based focused writing mode.
-- Increase the font size
-- Hide the mode-line
-- Hide line numbers
-- Enable ~olivetti-mode~
-
-#+begin_src emacs-lisp :tangle yes
 ;; (use-package! olivetti
 ;;   :ensure
 ;;   :diminish
@@ -898,15 +574,9 @@ Custom, ~olivetti-mode~-based focused writing mode.
 ;;       (setq hl-line-range-function nil)))
 
 ;;   :bind ("C-c o" . gt/olivetti-mode))
-#+end_src
 
-Russian QWERTY layout for writing
-#+begin_src emacs-lisp :tangle yes
 (use-package! quail-russian-qwerty)
-#+end_src
 
-Languagetool support
-#+begin_src emacs-lisp :tangle yes
 ;; (use-package lsp-ltex
 ;;   :ensure t
 ;;   :hook (text-mode . (lambda ()
@@ -914,11 +584,7 @@ Languagetool support
 ;;                        (lsp)))  ; or lsp-deferred
 ;;   :init
 ;;   (setq lsp-ltex-version "16.0.0"))  ; make sure you have set this, see below
-#+end_src
-** Anki
-Quickly insert an Anki card
 
-#+begin_src emacs-lisp :tangle yes
 (defun gt/insert-anki-card ()
   "Insert a new Anki note at the bottom of the current subtree."
   (interactive)
@@ -946,11 +612,7 @@ Quickly insert an Anki card
     (insert (format "%s Back\n"
                     (make-string subheading-level ?*))))
   (outline-up-heading 1))
-#+end_src
 
-Tag autocomplete for Anki cards
-
-#+begin_src emacs-lisp :tangle yes
 (defun gt/get-anki-tags ()
   "Collect all unique :ANKI_TAGS: in the current org buffer."
   (let ((tags '()))
@@ -968,11 +630,7 @@ Tag autocomplete for Anki cards
   (let* ((tags (gt/get-anki-tags))
          (selected-tags (completing-read-multiple "Select tags: " tags nil t)))
     (org-set-property "ANKI_TAGS" (mapconcat 'identity selected-tags " "))))
-#+end_src
 
-Key bindings
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! anki-editor
   :config
   (define-key org-mode-map (kbd "C-c n a a") #'gt/insert-anki-card)
@@ -982,56 +640,28 @@ Key bindings
     "C-c n a a" "Insert Anki card"
     "C-c n a t" "Select tags for card"
     "C-c n a p" "Push cards to Anki"))
-#+end_src
 
-** Time Tracking
-*** Pomodoro
-Keep the time spent on a killed pomodoro
-
-#+begin_src emacs-lisp :tangle yes
 (setq org-pomodoro-keep-killed-pomodoro-time t)
-#+end_src
 
-Don’t play sounds on Pomodoro events (notifications are enough)
-
-#+begin_src emacs-lisp :tangle yes
 (setq org-pomodoro-play-sounds nil)
-#+end_src
 
-** Tweaks
-*** Pomodoro notifications
-Set path to ~terminal-notifier~ executable
-
-#+begin_src emacs-lisp :tangle yes
 (setq alert-notifier-command (executable-find "terminal-notifier"))
-#+end_src
-*** Remove company-ispell backend
-This backend is causing Emacs to lock up randomly. Let’s remove it.
 
-#+begin_src emacs-lisp :tangle yes
-(use-package! company
+(use-package! corfu
   :config
-  (setq +company-backend-alist (assq-delete-all 'text-mode +company-backend-alist))
-  (add-to-list '+company-backend-alist '(text-mode (:separate company-dabbrev company-yasnippet))))
-#+end_src
+  (setq corfu-preselect 'first
+        corfu-preview-current 'insert))
 
-*** Inline images
-Set default inline image width to 500px, and show them on startup for files that have them.
+;; (use-package! company
+;;   :config
+;;   (setq +company-backend-alist (assq-delete-all 'text-mode +company-backend-alist))
+;;   (add-to-list '+company-backend-alist '(text-mode (:separate company-dabbrev company-yasnippet))))
 
-#+begin_src emacs-lisp :tangle yes
 (setq org-image-actual-width 500
       org-startup-with-inline-images t)
-#+end_src
-*** Capture frame parameters
-Make sure the capture frame is centered on the screen
-#+begin_src emacs-lisp :tangle yes
+
 (nconc +org-capture-frame-parameters '((top . 0.5) (left . 0.5)))
-#+end_src
 
-* Reading
-Calibre library interaction:
-
-#+begin_src emacs-lisp :tangle yes
 (use-package! calibredb
   :init
   (map! :map doom-leader-search-map :desc "Search Calibre database" "c" #'calibredb)
@@ -1083,11 +713,7 @@ Calibre library interaction:
         :nie "q" 'calibredb-entry-quit
         :nie "?" 'calibredb-entry-dispatch
         :nie "RET" 'calibredb-search-ret))
-#+end_src
 
-Use ~nov.el~ for EPUB files
-
-#+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 (setq nov-text-width 80)
@@ -1186,13 +812,7 @@ Use ~nov.el~ for EPUB files
     .programlisting {
         font-size: 20px;
     }"))
-#+end_src
 
-* IRC
-
-Using [[https://github.com/emacs-circe/circe][Circe]], to connect through my bouncer.
-
-#+begin_src emacs-lisp :tangle yes
 (setq gt/hostname (car (split-string (system-name) "\\.")))
 
 (set-irc-server! "sourcehut/libera"
@@ -1204,10 +824,5 @@ Using [[https://github.com/emacs-circe/circe][Circe]], to connect through my bou
     :channels ("#emacs" "#uxn" "#lisp")
     :sasl-username "gosha/liberachat@strogino"
     :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
-#+end_src
 
-Notifications through a message call rather than desktop notifications.
-
-#+begin_src emacs-lisp :tangle yes
 (setq circe-notifications-alert-style 'message)
-#+end_src
