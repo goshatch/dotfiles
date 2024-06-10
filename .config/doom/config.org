@@ -297,9 +297,9 @@ For some reason, typescript indent level needs to be manually set
 Use [[https://mise.jdx.dev/][Mise]] to manage ruby/node/etc versions
 
 #+begin_src emacs-lisp :tangle yes
-;; (use-package! mise
-;;  :config
-;;  (add-hook 'doom-after-init-hook #'global-mise-mode))
+(use-package! mise
+ :config
+ (add-hook 'doom-after-init-hook #'global-mise-mode))
 #+end_src
 
 ** Ruby
@@ -308,6 +308,7 @@ Additional LSP configuration
 #+begin_src emacs-lisp :tangle yes
 (after! lsp-mode
   (setq lsp-solargraph-use-bundler nil)
+  (setq lsp-solargraph-multi-root nil)
   (setq lsp-sorbet-as-add-on t)
   (setq lsp-sorbet-use-bundler t))
 #+end_src
@@ -329,6 +330,13 @@ Use ~lsp-ui-peek~ for definitions and references.
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
 (add-hook 'lsp-ui-mode-hook #'gt/setup-lsp-ui-peek)
+#+end_src
+
+Treemacs should follow us around
+#+begin_src emacs-lisp :tangle yes
+(use-package! treemacs
+  :config
+  (setq treemacs-follow-mode t))
 #+end_src
 
 *** DAP

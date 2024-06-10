@@ -162,12 +162,13 @@
 
 (setq typescript-indent-level 2)
 
-;; (use-package! mise
-;;  :config
-;;  (add-hook 'doom-after-init-hook #'global-mise-mode))
+(use-package! mise
+ :config
+ (add-hook 'doom-after-init-hook #'global-mise-mode))
 
 (after! lsp-mode
   (setq lsp-solargraph-use-bundler nil)
+  (setq lsp-solargraph-multi-root nil)
   (setq lsp-sorbet-as-add-on t)
   (setq lsp-sorbet-use-bundler t))
 
@@ -178,6 +179,10 @@
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
 (add-hook 'lsp-ui-mode-hook #'gt/setup-lsp-ui-peek)
+
+(use-package! treemacs
+  :config
+  (setq treemacs-follow-mode t))
 
 (add-hook 'dap-stopped-hook
           (lambda (arg) (call-interactively #'dap-hydra)))

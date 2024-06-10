@@ -95,7 +95,7 @@
 ;; (package! casual)
 ;;
 ;; Managing ruby, js, etc versions
-;; (package! mise)
+(package! mise)
 ;;
 ;; A mode for editing Cucumber features
 (package! feature-mode)
