@@ -42,8 +42,6 @@ export TEX_PATH="/Library/TeX/texbin"
 export CPATH="/opt/homebrew/include:$CPATH"
 export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
 
-kube_path=$(bash $HOME/.indeed-kube-profile)
-
 export PATH="$HOME/.bin:\
 .git/safe/../../bin:\
 $HOME/.cargo/bin:\
@@ -54,7 +52,6 @@ $HOME/.config/yarn/global/node_modules/.bin:\
 /opt/homebrew/bin:\
 $PLAYDATE_SDK_PATH/bin:\
 $TEX_PATH:\
-$kube_path:\
 $PATH"
 
 . "/Users/gosha/.indeed-kube-profile"
