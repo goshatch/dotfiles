@@ -53,12 +53,12 @@
         (bg-mode-line-active bg-cyan-subtle)
         (fg-mode-line-active fg-main)))
 
-(setq doom-theme 'modus-vivendi)
+(setq doom-theme 'modus-vivendi-tinted)
 
 (when (and (eq system-type 'darwin) (display-graphic-p))
   (use-package! auto-dark
     :init
-    (setq auto-dark-dark-theme 'modus-vivendi
+    (setq auto-dark-dark-theme 'modus-vivendi-tinted
           auto-dark-light-theme 'modus-operandi)
     (auto-dark-mode t))
   )
@@ -77,6 +77,10 @@
    ))
 
 (menu-bar-mode -1)
+
+(use-package! highlight-indent-guides
+  :config
+  (setq highlight-indent-guides-method 'character))
 
 (use-package! tab-bar
   :after emacs
@@ -170,7 +174,9 @@
   (setq lsp-solargraph-use-bundler nil)
   (setq lsp-solargraph-multi-root nil)
   (setq lsp-sorbet-as-add-on t)
-  (setq lsp-sorbet-use-bundler t))
+  (setq lsp-sorbet-use-bundler t)
+  ; Use HTML lsp server for .html.erb files
+  (add-to-list 'lsp-language-id-configuration '("\\.html\\.erb$" . "html")))
 
 (use-package! uxntal-mode)
 

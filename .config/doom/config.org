@@ -98,12 +98,12 @@ We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi
         (bg-mode-line-active bg-cyan-subtle)
         (fg-mode-line-active fg-main)))
 
-(setq doom-theme 'modus-vivendi)
+(setq doom-theme 'modus-vivendi-tinted)
 
 (when (and (eq system-type 'darwin) (display-graphic-p))
   (use-package! auto-dark
     :init
-    (setq auto-dark-dark-theme 'modus-vivendi
+    (setq auto-dark-dark-theme 'modus-vivendi-tinted
           auto-dark-light-theme 'modus-operandi)
     (auto-dark-mode t))
   )
@@ -134,9 +134,17 @@ Set the frame title to include the name of the current ~persp-mode~ workspace:
    " — Emacs"
    ))
 #+end_src
+
 *** Disable the menu bar
 #+begin_src emacs-lisp :tangle yes
 (menu-bar-mode -1)
+#+end_src
+
+*** Indent guide styles
+#+begin_src emacs-lisp :tangle yes
+(use-package! highlight-indent-guides
+  :config
+  (setq highlight-indent-guides-method 'character))
 #+end_src
 
 *** Vim-style tabs: ~tab-bar-mode~
@@ -310,7 +318,9 @@ Additional LSP configuration
   (setq lsp-solargraph-use-bundler nil)
   (setq lsp-solargraph-multi-root nil)
   (setq lsp-sorbet-as-add-on t)
-  (setq lsp-sorbet-use-bundler t))
+  (setq lsp-sorbet-use-bundler t)
+  ; Use HTML lsp server for .html.erb files
+  (add-to-list 'lsp-language-id-configuration '("\\.html\\.erb$" . "html")))
 #+end_src
 
 ** IDE
