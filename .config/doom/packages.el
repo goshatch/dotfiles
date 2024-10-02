@@ -49,14 +49,6 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
-;; +--------+
-;; | THEMES |
-;; +--------+
-
-;;
-;; Automatic switching between dark/light themes
-(package! auto-dark)
-
 ;; +-------------+
 ;; | PROGRAMMING |
 ;; +-------------+

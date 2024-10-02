@@ -100,14 +100,7 @@ We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi
         (bg-mode-line-active bg-cyan-subtle)
         (fg-mode-line-active fg-main)))
 
-(setq doom-theme 'modus-vivendi-tinted)
-
-(when (and (eq system-type 'darwin) (display-graphic-p))
-  (use-package! auto-dark
-    :init
-    (setq auto-dark-dark-theme 'modus-vivendi-tinted
-          auto-dark-light-theme 'modus-operandi-tinted)
-    (auto-dark-mode t)))
+(setq doom-theme 'modus-operandi-tinted)
 #+end_src
 
 *** Set keyboard shortcut to toggle between light/dark Modus themes.

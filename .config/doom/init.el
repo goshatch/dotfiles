@@ -116,7 +116,7 @@
 
        :lang
        ;;agda              ; types of types of types of types...
-       beancount           ; mind the GAAP
+       ;;beancount         ; mind the GAAP
        (cc +lsp
            +tree-sitter)   ; C > C++ == 1
        (clojure
@@ -133,7 +133,7 @@
         +lsp
         +tree-sitter)      ; erlang done right
        ;;elm               ; care for a cup of TEA?
-       emacs-lisp        ; drown in parentheses
+       emacs-lisp          ; drown in parentheses
        ;;erlang            ; an elegant language for a more civilized age
        ;;ess               ; emacs speaks statistics
        ;;factor
@@ -158,7 +158,7 @@
        ;;kotlin            ; a better, slicker Java(Script)
        (latex +lsp +fold)  ; writing papers in Emacs has never been so fun
        ;;lean              ; for folks with too much to prove
-       ;;ledger            ; be audit you can be
+       ledger              ; be audit you can be
        (lua +lsp)          ; one-based indices? one-based indices
        (markdown +grip)    ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c

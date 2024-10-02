@@ -55,14 +55,7 @@
         (bg-mode-line-active bg-cyan-subtle)
         (fg-mode-line-active fg-main)))
 
-(setq doom-theme 'modus-vivendi-tinted)
-
-(when (and (eq system-type 'darwin) (display-graphic-p))
-  (use-package! auto-dark
-    :init
-    (setq auto-dark-dark-theme 'modus-vivendi-tinted
-          auto-dark-light-theme 'modus-operandi-tinted)
-    (auto-dark-mode t)))
+(setq doom-theme 'modus-operandi-tinted)
 
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
