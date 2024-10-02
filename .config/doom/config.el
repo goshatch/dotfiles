@@ -5,7 +5,7 @@
       evil-want-fine-undo t
       truncate-string-ellipsis "…")
 
-(defvar gt/base-font-size 13
+(defvar gt/base-font-size 15
   "The base font size from which all others are calculated")
 
 (setq doom-font
@@ -22,11 +22,13 @@
       )
 
 (if (display-graphic-p)
-    (dolist (charset '(kana han cjk-misc bopomofo))
-      (set-fontset-font
-       (frame-parameter nil 'font)
-       charset
-       (font-spec :family "Noto Sans CJK TC" :size gt/base-font-size))))
+    (progn
+      (when (member "Noto Sans CJK JP" (font-family-list))
+        (dolist (charset '(kana han))
+          (set-fontset-font t charset (font-spec :family "Noto Sans CJK JP" :size gt/base-font-size) nil 'prepend)))
+      (when (member "Noto Sans CJK TC" (font-family-list))
+        (dolist (charset '(han cjk-misc bopomofo))
+          (set-fontset-font t charset (font-spec :family "Noto Sans CJK TC" :size gt/base-font-size) nil 'append)))))
 
 (if (display-graphic-p)
     (set-fontset-font
@@ -59,14 +61,15 @@
   (use-package! auto-dark
     :init
     (setq auto-dark-dark-theme 'modus-vivendi-tinted
-          auto-dark-light-theme 'modus-operandi)
-    (auto-dark-mode t))
-  )
+          auto-dark-light-theme 'modus-operandi-tinted)
+    (auto-dark-mode t)))
 
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
 
-(add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+
+(defvar x-gtk-use-system-tooltips use-system-tooltips)
 
 (setq
  frame-title-format
@@ -77,10 +80,6 @@
    ))
 
 (menu-bar-mode -1)
-
-(use-package! highlight-indent-guides
-  :config
-  (setq highlight-indent-guides-method 'character))
 
 (use-package! tab-bar
   :after emacs
@@ -110,10 +109,6 @@
               (tab-bar--update-tab-bar-lines t)))
   (tab-bar-mode 1))
 
-(setq +ivy-buffer-preview t)
-
-(setq ivy-read-action-function #'ivy-hydra-read-action)
-
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
 
@@ -142,6 +137,7 @@
 (evil-global-set-key 'motion "j" 'evil-next-visual-line)
 (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
+; FIXME: Does not work apparently
 (after! undo-tree
   (define-key undo-tree-visualizer-mode-map (kbd "j")
     'undo-tree-visualize-redo)
@@ -162,23 +158,40 @@
   :config
   (setq magit-log-section-commit-count 20))
 
+(defun color-buffer (proc &rest args)
+  (interactive)
+  (with-current-buffer (process-buffer proc)
+    (read-only-mode -1)
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (read-only-mode 1)))
+
+(advice-add 'magit-process-filter :after #'color-buffer)
+
+(use-package! magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
+
 (global-evil-matchit-mode 1)
 
+; FIXME: We really should not have to do this manually!
 (setq typescript-indent-level 2)
 
 (use-package! mise
  :config
  (add-hook 'doom-after-init-hook #'global-mise-mode))
 
+(use-package! gptel
+  :config
+  (setq! gptel-model "gpt-4o"))
+
 (after! lsp-mode
-  (setq lsp-solargraph-use-bundler nil)
-  (setq lsp-solargraph-multi-root nil)
-  (setq lsp-sorbet-as-add-on t)
-  (setq lsp-sorbet-use-bundler t)
+  ; FIXME: Ruby LSP is a mess, figure this out for work + personal projects
+  ;; (setq lsp-solargraph-use-bundler nil)
+  ;; (setq lsp-solargraph-multi-root nil)
+  ;; (setq lsp-sorbet-as-add-on t)
+  ;; (setq lsp-sorbet-use-bundler t)
   ; Use HTML lsp server for .html.erb files
   (add-to-list 'lsp-language-id-configuration '("\\.html\\.erb$" . "html")))
-
-(use-package! uxntal-mode)
 
 (defun gt/setup-lsp-ui-peek ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
@@ -190,44 +203,14 @@
   :config
   (setq treemacs-follow-mode t))
 
-(add-hook 'dap-stopped-hook
-          (lambda (arg) (call-interactively #'dap-hydra)))
-
-;; (require 'lsp-sonarlint)
-
-;; (defun gt/setup-sonarlint-ruby ()
-;;   (require 'lsp-sonarlint-ruby)
-;;   (setq lsp-sonarlint-ruby-enabled t))
-
-;; (add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
-
-(add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-
-;; (setq lsp-sonarlint-modes-enabled
-;;       (delete-dups
-;;        (append lsp-sonarlint-modes-enabled '(typescript-mode typescript-tsx-mode rjsx-mode))))
-
-;; (defun gt/setup-sonarlint-js ()
-;; (require 'lsp-sonarlint-javascript)
-;; (setq lsp-sonarlint-javascript-enabled t)
-
-;; (require 'lsp-sonarlint-typescript)
-;; (setq lsp-sonarlint-typescript-enabled t)
-;; )
-
-;; (dolist (hook '(js2-mode-hook rjsx-mode-hook typescript-mode-hook typescript-tsx-mode-hook))
-;;   (add-hook hook #'gt/setup-sonarlint-js))
-
-(use-package! lsp-tailwindcss)
-
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
 
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 
-;; (use-package! casual)
-
 (use-package! feature-mode)
+
+(use-package! adoc-mode)
 
 (setq org-directory "~/org/")
 
@@ -237,8 +220,7 @@
 (setq org-log-done 'time)
 
 (setq org-agenda-files
-      (list (concat org-directory "inbox.org")
-            (concat org-directory "work/")
+      (list (concat org-directory "work/")
             (concat org-directory "projects/")))
 
 (defun gt/open-agenda ()
@@ -283,8 +265,6 @@
   :bind
   ("C-c l" . gt/org-insert-link-dwim))
 
-(setq deft-directory org-roam-directory)
-
 (setq org-roam-completion-everywhere t)
 
 (setq org-roam-mode-section-functions
@@ -297,28 +277,6 @@
   :init
   (when (featurep 'xwidget-internal)
     (setq org-roam-ui-browser-function #'xwidget-webkit-browse-url)))
-
-(defvar gt/org-roam-instances
-  '(("Personal" . ("~/org/roam" "~/.emacs.d/.local/cache/org-roam.db"))
-    ("Work" . ("~/org/roam-work" "~/.emacs.d/.local/cache/org-roam-work.db")))
-  "An Alist of org-roam instances with labels")
-
-(defun gt/set-org-roam-instance (label)
-  (interactive)
-  (let* ((instance (assoc label gt/org-roam-instances))
-         (directory (expand-file-name (nth 1 instance)))
-         (db-location (expand-file-name (nth 2 instance))))
-    (unless instance
-      (error "No org-roam instance found with label: %s" label))
-    (setq org-roam-directory directory)
-    (setq org-roam-db-location db-location)
-    (org-roam-db-sync)))
-
-(defun gt/select-org-roam-instance ()
-  (interactive)
-  (let* ((labels (mapcar 'car gt/org-roam-instances))
-         (label (completing-read "Choose org-roam instance: " labels nil t)))
-    (gt/set-org-roam-instance label)))
 
 (use-package! org-roam
   :bind
@@ -401,80 +359,6 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
                   "%<%Y-%m-%d>.org"
                   "%[~/org/roam/templates/daily-template.org]"))))
 
-(setq gt/org-inbox-file (file-name-concat org-directory "inbox.org"))
-
-(defun gt/refile-to-file-headline (file headline)
-  "Refile tree to a specific file and a specific headline"
-  (let ((pos (save-excursion
-               (find-file file)
-               (org-find-exact-headline-in-buffer headline))))
-    (org-refile nil nil (list headline file nil pos))))
-
-(defun gt/org-roam-today-daily-path ()
-  "Return the path for today's org-roam daily note"
-  (file-name-concat
-   org-roam-directory
-   org-roam-dailies-directory
-   (format-time-string "%F.org")))
-
-(defun gt/refile-inbox-to-org-roam-today-daily ()
-  "Refile all org trees from inbox file to today's org-roam daily note"
-  (let ((inbox-buffer (find-file-noselect gt/org-inbox-file)))
-    (set-buffer inbox-buffer)
-    (org-map-entries
-     (lambda ()
-       (setq org-map-continue-from 0)
-       (gt/refile-to-file-headline
-        (gt/org-roam-today-daily-path)
-        "Inbox")))
-    (save-buffer)))
-
-(defun gt/org-roam-daily-hook ()
-  "Hook called upon visiting an org-roam daily note"
-  (let ((daily-buffer (current-buffer)))
-    ;; Only perform this if we're visiting the buffer for today's daily
-    (when (string= (buffer-file-name daily-buffer) (gt/org-roam-today-daily-path))
-      (gt/refile-inbox-to-org-roam-today-daily)
-      (set-buffer daily-buffer))))
-
-(add-hook 'org-roam-dailies-find-file-hook 'gt/org-roam-daily-hook)
-
-(defvar gt/weekly-review-capture-template
-  `(("d" "default" entry
-     "* %?"
-     :if-new (file+head
-              "daily/%<%Y-%m-%d>-weekly-review.org"
-              "%[~/org/roam/templates/weekly-review-template.org]"))))
-
-(defun gt/weekly-review-capture (&optional no-visit)
-  "Create a weekly review note from the appropriate template"
-  (interactive)
-  (org-roam-capture- :goto (unless no-visit '(4))
-                     :node (org-roam-node-create)
-                     :templates gt/weekly-review-capture-template))
-
-(use-package! org-roam
-  :bind
-  ("C-c j w" . gt/weekly-review-capture))
-
-(defvar gt/monthly-review-capture-template
-  `(("d" "default" entry
-     "* %?"
-     :if-new (file+head
-              "daily/%<%Y-%m>-monthly-review.org"
-              "%[~/org/roam/templates/monthly-review-template.org]"))))
-
-(defun gt/monthly-review-capture (&optional no-visit)
-  "Create a monthly review note from the appropriate template"
-  (interactive)
-  (org-roam-capture- :goto (unless no-visit '(4))
-                     :node (org-roam-node-create)
-                     :templates gt/monthly-review-capture-template))
-
-(use-package! org-roam
-  :bind
-  ("C-c j m" . gt/monthly-review-capture))
-
 (use-package! websocket
   :after org-roam)
 
@@ -526,68 +410,9 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
      (progn (beginning-of-visual-line) (point))
      (progn (end-of-visual-line) (point)))))
 
-;; (use-package! emacs
-;;   :config
-;;   (setq-default scroll-preserve-screen-position t)
-;;   (setq-default scroll-conservatively 1) ; affects `scroll-step'
-;;   (setq-default scroll-margin 0)
-
-;;   (define-minor-mode gt/scroll-centre-cursor-mode
-;;     "Toggle centred cursor scrolling behaviour."
-;;     :init-value nil
-;;     :lighter " S="
-;;     :global nil
-;;     (if gt/scroll-centre-cursor-mode
-;;         (setq-local scroll-margin (* (frame-height) 2)
-;;                     scroll-conservatively 0
-;;                     maximum-scroll-margin 0.5)
-;;       (dolist (local '(scroll-preserve-screen-position
-;;                        scroll-conservatively
-;;                        maximum-scroll-margin
-;;                        scroll-margin))
-;;         (kill-local-variable `,local))))
-;;   :bind ("C-c L" . gt/scroll-centre-cursor-mode))
-
-;; (use-package! olivetti
-;;   :ensure
-;;   :diminish
-;;   :config
-;;   (setq olivetti-body-width 80)
-;;   (setq olivetti-minimum-body-width 80)
-;;   (setq olivetti-recall-visual-line-mode-entry-state t)
-
-;;   (define-minor-mode gt/olivetti-mode
-;;     "Toggle buffer-local `olivetti-mode' with additional parameters."
-;;     :init-value nil
-;;     :global nil
-;;     (if gt/olivetti-mode
-;;         (progn
-;;           (olivetti-mode 1)
-;;           (org-indent-mode -1)
-;;           (setq line-spacing 0.4)
-;;           (buffer-face-mode)
-;;           (hide-mode-line-mode)
-;;           (vi-tilde-fringe-mode -1)
-;;           (set-window-fringes (selected-window) 0 0)
-;;           (text-scale-increase 1)
-;;           (display-line-numbers-mode -1)
-;;           (gt/scroll-centre-cursor-mode)
-;;           (setq hl-line-range-function 'gt/visual-line-range))
-;;       (olivetti-mode -1)
-;;       (org-indent-mode 1)
-;;       (setq line-spacing 0.1)
-;;       (hide-mode-line-mode -1)
-;;       (vi-tilde-fringe-mode 1)
-;;       (set-window-fringes (selected-window) nil) ; Use default width
-;;       (text-scale-decrease 1)
-;;       (gt/scroll-centre-cursor-mode -1)
-;;       (display-line-numbers-mode)
-;;       (setq hl-line-range-function nil)))
-
-;;   :bind ("C-c o" . gt/olivetti-mode))
-
 (use-package! quail-russian-qwerty)
 
+;; TODO: Fix this
 ;; (use-package lsp-ltex
 ;;   :ensure t
 ;;   :hook (text-mode . (lambda ()
@@ -662,11 +487,6 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
   :config
   (setq corfu-preselect 'first
         corfu-preview-current 'insert))
-
-;; (use-package! company
-;;   :config
-;;   (setq +company-backend-alist (assq-delete-all 'text-mode +company-backend-alist))
-;;   (add-to-list '+company-backend-alist '(text-mode (:separate company-dabbrev company-yasnippet))))
 
 (setq org-image-actual-width 500
       org-startup-with-inline-images t)
@@ -823,17 +643,3 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
     .programlisting {
         font-size: 20px;
     }"))
-
-(setq gt/hostname (car (split-string (system-name) "\\.")))
-
-(set-irc-server! "sourcehut/libera"
-  `(:port 6697
-    :host "chat.sr.ht"
-    :use-tls t
-    :nick "gosha_"
-    :realname "Gosha Tcherednitchenko"
-    :channels ("#emacs" "#uxn" "#lisp")
-    :sasl-username "gosha/liberachat@strogino"
-    :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
-
-(setq circe-notifications-alert-style 'message)

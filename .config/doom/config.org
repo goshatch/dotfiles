@@ -1,4 +1,4 @@
-#+TITLE: Gosha's Literate Doom Emacs Config
+#+title: Gosha's Literate Doom Emacs Config
 
 * Identity
 Some functionality uses this to identify you, e.g. GPG configuration, email clients, file templates, and snippets.
@@ -21,7 +21,7 @@ We want to raise the ~undo-limit~ to 80Mb, use granular undo, and replace ~...~ 
 Let's provide a base font size, from which all others will be calculated.
 
 #+begin_src emacs-lisp :tangle yes
-(defvar gt/base-font-size 13
+(defvar gt/base-font-size 15
   "The base font size from which all others are calculated")
 #+end_src
 
@@ -50,11 +50,13 @@ Specify a font for CJK text, for better performance — but only in GUI mode.
 
 #+begin_src emacs-lisp :tangle yes
 (if (display-graphic-p)
-    (dolist (charset '(kana han cjk-misc bopomofo))
-      (set-fontset-font
-       (frame-parameter nil 'font)
-       charset
-       (font-spec :family "Noto Sans CJK TC" :size gt/base-font-size))))
+    (progn
+      (when (member "Noto Sans CJK JP" (font-family-list))
+        (dolist (charset '(kana han))
+          (set-fontset-font t charset (font-spec :family "Noto Sans CJK JP" :size gt/base-font-size) nil 'prepend)))
+      (when (member "Noto Sans CJK TC" (font-family-list))
+        (dolist (charset '(han cjk-misc bopomofo))
+          (set-fontset-font t charset (font-spec :family "Noto Sans CJK TC" :size gt/base-font-size) nil 'append)))))
 #+end_src
 
 ~TODO:~ Have a different config for Mac and Linux:
@@ -104,9 +106,8 @@ We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi
   (use-package! auto-dark
     :init
     (setq auto-dark-dark-theme 'modus-vivendi-tinted
-          auto-dark-light-theme 'modus-operandi)
-    (auto-dark-mode t))
-  )
+          auto-dark-light-theme 'modus-operandi-tinted)
+    (auto-dark-mode t)))
 #+end_src
 
 *** Set keyboard shortcut to toggle between light/dark Modus themes.
@@ -118,10 +119,17 @@ We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi
 *** Always use midnight mode when opening a PDF file
 
 #+begin_src emacs-lisp :tangle yes
-(add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
 #+end_src
 
 ** Some small tweaks
+*** TODO Remove this once Emacs 30.1 ships
+This needed to be redefined in order to build the pdf-tools
+
+#+begin_src emacs-lisp :tangle yes
+(defvar x-gtk-use-system-tooltips use-system-tooltips)
+#+end_src
+
 *** Frame title
 Set the frame title to include the name of the current ~persp-mode~ workspace:
 
@@ -138,13 +146,6 @@ Set the frame title to include the name of the current ~persp-mode~ workspace:
 *** Disable the menu bar
 #+begin_src emacs-lisp :tangle yes
 (menu-bar-mode -1)
-#+end_src
-
-*** Indent guide styles
-#+begin_src emacs-lisp :tangle yes
-(use-package! highlight-indent-guides
-  :config
-  (setq highlight-indent-guides-method 'character))
 #+end_src
 
 *** Vim-style tabs: ~tab-bar-mode~
@@ -184,24 +185,13 @@ Also integrate ~tab-bar-mode~ and ~persp-mode~, as stolen from [[https://github.
   (tab-bar-mode 1))
 #+end_src
 
-*** Preview buffers in ivy
-
-#+begin_src emacs-lisp :tangle yes
-(setq +ivy-buffer-preview t)
-#+end_src
-
-*** Use hydra for navigation
-
-#+begin_src emacs-lisp :tangle yes
-(setq ivy-read-action-function #'ivy-hydra-read-action)
-#+end_src
-
 *** Split windows to the right and down by default
 
 #+begin_src emacs-lisp :tangle yes
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
 #+end_src
+
 *** Projectile tweaks
 Automatically find projects in ~$HOME/repos~
 
@@ -229,6 +219,7 @@ Recognize Rails/RSpec projects
    :test-suffix "_spec")
     )
 #+end_src
+
 *** Vterm
 Send C-c to the terminal
 
@@ -253,9 +244,10 @@ Use j/k to move up/down in visual lines
 (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 #+end_src
 
-~FIXME~ Vim-style movement in undo-tree
+Vim-style movement in undo-tree
 
 #+begin_src emacs-lisp :tangle yes
+; FIXME: Does not work apparently
 (after! undo-tree
   (define-key undo-tree-visualizer-mode-map (kbd "j")
     'undo-tree-visualize-redo)
@@ -274,6 +266,7 @@ An easier way to call =avy-goto-char-timer=:
 (setq avy-all-windows t)
 (map! "C-c SPC" #'avy-goto-char-2)
 #+end_src
+
 * Git
 ** Magit
 Authentication for Forge
@@ -289,6 +282,28 @@ Show more recent commits
   :config
   (setq magit-log-section-commit-count 20))
 #+end_src
+
+Correctly handle escape sequences in output of e.g. pre-commit hooks
+
+#+begin_src emacs-lisp :tangle yes
+(defun color-buffer (proc &rest args)
+  (interactive)
+  (with-current-buffer (process-buffer proc)
+    (read-only-mode -1)
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (read-only-mode 1)))
+
+(advice-add 'magit-process-filter :after #'color-buffer)
+#+end_src
+
+Project TODOs in Magit
+
+#+begin_src emacs-lisp :tangle yes
+(use-package! magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
+#+end_src
+
 * Programming
 Easily jump between the beginning and end of blocks
 
@@ -299,6 +314,7 @@ Easily jump between the beginning and end of blocks
 For some reason, typescript indent level needs to be manually set
 
 #+begin_src emacs-lisp :tangle yes
+; FIXME: We really should not have to do this manually!
 (setq typescript-indent-level 2)
 #+end_src
 
@@ -310,27 +326,28 @@ Use [[https://mise.jdx.dev/][Mise]] to manage ruby/node/etc versions
  (add-hook 'doom-after-init-hook #'global-mise-mode))
 #+end_src
 
+** LLM integration
+#+begin_src emacs-lisp :tangle yes
+(use-package! gptel
+  :config
+  (setq! gptel-model "gpt-4o"))
+#+end_src
+
 ** Ruby
 Additional LSP configuration
 
 #+begin_src emacs-lisp :tangle yes
 (after! lsp-mode
-  (setq lsp-solargraph-use-bundler nil)
-  (setq lsp-solargraph-multi-root nil)
-  (setq lsp-sorbet-as-add-on t)
-  (setq lsp-sorbet-use-bundler t)
+  ; FIXME: Ruby LSP is a mess, figure this out for work + personal projects
+  ;; (setq lsp-solargraph-use-bundler nil)
+  ;; (setq lsp-solargraph-multi-root nil)
+  ;; (setq lsp-sorbet-as-add-on t)
+  ;; (setq lsp-sorbet-use-bundler t)
   ; Use HTML lsp server for .html.erb files
   (add-to-list 'lsp-language-id-configuration '("\\.html\\.erb$" . "html")))
 #+end_src
 
 ** IDE
-*** uxntal
-[[https://github.com/non/uxntal-mode][Github repo]] for this mode.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package! uxntal-mode)
-#+end_src
-
 *** Navigation
 Use ~lsp-ui-peek~ for definitions and references.
 
@@ -349,91 +366,30 @@ Treemacs should follow us around
   (setq treemacs-follow-mode t))
 #+end_src
 
-*** DAP
-Use [[https://emacs-lsp.github.io/dap-mode/][DAP Mode]] for connectling to [[https://microsoft.github.io/debug-adapter-protocol/][Debug Adapter Protocol]] debuggers.
-
-We want the =dap-hydra= to pop up every time a DAP debugger is stopped on a breakpoint.
-
-#+begin_src emacs-lisp :tangle yes
-(add-hook 'dap-stopped-hook
-          (lambda (arg) (call-interactively #'dap-hydra)))
-#+end_src
-
-*** Sonarqube
-Use Sonarqube, via [[https://github.com/emacs-lsp/lsp-sonarlint][lsp-sonarlint]].
-
-#+begin_src emacs-lisp :tangle yes
-;; (require 'lsp-sonarlint)
-#+end_src
-
-**** Ruby
-Set up Sonarqube for Ruby
-
-#+begin_src emacs-lisp :tangle yes
-;; (defun gt/setup-sonarlint-ruby ()
-;;   (require 'lsp-sonarlint-ruby)
-;;   (setq lsp-sonarlint-ruby-enabled t))
-
-;; (add-hook 'ruby-mode #'gt/setup-sonarlint-ruby)
-#+end_src
-
-**** Javascript/Typescript
-Use ~rjsx-mode~ over ~js2-mode~ for all JS files
-
-#+begin_src emacs-lisp :tangle yes
-(add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-#+end_src
-
-~TODO~: Set up a completion framework for js/rjsx mode.
-
-Set up Sonarqube for JS/TS
-
-#+begin_src emacs-lisp :tangle yes
-;; (setq lsp-sonarlint-modes-enabled
-;;       (delete-dups
-;;        (append lsp-sonarlint-modes-enabled '(typescript-mode typescript-tsx-mode rjsx-mode))))
-
-;; (defun gt/setup-sonarlint-js ()
-;; (require 'lsp-sonarlint-javascript)
-;; (setq lsp-sonarlint-javascript-enabled t)
-
-;; (require 'lsp-sonarlint-typescript)
-;; (setq lsp-sonarlint-typescript-enabled t)
-;; )
-
-;; (dolist (hook '(js2-mode-hook rjsx-mode-hook typescript-mode-hook typescript-tsx-mode-hook))
-;;   (add-hook hook #'gt/setup-sonarlint-js))
-#+end_src
-
-*** Tailwind LSP
-#+begin_src emacs-lisp :tangle yes
-(use-package! lsp-tailwindcss)
-#+end_src
-
 ** Emacs metaprogramming
-
 Set the scratch buffer to open in ~lisp-interaction-mode~ by default.
 
 #+begin_src emacs-lisp :tangle yes
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
 #+end_src
+
 ** Conveniences
 Make script files executable when saving
-
 #+begin_src emacs-lisp :tangle yes
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
-#+end_src
-
-Add a porcelain for Calc:
-#+begin_src emacs-lisp :tangle yes
-;; (use-package! casual)
 #+end_src
 
 Support for Cucumber/Features
 #+begin_src emacs-lisp :tangle yes
 (use-package! feature-mode)
 #+end_src
+
+Support for ASCII Doc file format
+#+begin_src emacs-lisp :tangle yes
+(use-package! adoc-mode)
+#+end_src
+
 * Org-mode
 Set the working directory for Org files.
 
@@ -461,8 +417,7 @@ Build the agenda from work task files
 
 #+begin_src emacs-lisp :tangle yes
 (setq org-agenda-files
-      (list (concat org-directory "inbox.org")
-            (concat org-directory "work/")
+      (list (concat org-directory "work/")
             (concat org-directory "projects/")))
 #+end_src
 
@@ -488,7 +443,6 @@ Add a hotkey to toggle the log mode in the agenda
 #+end_src
 
 ** Links DWIM
-
 Code lifted from [[https://xenodium.com/emacs-dwim-do-what-i-mean/][Emacs DWIM: do what ✨I✨ mean]].
 
 #+begin_src emacs-lisp :tangle yes
@@ -523,12 +477,6 @@ Code lifted from [[https://xenodium.com/emacs-dwim-do-what-i-mean/][Emacs DWIM: 
 #+end_src
 
 ** Roam
-Set the Roam directory as the working directory for Deft.
-
-#+begin_src emacs-lisp :tangle yes
-(setq deft-directory org-roam-directory)
-#+end_src
-
 Enable node link completion everywhere
 
 #+begin_src emacs-lisp :tangle yes
@@ -554,32 +502,7 @@ Use Xwidgets to open UI instead of system browser
     (setq org-roam-ui-browser-function #'xwidget-webkit-browse-url)))
 #+end_src
 
-*** Multiple Roam instances
-#+begin_src emacs-lisp :tangle yes
-(defvar gt/org-roam-instances
-  '(("Personal" . ("~/org/roam" "~/.emacs.d/.local/cache/org-roam.db"))
-    ("Work" . ("~/org/roam-work" "~/.emacs.d/.local/cache/org-roam-work.db")))
-  "An Alist of org-roam instances with labels")
-
-(defun gt/set-org-roam-instance (label)
-  (interactive)
-  (let* ((instance (assoc label gt/org-roam-instances))
-         (directory (expand-file-name (nth 1 instance)))
-         (db-location (expand-file-name (nth 2 instance))))
-    (unless instance
-      (error "No org-roam instance found with label: %s" label))
-    (setq org-roam-directory directory)
-    (setq org-roam-db-location db-location)
-    (org-roam-db-sync)))
-
-(defun gt/select-org-roam-instance ()
-  (interactive)
-  (let* ((labels (mapcar 'car gt/org-roam-instances))
-         (label (completing-read "Choose org-roam instance: " labels nil t)))
-    (gt/set-org-roam-instance label)))
-#+end_src
 *** Journaling
-
 Global hotkey to reach today's daily
 
 #+begin_src emacs-lisp :tangle yes
@@ -669,98 +592,7 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
                   "%[~/org/roam/templates/daily-template.org]"))))
 #+end_src
 
-**** Processing mobile capture inbox
-I use the Plain Org app on iOS to capture text on the go. The code below runs whenever a new org-roam daily is created for today, it takes all the trees in the capture inbox and moves them to the top of the newly created daily note.
-
-#+begin_src emacs-lisp :tangle yes
-(setq gt/org-inbox-file (file-name-concat org-directory "inbox.org"))
-
-(defun gt/refile-to-file-headline (file headline)
-  "Refile tree to a specific file and a specific headline"
-  (let ((pos (save-excursion
-               (find-file file)
-               (org-find-exact-headline-in-buffer headline))))
-    (org-refile nil nil (list headline file nil pos))))
-
-(defun gt/org-roam-today-daily-path ()
-  "Return the path for today's org-roam daily note"
-  (file-name-concat
-   org-roam-directory
-   org-roam-dailies-directory
-   (format-time-string "%F.org")))
-
-(defun gt/refile-inbox-to-org-roam-today-daily ()
-  "Refile all org trees from inbox file to today's org-roam daily note"
-  (let ((inbox-buffer (find-file-noselect gt/org-inbox-file)))
-    (set-buffer inbox-buffer)
-    (org-map-entries
-     (lambda ()
-       (setq org-map-continue-from 0)
-       (gt/refile-to-file-headline
-        (gt/org-roam-today-daily-path)
-        "Inbox")))
-    (save-buffer)))
-
-(defun gt/org-roam-daily-hook ()
-  "Hook called upon visiting an org-roam daily note"
-  (let ((daily-buffer (current-buffer)))
-    ;; Only perform this if we're visiting the buffer for today's daily
-    (when (string= (buffer-file-name daily-buffer) (gt/org-roam-today-daily-path))
-      (gt/refile-inbox-to-org-roam-today-daily)
-      (set-buffer daily-buffer))))
-
-(add-hook 'org-roam-dailies-find-file-hook 'gt/org-roam-daily-hook)
-#+end_src
-**** Weekly reviews
-
-Bind =C-c j w= globally to creating a new weekly review note from a template.
-
-#+begin_src emacs-lisp :tangle yes
-(defvar gt/weekly-review-capture-template
-  `(("d" "default" entry
-     "* %?"
-     :if-new (file+head
-              "daily/%<%Y-%m-%d>-weekly-review.org"
-              "%[~/org/roam/templates/weekly-review-template.org]"))))
-
-(defun gt/weekly-review-capture (&optional no-visit)
-  "Create a weekly review note from the appropriate template"
-  (interactive)
-  (org-roam-capture- :goto (unless no-visit '(4))
-                     :node (org-roam-node-create)
-                     :templates gt/weekly-review-capture-template))
-
-(use-package! org-roam
-  :bind
-  ("C-c j w" . gt/weekly-review-capture))
-#+end_src
-
-**** Monthly reviews
-
-Bind =C-c j m= globally to creating a new monthly review note from a template.
-
-#+begin_src emacs-lisp :tangle yes
-(defvar gt/monthly-review-capture-template
-  `(("d" "default" entry
-     "* %?"
-     :if-new (file+head
-              "daily/%<%Y-%m>-monthly-review.org"
-              "%[~/org/roam/templates/monthly-review-template.org]"))))
-
-(defun gt/monthly-review-capture (&optional no-visit)
-  "Create a monthly review note from the appropriate template"
-  (interactive)
-  (org-roam-capture- :goto (unless no-visit '(4))
-                     :node (org-roam-node-create)
-                     :templates gt/monthly-review-capture-template))
-
-(use-package! org-roam
-  :bind
-  ("C-c j m" . gt/monthly-review-capture))
-#+end_src
-
 **** org-roam-ui
-
 #+begin_src emacs-lisp :tangle yes
 (use-package! websocket
   :after org-roam)
@@ -773,6 +605,7 @@ Bind =C-c j m= globally to creating a new monthly review note from a template.
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 #+end_src
+
 *** Keybindings
 #+begin_src emacs-lisp :tangle yes
 (use-package! org-roam
@@ -782,7 +615,6 @@ Bind =C-c j m= globally to creating a new monthly review note from a template.
   ("C-c n u" . org-roam-ui-open)
   ("C-c n h" . gt/select-org-roam-instance))
 #+end_src
-
 
 ** Writing
 Disable line numbers in org files and hide the emphasis markers.
@@ -798,7 +630,7 @@ Disable line numbers in org files and hide the emphasis markers.
 )))
 #+end_src
 
-Use ~mixed-pitch-mode~ for org-mode files (disable for now)
+Use ~mixed-pitch-mode~ for org-mode files
 #+begin_src emacs-lisp :tangle yes
 ;; (use-package! mixed-pitch
 ;;   :hook
@@ -836,80 +668,6 @@ Highlight visual line instead of actual line (for wrapped text)
      (progn (end-of-visual-line) (point)))))
 #+end_src
 
-Everything else under this heading is basically stolen from [[https://protesilaos.com/codelog/2020-07-16-emacs-focused-editing/][Protesilaos Stavrou]], /also known as Prot/.
-
-Keep the cursor in the middle of the page (aka typewriter mode):
-
-#+begin_src emacs-lisp :tangle yes
-;; (use-package! emacs
-;;   :config
-;;   (setq-default scroll-preserve-screen-position t)
-;;   (setq-default scroll-conservatively 1) ; affects `scroll-step'
-;;   (setq-default scroll-margin 0)
-
-;;   (define-minor-mode gt/scroll-centre-cursor-mode
-;;     "Toggle centred cursor scrolling behaviour."
-;;     :init-value nil
-;;     :lighter " S="
-;;     :global nil
-;;     (if gt/scroll-centre-cursor-mode
-;;         (setq-local scroll-margin (* (frame-height) 2)
-;;                     scroll-conservatively 0
-;;                     maximum-scroll-margin 0.5)
-;;       (dolist (local '(scroll-preserve-screen-position
-;;                        scroll-conservatively
-;;                        maximum-scroll-margin
-;;                        scroll-margin))
-;;         (kill-local-variable `,local))))
-;;   :bind ("C-c L" . gt/scroll-centre-cursor-mode))
-#+end_src
-
-Custom, ~olivetti-mode~-based focused writing mode.
-- Increase the font size
-- Hide the mode-line
-- Hide line numbers
-- Enable ~olivetti-mode~
-
-#+begin_src emacs-lisp :tangle yes
-;; (use-package! olivetti
-;;   :ensure
-;;   :diminish
-;;   :config
-;;   (setq olivetti-body-width 80)
-;;   (setq olivetti-minimum-body-width 80)
-;;   (setq olivetti-recall-visual-line-mode-entry-state t)
-
-;;   (define-minor-mode gt/olivetti-mode
-;;     "Toggle buffer-local `olivetti-mode' with additional parameters."
-;;     :init-value nil
-;;     :global nil
-;;     (if gt/olivetti-mode
-;;         (progn
-;;           (olivetti-mode 1)
-;;           (org-indent-mode -1)
-;;           (setq line-spacing 0.4)
-;;           (buffer-face-mode)
-;;           (hide-mode-line-mode)
-;;           (vi-tilde-fringe-mode -1)
-;;           (set-window-fringes (selected-window) 0 0)
-;;           (text-scale-increase 1)
-;;           (display-line-numbers-mode -1)
-;;           (gt/scroll-centre-cursor-mode)
-;;           (setq hl-line-range-function 'gt/visual-line-range))
-;;       (olivetti-mode -1)
-;;       (org-indent-mode 1)
-;;       (setq line-spacing 0.1)
-;;       (hide-mode-line-mode -1)
-;;       (vi-tilde-fringe-mode 1)
-;;       (set-window-fringes (selected-window) nil) ; Use default width
-;;       (text-scale-decrease 1)
-;;       (gt/scroll-centre-cursor-mode -1)
-;;       (display-line-numbers-mode)
-;;       (setq hl-line-range-function nil)))
-
-;;   :bind ("C-c o" . gt/olivetti-mode))
-#+end_src
-
 Russian QWERTY layout for writing
 #+begin_src emacs-lisp :tangle yes
 (use-package! quail-russian-qwerty)
@@ -917,6 +675,7 @@ Russian QWERTY layout for writing
 
 Languagetool support
 #+begin_src emacs-lisp :tangle yes
+;; TODO: Fix this
 ;; (use-package lsp-ltex
 ;;   :ensure t
 ;;   :hook (text-mode . (lambda ()
@@ -925,6 +684,7 @@ Languagetool support
 ;;   :init
 ;;   (setq lsp-ltex-version "16.0.0"))  ; make sure you have set this, see below
 #+end_src
+
 ** Anki
 Quickly insert an Anki card
 
@@ -1025,16 +785,6 @@ Candidate selection tweaks
         corfu-preview-current 'insert))
 #+end_src
 
-*** Remove company-ispell backend
-This backend is causing Emacs to lock up randomly. Let’s remove it.
-
-#+begin_src emacs-lisp :tangle yes
-;; (use-package! company
-;;   :config
-;;   (setq +company-backend-alist (assq-delete-all 'text-mode +company-backend-alist))
-;;   (add-to-list '+company-backend-alist '(text-mode (:separate company-dabbrev company-yasnippet))))
-#+end_src
-
 *** Inline images
 Set default inline image width to 500px, and show them on startup for files that have them.
 
@@ -1042,6 +792,7 @@ Set default inline image width to 500px, and show them on startup for files that
 (setq org-image-actual-width 500
       org-startup-with-inline-images t)
 #+end_src
+
 *** Capture frame parameters
 Make sure the capture frame is centered on the screen
 #+begin_src emacs-lisp :tangle yes
@@ -1206,28 +957,4 @@ Use ~nov.el~ for EPUB files
     .programlisting {
         font-size: 20px;
     }"))
-#+end_src
-
-* IRC
-
-Using [[https://github.com/emacs-circe/circe][Circe]], to connect through my bouncer.
-
-#+begin_src emacs-lisp :tangle yes
-(setq gt/hostname (car (split-string (system-name) "\\.")))
-
-(set-irc-server! "sourcehut/libera"
-  `(:port 6697
-    :host "chat.sr.ht"
-    :use-tls t
-    :nick "gosha_"
-    :realname "Gosha Tcherednitchenko"
-    :channels ("#emacs" "#uxn" "#lisp")
-    :sasl-username "gosha/liberachat@strogino"
-    :sasl-password (lambda (&rest _) (+pass-get-secret "irc/bouncer"))))
-#+end_src
-
-Notifications through a message call rather than desktop notifications.
-
-#+begin_src emacs-lisp :tangle yes
-(setq circe-notifications-alert-style 'message)
 #+end_src

@@ -53,11 +53,9 @@
 ;; | THEMES |
 ;; +--------+
 
-(package! modus-themes)
 ;;
 ;; Automatic switching between dark/light themes
 (package! auto-dark)
-
 
 ;; +-------------+
 ;; | PROGRAMMING |
@@ -66,21 +64,18 @@
 ;; Press % to jump between matching tags
 (package! evil-matchit)
 ;;
-;; Linter mainly for Javascript projects at work
-;;
-;;
 ;; Client for Debug Adapter Protocol
 ;; https://github.com/emacs-lsp/dap-mode
-(package! dap-mode)
+;; (package! dap-mode)
 ;;
 ;; Syntax highlight for Uxntal.
 ;; Maybe a better alternative is https://github.com/non/uxntal-mode,
 ;; however there is an issue with that mode's rendering in my config:
 ;; https://github.com/non/uxntal-mode/issues/8
-(package!
-  uxntal-mode
-  :recipe (:local-repo "/Users/gosha/repos/uxntal-mode"
-           :build (:not compile)))
+;; (package!
+;;   uxntal-mode
+;;   :recipe (:local-repo "/Users/gosha/repos/uxntal-mode"
+;;            :build (:not compile)))
 ;;
 ;; Syntax highlighting and utilities for Forth
 ;; https://github.com/larsbrinkhoff/forth-mode
@@ -88,7 +83,7 @@
 ;;
 ;; LSP server for Tailwind CSS
 ;; https://github.com/merrickluo/lsp-tailwindcss
-(package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+;; (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
 ;;
 ;; A porcelain for Emacs Calc
 ;; http://yummymelon.com/devnull/announcing-casual-an-opinionated-porcelain-for-emacs-calc.html
@@ -99,6 +94,12 @@
 ;;
 ;; A mode for editing Cucumber features
 (package! feature-mode)
+;;
+;; Interacting with LLMs from Emacs
+(package! gptel)
+;;
+;; Project TODOs in Magit
+(package! magit-todos)
 
 ;; +---------+
 ;; | WRITING |
@@ -126,6 +127,9 @@
                            :repo "bnbeckwith/wc-mode"
                            :files ("*.el")))
 
+;; ASCII Doc format
+;; https://github.com/bbatsov/adoc-mode
+(package! adoc-mode)
 
 ;; +---------+
 ;; | READING |
@@ -144,7 +148,6 @@
 (package! nov-xwidget :recipe (:host github
                                :repo "chenyanming/nov-xwidget"
                                :files ("*.el")))
-
 
 ;; +----------+
 ;; | STUDYING |
