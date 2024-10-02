@@ -8,7 +8,7 @@ alias vim="nvim"
 alias g="git"
 alias be="bundle exec"
 alias mux="tmuxinator"
-alias ls="exa --icons"
+alias ls="eza --icons"
 alias la="ls -la"
 alias ll="ls -l"
 alias cat="bat"
@@ -36,11 +36,12 @@ uxn() {
 
 export FZF_DEFAULT_COMMAND="rg --files --follow"
 export GOPATH="$HOME/repos/go"
-export BAT_THEME=DarkNeon
+export BAT_THEME=ansi
 export PLAYDATE_SDK_PATH="$HOME/Developer/PlaydateSDK"
 export TEX_PATH="/Library/TeX/texbin"
 export CPATH="/opt/homebrew/include:$CPATH"
 export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
+export XDG_CONFIG_HOME="$HOME/.config"
 
 export PATH="$HOME/.bin:\
 .git/safe/../../bin:\
@@ -108,3 +109,10 @@ if [ -z "${_mise_cmd_not_found:-}" ]; then
         fi
     }
 fi
+
+# bun completions
+[ -s "/Users/gosha/.bun/_bun" ] && source "/Users/gosha/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
