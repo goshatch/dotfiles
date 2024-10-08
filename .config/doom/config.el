@@ -5,7 +5,7 @@
       evil-want-fine-undo t
       truncate-string-ellipsis "…")
 
-(defvar gt/base-font-size 15
+(defvar gt/base-font-size 13
   "The base font size from which all others are calculated")
 
 (setq doom-font
@@ -36,7 +36,7 @@
      'cyrillic
      gt/ru-font))
 
-(setq-default line-spacing 0.1)
+(setq-default line-spacing 0.0)
 
 (setq modus-themes-bold-constructs t)
 
@@ -123,6 +123,16 @@
 (map! :after vterm
       :map vterm-mode-map
       :ni "C-c" (vterm-send-key (kbd "C-c")))
+
+(setq
+    indent-bars-color '(highlight :face-bg t :blend 0.15)
+    indent-bars-pattern "."
+    indent-bars-width-frac 0.1
+    indent-bars-pad-frac 0.1
+    indent-bars-zigzag nil
+    indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1) ; blend=1: blend with BG only
+    indent-bars-highlight-current-depth '(:blend 0.5) ; pump up the BG blend on current
+    indent-bars-display-on-blank-lines t)
 
 (setq evil-escape-key-sequence "jj"
       evil-escape-delay 0.3)
