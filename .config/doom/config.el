@@ -124,7 +124,9 @@
       :map vterm-mode-map
       :ni "C-c" (vterm-send-key (kbd "C-c")))
 
-(setq
+(use-package! indent-bars
+  :config
+  (setq
     indent-bars-color '(highlight :face-bg t :blend 0.15)
     indent-bars-pattern "."
     indent-bars-width-frac 0.1
@@ -133,6 +135,7 @@
     indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1) ; blend=1: blend with BG only
     indent-bars-highlight-current-depth '(:blend 0.5) ; pump up the BG blend on current
     indent-bars-display-on-blank-lines t)
+  :hook ((ruby-mode clojure-mode sql-mode js2-mode web-mode conf-mode python-mode yaml-mode) . indent-bars-mode))
 
 (setq evil-escape-key-sequence "jj"
       evil-escape-delay 0.3)
@@ -185,7 +188,15 @@
 
 (use-package! gptel
   :config
-  (setq! gptel-model "gpt-4o"))
+  (setq! gptel-model "gpt-4o")
+  :bind
+  ("C-c g g" . gptel)
+  ("C-c g a" . gptel-add)
+  ("C-c g f" . gptel-add-file)
+  ("C-c g m" . gptel-menu)
+  ("C-c g s" . gptel-send)
+  ("C-c g o t" . gptel-org-set-topic)
+  ("C-c g o p" . gptel-org-set-properties))
 
 (after! lsp-mode
   ; FIXME: Ruby LSP is a mess, figure this out for work + personal projects
@@ -377,8 +388,7 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
   :bind
   ("C-c n n" . org-roam-node-find)
   ("C-c n i" . org-roam-node-insert)
-  ("C-c n u" . org-roam-ui-open)
-  ("C-c n h" . gt/select-org-roam-instance))
+  ("C-c n u" . org-roam-ui-open))
 
 (use-package! org
   :config

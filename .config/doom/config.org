@@ -225,7 +225,9 @@ Send C-c to the terminal
 See [[https://github.com/jdtsmith/indent-bars/blob/main/examples.md][examples]] in ~indent-bars~ repo
 
 #+begin_src emacs-lisp :tangle yes
-(setq
+(use-package! indent-bars
+  :config
+  (setq
     indent-bars-color '(highlight :face-bg t :blend 0.15)
     indent-bars-pattern "."
     indent-bars-width-frac 0.1
@@ -234,7 +236,7 @@ See [[https://github.com/jdtsmith/indent-bars/blob/main/examples.md][examples]] 
     indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1) ; blend=1: blend with BG only
     indent-bars-highlight-current-depth '(:blend 0.5) ; pump up the BG blend on current
     indent-bars-display-on-blank-lines t)
-
+  :hook ((ruby-mode clojure-mode sql-mode js2-mode web-mode conf-mode python-mode yaml-mode) . indent-bars-mode))
 #+end_src
 
 #+RESULTS:
@@ -341,7 +343,15 @@ Use [[https://mise.jdx.dev/][Mise]] to manage ruby/node/etc versions
 #+begin_src emacs-lisp :tangle yes
 (use-package! gptel
   :config
-  (setq! gptel-model "gpt-4o"))
+  (setq! gptel-model "gpt-4o")
+  :bind
+  ("C-c g g" . gptel)
+  ("C-c g a" . gptel-add)
+  ("C-c g f" . gptel-add-file)
+  ("C-c g m" . gptel-menu)
+  ("C-c g s" . gptel-send)
+  ("C-c g o t" . gptel-org-set-topic)
+  ("C-c g o p" . gptel-org-set-properties))
 #+end_src
 
 ** Ruby
@@ -623,8 +633,7 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
   :bind
   ("C-c n n" . org-roam-node-find)
   ("C-c n i" . org-roam-node-insert)
-  ("C-c n u" . org-roam-ui-open)
-  ("C-c n h" . gt/select-org-roam-instance))
+  ("C-c n u" . org-roam-ui-open))
 #+end_src
 
 ** Writing
