@@ -1,0 +1,9 @@
+font-family = "PragmataPro"
+theme = dark:"Builtin Pastel Dark",light:"Builtin Solarized Light"
+window-colorspace = display-p3
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+window-padding-y = 2
+window-padding-x = 2
+window-padding-balance = true
