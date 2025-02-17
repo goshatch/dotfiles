@@ -156,7 +156,9 @@
         +tree-sitter)      ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)
-       (latex +lsp +fold)  ; writing papers in Emacs has never been so fun
+       (latex +cdlatex
+              +lsp
+              +fold)       ; writing papers in Emacs has never been so fun
        ;;lean              ; for folks with too much to prove
        ledger              ; be audit you can be
        (lua +lsp)          ; one-based indices? one-based indices
@@ -181,7 +183,7 @@
         +lsp
         +tree-sitter)      ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
-       ;;racket            ; a DSL for DSLs
+       racket              ; a DSL for DSLs
        ;;raku              ; the artist formerly known as perl6
        (rest +jq)          ; Emacs as a REST client
        ;;rst               ; ReST in peace
@@ -191,7 +193,7 @@
        (rust +lsp
              +tree-sitter) ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
-       (scheme +guile)     ; a fully conniving family of lisps
+       (scheme +racket)    ; a fully conniving family of lisps
        (sh +lsp
            +tree-sitter)   ; she sells {ba,z,fi}sh shells on the C xor
        ;;sml
@@ -202,7 +204,8 @@
             +tree-sitter)  ; the tubes
        (yaml +lsp
              +tree-sitter) ; JSON, but readable
-       ;;zig               ; C, but simpler
+       (zig +lsp
+            +tree-sitter)  ; C, but simpler
 
        :email
        ;;(mu4e +org +gmail)

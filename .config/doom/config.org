@@ -12,7 +12,7 @@ Some functionality uses this to identify you, e.g. GPG configuration, email clie
 We want to raise the ~undo-limit~ to 80Mb, use granular undo, and replace ~...~ with a unicode ellipse.
 #+begin_src emacs-lisp :tangle yes
 (setq undo-limit 80000000
-      evil-want-fine-undo t
+      ;; evil-want-fine-undo t
       truncate-string-ellipsis "…")
 #+end_src
 
@@ -106,6 +106,7 @@ We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi
 *** Set keyboard shortcut to toggle between light/dark Modus themes.
 
 #+begin_src emacs-lisp :tangle yes
+(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
 #+end_src
@@ -236,11 +237,17 @@ See [[https://github.com/jdtsmith/indent-bars/blob/main/examples.md][examples]] 
     indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1) ; blend=1: blend with BG only
     indent-bars-highlight-current-depth '(:blend 0.5) ; pump up the BG blend on current
     indent-bars-display-on-blank-lines t)
-  :hook ((ruby-mode clojure-mode sql-mode js2-mode web-mode conf-mode python-mode yaml-mode) . indent-bars-mode))
+  :hook ((prog-mode) . indent-bars-mode))
 #+end_src
 
 #+RESULTS:
 : t
+*** File path in modeline
+Show buffer names relative to project
+
+#+begin_src emacs-lisp :tangle yes
+(setq! doom-modeline-buffer-file-name-style 'relative-to-project)
+#+end_src
 
 ** Custom keybindings
 Some convenience from Vim:
@@ -279,15 +286,21 @@ An easier way to call =avy-goto-char-timer=:
 (setq avy-all-windows t)
 (map! "C-c SPC" #'avy-goto-char-2)
 #+end_src
-
-* Git
-** Magit
-Authentication for Forge
+* Utilities
+Get secrets from authinfo:
 
 #+begin_src emacs-lisp :tangle yes
 (setq auth-sources '("~/.authinfo.gpg"))
+
+(defun gt/lookup-password (&rest keys)
+  (let ((result (apply #'auth-source-search keys)))
+    (if result
+        (funcall (plist-get (car result) :secret))
+      nil)))
 #+end_src
 
+* Git
+** Magit
 Show more recent commits
 
 #+begin_src emacs-lisp :tangle yes
@@ -343,7 +356,24 @@ Use [[https://mise.jdx.dev/][Mise]] to manage ruby/node/etc versions
 #+begin_src emacs-lisp :tangle yes
 (use-package! gptel
   :config
-  (setq! gptel-model "gpt-4o")
+  (setq! gptel-model 'claude-3-5-sonnet-latest)
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key (gt/lookup-password :host "api.anthropic.com"))
+  (gptel-make-openai "DeepSeek"
+    :host "api.deepseek.com"
+    :endpoint "/chat/completions"
+    :stream t
+    :key (gt/lookup-password :host "api.deepseek.com")
+    :models '(deepseek-reasoner deepseek-chat deepseek-coder))
+  (gptel-make-ollama "Ollama"
+    :host "localhost:11434"
+    :stream t
+    :models '(deepseek-r1:latest))
+  (setq gptel-directives
+        (cons
+         '("clojure-dev" . "You are a large language model working inside a Doom Emacs installation, and a careful Clojure and ClojureScript programmer. Provide code and only code as output without any additional text, prompt or note, except when fixing a mistake, in which case provide an terse explanation on what has changed and why. Always ask for clarifications when you need them, it is better to get alignment on what we are attempting to build. When suggesting changes to existing code blocks, also provide a diff between the existing code and your changes. Prioritise idiomatic Clojure/ClojureScript.")
+         gptel-directives))
   :bind
   ("C-c g g" . gptel)
   ("C-c g a" . gptel-add)
@@ -385,6 +415,17 @@ Treemacs should follow us around
 (use-package! treemacs
   :config
   (setq treemacs-follow-mode t))
+#+end_src
+*** Apheleia
+#+begin_src emacs-lisp :tangle yes
+(use-package! apheleia
+  :ensure apheleia
+  :config
+  (setf (alist-get 'standard-clojure apheleia-formatters) '("standard-clj" "fix" "-"))
+  (setf (alist-get 'clojure-mode apheleia-mode-alist) 'standard-clojure)
+  (setf (alist-get 'clojure-ts-mode apheleia-mode-alist) 'standard-clojure)
+  (setf (alist-get 'clojurec-mode apheleia-mode-alist) 'standard-clojure)
+  (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure))
 #+end_src
 
 ** Emacs metaprogramming
@@ -977,4 +1018,11 @@ Use ~nov.el~ for EPUB files
     .programlisting {
         font-size: 20px;
     }"))
+#+end_src
+* Ledger
+Use ~ledger-mode~ for ~hledger~ files:
+
+#+begin_src emacs-lisp :tangle yes
+(after! ledger-mode
+  (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode)))
 #+end_src

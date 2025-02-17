@@ -2,7 +2,7 @@
       user-mail-address "mail@gosha.net")
 
 (setq undo-limit 80000000
-      evil-want-fine-undo t
+      ;; evil-want-fine-undo t
       truncate-string-ellipsis "…")
 
 (defvar gt/base-font-size 13
@@ -57,6 +57,7 @@
 
 (setq doom-theme 'modus-operandi-tinted)
 
+(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
 
@@ -135,7 +136,9 @@
     indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1) ; blend=1: blend with BG only
     indent-bars-highlight-current-depth '(:blend 0.5) ; pump up the BG blend on current
     indent-bars-display-on-blank-lines t)
-  :hook ((ruby-mode clojure-mode sql-mode js2-mode web-mode conf-mode python-mode yaml-mode) . indent-bars-mode))
+  :hook ((prog-mode) . indent-bars-mode))
+
+(setq! doom-modeline-buffer-file-name-style 'relative-to-project)
 
 (setq evil-escape-key-sequence "jj"
       evil-escape-delay 0.3)
@@ -159,6 +162,12 @@
 (map! "C-c SPC" #'avy-goto-char-2)
 
 (setq auth-sources '("~/.authinfo.gpg"))
+
+(defun gt/lookup-password (&rest keys)
+  (let ((result (apply #'auth-source-search keys)))
+    (if result
+        (funcall (plist-get (car result) :secret))
+      nil)))
 
 (use-package! magit
   :config
@@ -188,7 +197,24 @@
 
 (use-package! gptel
   :config
-  (setq! gptel-model "gpt-4o")
+  (setq! gptel-model 'claude-3-5-sonnet-latest)
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key (gt/lookup-password :host "api.anthropic.com"))
+  (gptel-make-openai "DeepSeek"
+    :host "api.deepseek.com"
+    :endpoint "/chat/completions"
+    :stream t
+    :key (gt/lookup-password :host "api.deepseek.com")
+    :models '(deepseek-reasoner deepseek-chat deepseek-coder))
+  (gptel-make-ollama "Ollama"
+    :host "localhost:11434"
+    :stream t
+    :models '(deepseek-r1:latest))
+  (setq gptel-directives
+        (cons
+         '("clojure-dev" . "You are a large language model working inside a Doom Emacs installation, and a careful Clojure and ClojureScript programmer. Provide code and only code as output without any additional text, prompt or note, except when fixing a mistake, in which case provide an terse explanation on what has changed and why. Always ask for clarifications when you need them, it is better to get alignment on what we are attempting to build. When suggesting changes to existing code blocks, also provide a diff between the existing code and your changes. Prioritise idiomatic Clojure/ClojureScript.")
+         gptel-directives))
   :bind
   ("C-c g g" . gptel)
   ("C-c g a" . gptel-add)
@@ -216,6 +242,15 @@
 (use-package! treemacs
   :config
   (setq treemacs-follow-mode t))
+
+(use-package! apheleia
+  :ensure apheleia
+  :config
+  (setf (alist-get 'standard-clojure apheleia-formatters) '("standard-clj" "fix" "-"))
+  (setf (alist-get 'clojure-mode apheleia-mode-alist) 'standard-clojure)
+  (setf (alist-get 'clojure-ts-mode apheleia-mode-alist) 'standard-clojure)
+  (setf (alist-get 'clojurec-mode apheleia-mode-alist) 'standard-clojure)
+  (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure))
 
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
 
@@ -656,3 +691,6 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
     .programlisting {
         font-size: 20px;
     }"))
+
+(after! ledger-mode
+  (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode)))
