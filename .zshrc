@@ -1,6 +1,5 @@
 eval "$(starship init zsh)"
 eval "$(direnv hook zsh)"
-# eval "$(rbenv init - zsh)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
