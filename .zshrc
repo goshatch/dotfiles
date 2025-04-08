@@ -23,6 +23,7 @@ alias copm="git diff --name-only | grep '\.rb$' | xargs bundle exec rubocop"
 alias copma="git diff --name-only | grep '\.rb$' | xargs bundle exec rubocop -A"
 alias cops="git diff --cached --name-only --diff-filter=ACM | grep '\.rb$' | xargs bundle exec rubocop"
 alias copsa="git diff --cached --name-only --diff-filter=ACM | grep '\.rb$' | xargs bundle exec rubocop -A"
+alias git-tree="git ls-files | tree --fromfile"
 
 export EDITOR=nvim
 
@@ -43,10 +44,11 @@ export CPATH="/opt/homebrew/include:$CPATH"
 export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
 export XDG_CONFIG_HOME="$HOME/.config"
 
-export PATH="$HOME/.bin:\
+export PATH="./bin:$HOME/.bin:\
 .git/safe/../../bin:\
 $HOME/.cargo/bin:\
 $GOPATH/bin:\
+$HOME/.qlot/bin:\
 $HOME/.config/emacs/bin:\
 $HOME/.yarn/bin:\
 $HOME/.config/yarn/global/node_modules/.bin:\
@@ -116,3 +118,19 @@ fi
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+# BEGIN env Setup -- Managed by Ansible DO NOT EDIT.
+
+# Setup INDEED_ENV_DIR earlier.
+if [ -z "${INDEED_ENV_DIR}" ]; then
+    export INDEED_ENV_DIR="/Users/gosha/env"
+fi
+
+# Single-brace syntax because this is required in bash and sh alike
+if [ -e "${INDEED_ENV_DIR}/etc/indeedrc" ]; then
+    . "${INDEED_ENV_DIR}/etc/indeedrc"
+fi
+# END env Setup -- Managed by Ansible DO NOT EDIT.
+
+# Created by `pipx` on 2024-10-30 15:28:33
+export PATH="$PATH:/Users/gosha/.local/bin"
+eval "$(mise activate zsh)"
