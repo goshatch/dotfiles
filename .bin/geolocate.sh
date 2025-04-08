@@ -6,7 +6,7 @@
 # Requires:
 # - curl
 # - gq
-# - a ininfo.io access token passed as parameter
+# - a ipinfo.io access token passed as parameter
 #
 # The API key for ipinfo.io is either passed as argument, or retrieved from
 # the IPINFO_API_KEY environment variable.
@@ -55,11 +55,11 @@ if [[ -z "${API_KEY}" ]]; then
   exit 1
 fi
 
-curl "https://ipinfo.io/?token=${API_KEY}" | \
-  jq '.city, .country' | \
+curl "https://ipinfo.io/?token=${API_KEY}" |
+  jq '.city, .country' |
   while read -r CITY; do
     read -r COUNTRY
-    echo "${CITY},${COUNTRY}" | \
+    echo "${CITY},${COUNTRY}" |
       tr -d \" > \
-      ${OUTPUT_FILE}
-    done
+        ${OUTPUT_FILE}
+  done
