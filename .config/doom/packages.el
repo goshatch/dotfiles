@@ -49,6 +49,11 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
+;; +--------+
+;; | THEMES |
+;; +--------+
+;; (package! modus-themes)
+
 ;; +-------------+
 ;; | PROGRAMMING |
 ;; +-------------+
@@ -83,9 +88,6 @@
 ;;
 ;; Managing ruby, js, etc versions
 (package! mise)
-;;
-;; A mode for editing Cucumber features
-(package! feature-mode)
 ;;
 ;; Interacting with LLMs from Emacs
 (package! gptel)

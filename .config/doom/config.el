@@ -38,13 +38,12 @@
 
 (setq-default line-spacing 0.0)
 
-(setq modus-themes-bold-constructs t)
-
-(setq modus-themes-common-palette-overrides
+(setq modus-themes-bold-constructs t
+      modus-themes-common-palette-overrides
       '((fringe unspecified)
         (comment yellow-cooler)
         (border-mode-line-inactive unspecified)
-        (border-mode-line-active unpsecified)
+        (border-mode-line-active unspecified)
         (fg-line-number-inactive "gray50")
         (fg-line-number-active fg-main)
         (bg-line-number-inactive unspecified)
@@ -53,11 +52,10 @@
         (underline-paren-match fg-main)
         (fg-region fg-main)
         (bg-mode-line-active bg-cyan-subtle)
-        (fg-mode-line-active fg-main)))
+        (fg-mode-line-active fg-main))
+      doom-theme 'modus-operandi-tinted)
 
-(setq doom-theme 'modus-operandi-tinted)
-
-(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
 
@@ -197,10 +195,12 @@
 
 (use-package! gptel
   :config
-  (setq! gptel-model 'claude-3-5-sonnet-latest)
-  (gptel-make-anthropic "Claude"
-    :stream t
-    :key (gt/lookup-password :host "api.anthropic.com"))
+  (setq
+   gptel-default-mode 'org-mode
+   gptel-model 'claude-3-7-sonnet-20250219
+   gptel-backend (gptel-make-anthropic "Claude"
+                   :stream t
+                   :key (gt/lookup-password :host "api.anthropic.com")))
   (gptel-make-openai "DeepSeek"
     :host "api.deepseek.com"
     :endpoint "/chat/completions"
@@ -211,10 +211,8 @@
     :host "localhost:11434"
     :stream t
     :models '(deepseek-r1:latest))
-  (setq gptel-directives
-        (cons
-         '("clojure-dev" . "You are a large language model working inside a Doom Emacs installation, and a careful Clojure and ClojureScript programmer. Provide code and only code as output without any additional text, prompt or note, except when fixing a mistake, in which case provide an terse explanation on what has changed and why. Always ask for clarifications when you need them, it is better to get alignment on what we are attempting to build. When suggesting changes to existing code blocks, also provide a diff between the existing code and your changes. Prioritise idiomatic Clojure/ClojureScript.")
-         gptel-directives))
+  (add-to-list 'gptel-directives
+               '(clojure-dev . "you're a senior clojure/clojurescript dev with strong fp discipline. respond in PURE code blocks except: (1) when identifying errors (add terse explanations), (2) when clarification is needed (ask briefly), or (3) when suggesting changes (provide git-style diffs). prioritize idiomatic clojure: immutable data, pure functions, thread-last macros where appropriate. flag any non-obvious performance implications or side effects. favor core functions over 3rd-party libs when reasonable."))
   :bind
   ("C-c g g" . gptel)
   ("C-c g a" . gptel-add)
@@ -256,8 +254,6 @@
 
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
-
-(use-package! feature-mode)
 
 (use-package! adoc-mode)
 
@@ -408,6 +404,44 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
                   "%<%Y-%m-%d>.org"
                   "%[~/org/roam/templates/daily-template.org]"))))
 
+(defun gt/dailies-location-stats (directory)
+  "Parse all org files in DIRECTORY and count occurrences of #+location: headers.
+Returns an alist of (location . count) sorted by count in descending order."
+  (interactive "DDirectory: ")
+  (let ((org-files (directory-files-recursively directory "\\.org$"))
+        (locations '()))
+
+    ;; Process each org file
+    (dolist (file org-files)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (while (re-search-forward "^#\\+location:\\s-*\\(.*\\)$" nil t)
+          (let* ((location (string-trim (match-string 1)))
+                 (existing (assoc location locations)))
+            (if existing
+                ;; Increment count if location already exists
+                (setcdr existing (1+ (cdr existing)))
+              ;; Otherwise add new location with count 1
+              (push (cons location 1) locations))))))
+
+    ;; Sort by count (descending)
+    (setq locations (sort locations (lambda (a b) (> (cdr a) (cdr b)))))
+
+    ;; Display results in a buffer
+    (with-current-buffer (get-buffer-create "*Org Locations*")
+      (erase-buffer)
+      (insert "| Location | Count |\n")
+      (insert "|----------|-------|\n")
+      (dolist (loc locations)
+        (insert (format "| %s | %d |\n" (car loc) (cdr loc))))
+      (org-table-align)
+      (goto-char (point-min))
+      (switch-to-buffer (current-buffer)))
+
+    ;; Return locations alist
+    locations))
+
 (use-package! websocket
   :after org-roam)
 
@@ -420,10 +454,17 @@ BIRTH-DATE to `gt/child-age-in-weeks'."
         org-roam-ui-open-on-start t))
 
 (use-package! org-roam
+  :ensure t
   :bind
   ("C-c n n" . org-roam-node-find)
   ("C-c n i" . org-roam-node-insert)
-  ("C-c n u" . org-roam-ui-open))
+  ("C-c n u" . org-roam-ui-open)
+  ("C-c n l" . (lambda ()
+                 (interactive)
+                 (gt/dailies-location-stats
+                  (concat org-roam-directory org-roam-dailies-directory))))
+  ("C-c j j" . org-roam-dailies-goto-today)
+  ("C-c j i" . org-roam-dailies-capture-today))
 
 (use-package! org
   :config
