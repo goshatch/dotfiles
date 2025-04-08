@@ -10,13 +10,13 @@
   "vim_mode": true,
   "assistant": {
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-3-5-sonnet-20240620"
+      "provider": "anthropic",
+      "model": "claude-3-7-sonnet-latest"
     },
     "version": "2"
   },
   "features": {
-    "inline_completion_provider": "none"
+    "edit_prediction_provider": "none"
   },
   "soft_wrap": "prefer_line",
   "preferred_line_length": 80,
@@ -24,12 +24,13 @@
   "theme": {
     "mode": "system",
     "light": "One Hunter Flexokit Light",
-    "dark": "Zedokai (Filter Spectrum)"
+    "dark": "Carbonfox"
   },
   "ui_font_size": 13,
-  "buffer_font_size": 15,
+  "buffer_font_size": 13,
   "buffer_line_height": "comfortable",
   "buffer_font_family": "PragmataPro",
+  "buffer_font_weight": 200,
   "git": {
     "inline_blame": {
       "enabled": false
@@ -37,5 +38,27 @@
   },
   "terminal": {
     "dock": "right"
+  },
+  "languages": {
+    "Ruby": {
+      "format_on_save": "on",
+      "language_servers": ["!ruby-lsp", "solargraph"],
+      "formatter": {
+        "external": {
+          "command": "bundle",
+          "arguments": [
+            "exec",
+            "rubocop",
+            "--server",
+            "--fail-level",
+            "error",
+            "--autocorrect",
+            "--stdin",
+            "corrected.rb",
+            "--stderr"
+          ]
+        }
+      }
+    }
   }
 }
