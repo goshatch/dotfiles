@@ -9,9 +9,15 @@
   "The base font size from which all others are calculated")
 
 (setq doom-font
-      (font-spec :family "PragmataPro Mono" :size gt/base-font-size :weight 'normal :spacing 100))
+      (font-spec :family "PragmataPro Mono"
+                 :size gt/base-font-size
+                 :weight 'normal
+                 :spacing 100))
 (setq gt/ru-font
-      (font-spec :family "Iosevka" :size gt/base-font-size :weight 'normal :spacing 100))
+      (font-spec :family "Iosevka"
+                 :size gt/base-font-size
+                 :weight 'normal
+                 :spacing 100))
 (setq doom-variable-pitch-font
       (font-spec :family "PT Serif" :weight 'regular :height 160 :width 'normal))
 
