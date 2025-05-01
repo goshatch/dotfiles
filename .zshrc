@@ -134,3 +134,5 @@ fi
 # Created by `pipx` on 2024-10-30 15:28:33
 export PATH="$PATH:/Users/gosha/.local/bin"
 eval "$(mise activate zsh)"
+
+[ -f "/Users/gosha/.ghcup/env" ] && . "/Users/gosha/.ghcup/env" # ghcup-env
