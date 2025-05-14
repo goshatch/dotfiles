@@ -61,6 +61,8 @@
         (fg-mode-line-active fg-main))
       doom-theme 'modus-operandi-tinted)
 
+(use-package! colourless-themes)
+
 (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
@@ -199,9 +201,9 @@
  :config
  (add-hook 'doom-after-init-hook #'global-mise-mode))
 
-(use-package! gptel
-  :config
+(after! gptel
   (setq
+   gptel-display-buffer-action t
    gptel-default-mode 'org-mode
    gptel-model 'claude-3-7-sonnet-20250219
    gptel-backend (gptel-make-anthropic "Claude"
@@ -218,34 +220,59 @@
     :stream t
     :models '(deepseek-r1:latest))
   (add-to-list 'gptel-directives
-               '(clojure-dev . "you're a senior clojure/clojurescript dev with strong fp discipline. respond in PURE code blocks except: (1) when identifying errors (add terse explanations), (2) when clarification is needed (ask briefly), or (3) when suggesting changes (provide git-style diffs). prioritize idiomatic clojure: immutable data, pure functions, thread-last macros where appropriate. flag any non-obvious performance implications or side effects. favor core functions over 3rd-party libs when reasonable."))
-  :bind
-  ("C-c g g" . gptel)
-  ("C-c g a" . gptel-add)
-  ("C-c g f" . gptel-add-file)
-  ("C-c g m" . gptel-menu)
-  ("C-c g s" . gptel-send)
-  ("C-c g o t" . gptel-org-set-topic)
-  ("C-c g o p" . gptel-org-set-properties))
+               '(clojure-dev . "you're a senior clojure/clojurescript dev with strong fp discipline. respond in PURE code blocks except: (1) when identifying errors (add terse explanations), (2) when clarification is needed (ask briefly), or (3) when suggesting changes (provide git-style diffs). prioritize idiomatic clojure: immutable data, pure functions, thread-last macros where appropriate. flag any non-obvious performance implications or side effects. favor core functions over 3rd-party libs when reasonable.")))
+  ;; :bind
+  ;; ("C-c g g" . gptel)
+  ;; ("C-c g a" . gptel-add)
+  ;; ("C-c g f" . gptel-add-file)
+  ;; ("C-c g m" . gptel-menu)
+  ;; ("C-c g s" . gptel-send)
+  ;; ("C-c g o t" . gptel-org-set-topic)
+  ;; ("C-c g o p" . gptel-org-set-properties))
 
 (after! lsp-mode
-  ; FIXME: Ruby LSP is a mess, figure this out for work + personal projects
-  ;; (setq lsp-solargraph-use-bundler nil)
-  ;; (setq lsp-solargraph-multi-root nil)
-  ;; (setq lsp-sorbet-as-add-on t)
-  ;; (setq lsp-sorbet-use-bundler t)
-  ; Use HTML lsp server for .html.erb files
+  (require 'lsp-sorbet)
+  (add-to-list 'lsp-disabled-clients 'sorbet-ls)
+
+  (defun gt/project-has-sorbet-p ()
+    "Does this project use Sorbet?"
+    (or (locate-dominating-file default-directory "sorbet")
+        (when-let* ((root (locate-dominating-file default-directory "Gemfile.lock"))
+                    (gemfile-lock (expand-file-name "Gemfile.lock" root)))
+          (with-temp-buffer
+            (insert-file-contents gemfile-lock)
+            (search-forward-regexp "^ *sorbet \\|^ *sorbet-static " nil t)))))
+
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection
+                     (lambda ()
+                       (when (gt/project-has-sorbet-p)
+                         (if (file-exists-p "Gemfile")
+                             '("bundle" "exec" "srb" "tc" "--lsp")
+                           '("srb" "tc" "--lsp")))))
+    :activation-fn (lambda (filename _mode)
+                     (and (eq major-mode 'ruby-mode) (gt/project-has-sorbet-p)))
+    :priority -1
+    :add-on? t
+    :server-id 'gt/sorbet-ls))
+
+  (setq lsp-rubocop-use-bundler t
+        lsp-sorbet-use-bundler t
+        lsp-sorbet-as-add-on t)
+                                        ; Use HTML lsp server for .html.erb files
   (add-to-list 'lsp-language-id-configuration '("\\.html\\.erb$" . "html")))
+
+(add-hook 'ruby-mode-hook
+          (lambda ()
+            (setq-local lsp-enabled-clients '(ruby-lsp-ls gt/sorbet-ls))
+            (lsp)))
 
 (defun gt/setup-lsp-ui-peek ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
 (add-hook 'lsp-ui-mode-hook #'gt/setup-lsp-ui-peek)
-
-(use-package! treemacs
-  :config
-  (setq treemacs-follow-mode t))
 
 (use-package! apheleia
   :ensure apheleia
@@ -254,7 +281,8 @@
   (setf (alist-get 'clojure-mode apheleia-mode-alist) 'standard-clojure)
   (setf (alist-get 'clojure-ts-mode apheleia-mode-alist) 'standard-clojure)
   (setf (alist-get 'clojurec-mode apheleia-mode-alist) 'standard-clojure)
-  (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure))
+  (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)
+  (apheleia-global-mode +1))
 
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
 

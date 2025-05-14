@@ -46,7 +46,7 @@
        ophints             ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
        ;;tabs              ; a tab bar for Emacs
-       (treemacs +lsp)     ; a project drawer, like neotree but cooler
+       ;;(treemacs +lsp)   ; a project drawer, like neotree but cooler
        unicode             ; extended unicode support for various languages
        (vc-gutter +pretty) ; vcs diff in the fringe
        vi-tilde-fringe     ; fringe tildes to mark beyond EOB
@@ -59,7 +59,9 @@
        (evil +everywhere)  ; come to the dark side, we have cookies
        file-templates      ; auto-snippets for empty files
        fold                ; (nigh) universal code folding
-       (format +onsave)    ; automated prettiness
+       (format             ; automated prettiness
+        +onsave
+        +lsp)
        ;;god               ; run Emacs commands without modifier keys
        ;;lispy             ; vim for lisp, for people who don't like vim
        multiple-cursors    ; editing in many places at once
@@ -101,6 +103,7 @@
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        lookup              ; navigate your code and its documentation
+       llm                 ; when I said you needed friends, I didn't mean...
        (lsp +peek)         ; M-x vscode
        (magit +forge)      ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs

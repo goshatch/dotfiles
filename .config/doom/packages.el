@@ -52,7 +52,9 @@
 ;; +--------+
 ;; | THEMES |
 ;; +--------+
-;; (package! modus-themes)
+(package! colourless-themes
+  :recipe (:host sourcehut
+           :repo "peregrinator/colourless-themes"))
 
 ;; +-------------+
 ;; | PROGRAMMING |
@@ -90,7 +92,7 @@
 (package! mise)
 ;;
 ;; Interacting with LLMs from Emacs
-(package! gptel)
+;; (package! gptel)
 ;;
 ;; Project TODOs in Magit
 (package! magit-todos)
