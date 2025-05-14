@@ -1,0 +1,12 @@
+theme = "solarized_light"
+
+[editor]
+cursorline = true
+bufferline = "multiple"
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name"]
+right = ["file-type", "diagnostics", "position", "position-percentage", "file-encoding"]
+
+[keys.insert]
+"C-c" = "normal_mode"

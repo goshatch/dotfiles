@@ -25,7 +25,7 @@ alias cops="git diff --cached --name-only --diff-filter=ACM | grep '\.rb$' | xar
 alias copsa="git diff --cached --name-only --diff-filter=ACM | grep '\.rb$' | xargs bundle exec rubocop -A"
 alias git-tree="git ls-files | tree --fromfile"
 
-export EDITOR=nvim
+export EDITOR=hx
 
 conf() {
     git --git-dir=$HOME/repos/dotfiles/ --work-tree=$HOME "$@"
@@ -43,6 +43,7 @@ export TEX_PATH="/Library/TeX/texbin"
 export CPATH="/opt/homebrew/include:$CPATH"
 export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
 export XDG_CONFIG_HOME="$HOME/.config"
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 
 export PATH="./bin:$HOME/.bin:\
 .git/safe/../../bin:\

@@ -1,0 +1,9 @@
+[[language]]
+name = "clojure"
+auto-format = true
+formatter = { command = "cljstyle", args = ["pipe"] }
+roots = ["deps.edn", "project.clj"]
+
+
+[language-server.clojure-lsp]
+command = "clojure-lsp"
