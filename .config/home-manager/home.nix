@@ -44,6 +44,19 @@
         export XDG_CONFIG_HOME="$HOME/.config"
         export JAVA_HOME="$(${pkgs.coreutils}/bin/env /usr/libexec/java_home -v 21)"
         export PATH="$HOME/.qlot/bin:$HOME/.config/emacs/bin:$PATH"
+
+        export PATH="./bin:$HOME/.bin:\
+        .git/safe/../../bin:\
+        $HOME/.cargo/bin:\
+        $GOPATH/bin:\
+        $HOME/.qlot/bin:\
+        $HOME/.config/emacs/bin:\
+        $HOME/.yarn/bin:\
+        $HOME/.config/yarn/global/node_modules/.bin:\
+        /opt/homebrew/bin:\
+        $PLAYDATE_SDK_PATH/bin:\
+        $TEX_PATH:\
+        $PATH"
       '';
 
       initContent = ''
