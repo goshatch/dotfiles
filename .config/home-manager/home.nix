@@ -72,6 +72,9 @@
 
         # work stuff
         [ -f "$HOME/.indeed-kube-profile" ] && source "$HOME/.indeed-kube-profile"
+
+        # ghcup
+        [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
       '';
     };
     
@@ -102,6 +105,7 @@
         };
         settings = {
           experimental = true;
+          idiomatic_version_file_enable_tools = ["ruby"];
         };
       };
       enableZshIntegration = true;
@@ -119,10 +123,10 @@
     rubocop
     gh
     bun
-    haskell.compiler.ghc96
-    haskellPackages.cabal-install
-    haskellPackages.hoogle
-    haskell-language-server
-    stack
+    # haskell.compiler.ghc98
+    # haskell-language-server
+    # haskellPackages.cabal-install
+    # haskellPackages.hoogle
+    # stack
   ];
 }

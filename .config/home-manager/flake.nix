@@ -8,7 +8,7 @@
   };
 
   outputs = { nixpkgs, home-manager, ... }: {
-    homeConfigurations.gosha = home-manager.lib.homeManagerConfiguration {
+    homeConfigurations.strogino = home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs { system = "aarch64-darwin"; };
       modules = [
         ./home.nix
