@@ -3,6 +3,34 @@ theme = "solarized_light"
 [editor]
 cursorline = true
 bufferline = "multiple"
+end-of-line-diagnostics = "hint"
+
+[editor.auto-save]
+focus-lost = true
+
+[editor.file-picker]
+hidden = false
+
+[editor.inline-diagnostics]
+cursor-line = "warning"
+other-lines = "warning"
+
+[editor.lsp]
+display-messages = true
+display-progress-messages = true
+display-inlay-hints = true
+
+[editor.cursor-shape]
+insert = "bar"
+
+[editor.indent-guides]
+render = true
+character = "▏"
+
+[editor.statusline.mode]
+normal = "normal"
+insert = "insert"
+select = "select"
 
 [editor.statusline]
 left = ["mode", "spinner", "file-name"]
@@ -10,3 +38,11 @@ right = ["file-type", "diagnostics", "position", "position-percentage", "file-en
 
 [keys.insert]
 "C-c" = "normal_mode"
+"C-g" = "normal_mode"
+"j" = { j = "normal_mode" }
+
+[keys.normal."["]
+b = ":buffer-previous"
+
+[keys.normal."]"]
+b = ":buffer-next"

@@ -3,7 +3,19 @@ name = "clojure"
 auto-format = true
 formatter = { command = "cljstyle", args = ["pipe"] }
 roots = ["deps.edn", "project.clj"]
-
-
 [language-server.clojure-lsp]
 command = "clojure-lsp"
+
+[[language]]
+name = "ruby"
+scope = "source.rb"
+injection-regex = "ruby"
+file-types = ["rb", "rake", "ru", "gemspec", "jbuilder"]
+roots = ["Gemfile", ".git"]
+comment-token = "#"
+indent = { tab-width = 2, unit = "  " }
+
+[[language]]
+name = "haskell"
+scope = "source.hs"
+auto-format = true
