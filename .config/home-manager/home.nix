@@ -70,9 +70,6 @@
           uxnemu -2x "$HOME/roms/$1.rom" "$@"
         }
 
-        # work stuff
-        [ -f "$HOME/.indeed-kube-profile" ] && source "$HOME/.indeed-kube-profile"
-
         # ghcup
         [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
       '';
