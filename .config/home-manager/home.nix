@@ -120,6 +120,7 @@
     rubocop
     gh
     bun
+    typescript-language-server
     # haskell.compiler.ghc98
     # haskell-language-server
     # haskellPackages.cabal-install
