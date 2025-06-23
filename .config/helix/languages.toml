@@ -19,3 +19,4 @@ indent = { tab-width = 2, unit = "  " }
 name = "haskell"
 scope = "source.hs"
 auto-format = true
+
