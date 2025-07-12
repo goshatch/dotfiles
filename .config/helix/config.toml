@@ -1,4 +1,4 @@
-theme = "modus_vivendi"
+theme = "solarized_light"
 
 [editor]
 cursorline = true
