@@ -3,7 +3,96 @@
 {
   home.stateVersion = "23.11";
 
+  xdg = {
+    enable = true;
+    configHome = "${config.home.homeDirectory}/.config";
+    dataHome = "${config.home.homeDirectory}/.local/share";
+    cacheHome = "${config.home.homeDirectory}/.cache";
+    stateHome = "${config.home.homeDirectory}/.local/state";
+  };
+
   programs = {
+    nushell = {
+      enable = true;
+     
+      settings = {
+        show_banner = false;
+      };
+
+      shellAliases = {
+        ll = "ls -l";
+        la = "ls -la";
+        vim = "nvim";
+        g = "git";
+        be = "bundle exec";
+        cat = "bat";
+        more = "bat";
+        gg = "lazygit";
+        git-tree = "git ls-files | tree --fromfile";
+      };
+
+      environmentVariables = {
+        EDITOR = "hx";
+        BAT_THEME = "ansi";
+        XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
+        XDG_DATA_HOME = "${config.home.homeDirectory}/.local/share";
+        XDG_CACHE_HOME = "${config.home.homeDirectory}/.cache";
+        XDG_STATE_HOME = "${config.home.homeDirectory}/.local/state";
+      };
+
+      extraEnv = ''
+        $env.GOPATH = $"($env.HOME)/repos/go"
+        $env.PLAYDATE_SDK_PATH = $"($env.HOME)/Developer/PlaydateSDK"
+        $env.TEX_PATH = "/Library/TeX/texbin"
+
+        $env.CPATH = if ($env.CPATH? | is-empty) { 
+            "/opt/homebrew/include" 
+        } else { 
+            $"/opt/homebrew/include:($env.CPATH)" 
+        }        
+        $env.LIBRARY_PATH = if ($env.LIBRARY_PATH? | is-empty) { 
+            "/opt/homebrew/lib" 
+        } else { 
+            $"/opt/homebrew/lib:($env.LIBRARY_PATH)" 
+        }
+        
+        $env.JAVA_HOME = (do { /usr/libexec/java_home -v 21 } | complete | get stdout | str trim)
+        
+        $env.PATH = ($env.PATH | split row (char esep) | prepend [
+          "./bin"
+          ($env.HOME | path join ".bin")
+          ".git/safe/../../bin"
+          ($env.HOME | path join ".nix-profile/bin")
+          "/nix/var/nix/profiles/default/bin"
+          ($env.HOME | path join ".cargo/bin")
+          ($env.HOME | path join "repos/go/bin")
+          ($env.HOME | path join ".qlot/bin")
+          ($env.HOME | path join ".config/emacs/bin")
+          ($env.HOME | path join ".claude/local")
+          "/opt/homebrew/bin"
+          ($env.HOME | path join "Developer/PlaydateSDK/bin")
+          "/Library/TeX/texbin"
+          ($env.HOME | path join ".ghcup/bin")
+          ($env.HOME | path join ".cabal/bin")
+        ] | where ($it | path exists))
+      '';
+
+      extraConfig = ''
+        use std/config light-theme
+        $env.config.color_config = (light-theme)
+
+        # dotfiles git wrapper
+        def conf [...args] {
+          git $"--git-dir=($env.HOME)/repos/dotfiles" $"--work-tree=($env.HOME)" ...$args
+        }
+
+        # uxn wrapper  
+        def uxn [rom: string, ...args] {
+          uxnemu -2x $"($env.HOME)/roms/($rom).rom" ...$args
+        }
+      '';
+    };
+
     zsh = {
       enable = true;
       enableCompletion = true;
@@ -43,7 +132,6 @@
         export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
         export XDG_CONFIG_HOME="$HOME/.config"
         export JAVA_HOME="$(${pkgs.coreutils}/bin/env /usr/libexec/java_home -v 21)"
-        export PATH="$HOME/.qlot/bin:$HOME/.config/emacs/bin:$PATH"
 
         export PATH="./bin:$HOME/.bin:\
         .git/safe/../../bin:\
@@ -51,8 +139,7 @@
         $GOPATH/bin:\
         $HOME/.qlot/bin:\
         $HOME/.config/emacs/bin:\
-        $HOME/.yarn/bin:\
-        $HOME/.config/yarn/global/node_modules/.bin:\
+        $HOME/.claude/local: \
         /opt/homebrew/bin:\
         $PLAYDATE_SDK_PATH/bin:\
         $TEX_PATH:\
@@ -78,11 +165,13 @@
     direnv = {
       enable = true;
       enableZshIntegration = true;
+      enableNushellIntegration = true;
       nix-direnv.enable = true;
     };
     
     starship = {
       enable = true;
+      enableNushellIntegration = true;
       settings = {
         add_newline = false;
       };
@@ -100,12 +189,13 @@
           ruby = "latest";
           node = "lts";
         };
-        settings = {
-          experimental = true;
-          idiomatic_version_file_enable_tools = ["ruby"];
-        };
+      };
+      settings = {
+        experimental = true;
+        idiomatic_version_file_enable_tools = ["ruby"];
       };
       enableZshIntegration = true;
+      enableNushellIntegration = true;
     };
   };
 
@@ -120,6 +210,7 @@
     rubocop
     gh
     bun
+    pnpm
     typescript-language-server
     # haskell.compiler.ghc98
     # haskell-language-server
