@@ -9,7 +9,7 @@
 
   outputs = { nixpkgs, home-manager, ... }: {
     homeConfigurations.strogino = home-manager.lib.homeManagerConfiguration {
-      pkgs = import nixpkgs { system = "aarch64-darwin"; };
+      pkgs = nixpkgs.legacyPackages.aarch64-darwin;
       modules = [
         ./home.nix
         {

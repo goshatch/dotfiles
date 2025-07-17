@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.stateVersion = "23.11";
@@ -172,9 +172,15 @@
     starship = {
       enable = true;
       enableNushellIntegration = true;
-      settings = {
-        add_newline = false;
-      };
+      settings = lib.mkMerge [
+          (builtins.fromTOML (builtins.readFile "${pkgs.starship}/share/starship/presets/nerd-font-symbols.toml"))
+          {
+            add_newline = false;
+            bun = {
+              symbol = lib.mkForce "󰬉 ";
+            };
+          }
+        ];
     };
     
     fzf = {
@@ -212,6 +218,7 @@
     bun
     pnpm
     typescript-language-server
+    nix-direnv
     # haskell.compiler.ghc98
     # haskell-language-server
     # haskellPackages.cabal-install
