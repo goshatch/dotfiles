@@ -203,6 +203,29 @@
       enableZshIntegration = true;
       enableNushellIntegration = true;
     };
+
+    tmux = {
+      enable = true;
+      baseIndex = 1;
+      escapeTime = 0;
+      historyLimit = 50000;
+      mouse = true;
+      prefix = "C-a";
+      shell = "${pkgs.nushell}/bin/nu";
+      extraConfig = ''
+        set -g pane-base-index 1
+        set -g renumber-windows on
+        bind | split-window -h
+        bind - split-window -v
+        unbind '"'
+        unbind %
+        bind h select-pane -L
+        bind j select-pane -D
+        bind k select-pane -U
+        bind l select-pane -R
+        bind r source-file ~/.config/tmux/tmux.conf \; display "reloaded"
+      '';
+    };
   };
 
   home.packages = with pkgs; [
