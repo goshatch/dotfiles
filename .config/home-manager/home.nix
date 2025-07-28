@@ -12,87 +12,6 @@
   };
 
   programs = {
-    nushell = {
-      enable = true;
-     
-      settings = {
-        show_banner = false;
-      };
-
-      shellAliases = {
-        ll = "ls -l";
-        la = "ls -la";
-        vim = "nvim";
-        g = "git";
-        be = "bundle exec";
-        cat = "bat";
-        more = "bat";
-        gg = "lazygit";
-        git-tree = "git ls-files | tree --fromfile";
-      };
-
-      environmentVariables = {
-        EDITOR = "hx";
-        BAT_THEME = "ansi";
-        XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
-        XDG_DATA_HOME = "${config.home.homeDirectory}/.local/share";
-        XDG_CACHE_HOME = "${config.home.homeDirectory}/.cache";
-        XDG_STATE_HOME = "${config.home.homeDirectory}/.local/state";
-      };
-
-      extraEnv = ''
-        $env.GOPATH = $"($env.HOME)/repos/go"
-        $env.PLAYDATE_SDK_PATH = $"($env.HOME)/Developer/PlaydateSDK"
-        $env.TEX_PATH = "/Library/TeX/texbin"
-
-        $env.CPATH = if ($env.CPATH? | is-empty) { 
-            "/opt/homebrew/include" 
-        } else { 
-            $"/opt/homebrew/include:($env.CPATH)" 
-        }        
-        $env.LIBRARY_PATH = if ($env.LIBRARY_PATH? | is-empty) { 
-            "/opt/homebrew/lib" 
-        } else { 
-            $"/opt/homebrew/lib:($env.LIBRARY_PATH)" 
-        }
-        
-        $env.JAVA_HOME = (do { /usr/libexec/java_home -v 21 } | complete | get stdout | str trim)
-        
-        $env.PATH = ($env.PATH | split row (char esep) | prepend [
-          "./bin"
-          ($env.HOME | path join ".bin")
-          ".git/safe/../../bin"
-          ($env.HOME | path join ".nix-profile/bin")
-          "/nix/var/nix/profiles/default/bin"
-          ($env.HOME | path join ".cargo/bin")
-          ($env.HOME | path join "repos/go/bin")
-          ($env.HOME | path join ".qlot/bin")
-          ($env.HOME | path join ".config/emacs/bin")
-          ($env.HOME | path join ".claude/local")
-          "/opt/homebrew/bin"
-          ($env.HOME | path join "Developer/PlaydateSDK/bin")
-          "/Library/TeX/texbin"
-          ($env.HOME | path join ".ghcup/bin")
-          ($env.HOME | path join ".cabal/bin")
-        ] | where ($it | path exists))
-      '';
-
-      extraConfig = ''
-        use std/config light-theme
-        $env.config.color_config = (light-theme)
-
-        # dotfiles git wrapper
-        def conf [...args] {
-          git $"--git-dir=($env.HOME)/repos/dotfiles" $"--work-tree=($env.HOME)" ...$args
-        }
-
-        # uxn wrapper  
-        def uxn [rom: string, ...args] {
-          uxnemu -2x $"($env.HOME)/roms/($rom).rom" ...$args
-        }
-      '';
-    };
-
     zsh = {
       enable = true;
       enableCompletion = true;
@@ -139,7 +58,8 @@
         $GOPATH/bin:\
         $HOME/.qlot/bin:\
         $HOME/.config/emacs/bin:\
-        $HOME/.claude/local: \
+        $HOME/.claude/local:\
+        $HOME/.nix-profile/bin:\
         /opt/homebrew/bin:\
         $PLAYDATE_SDK_PATH/bin:\
         $TEX_PATH:\
@@ -147,6 +67,9 @@
       '';
 
       initContent = ''
+        # homebrew
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        
         # dotfiles git wrapper
         conf() {
           git --git-dir=$HOME/repos/dotfiles/ --work-tree=$HOME "$@"
@@ -159,28 +82,27 @@
 
         # ghcup
         [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
+
+        # opam
+        [[ ! -r "/Users/gosha/.opam/opam-init/init.zsh" ]] || source "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null
       '';
     };
     
     direnv = {
       enable = true;
       enableZshIntegration = true;
-      enableNushellIntegration = true;
       nix-direnv.enable = true;
     };
     
     starship = {
       enable = true;
-      enableNushellIntegration = true;
+      enableZshIntegration = true;
       settings = lib.mkMerge [
-          (builtins.fromTOML (builtins.readFile "${pkgs.starship}/share/starship/presets/nerd-font-symbols.toml"))
-          {
-            add_newline = false;
-            bun = {
-              symbol = lib.mkForce "󰬉 ";
-            };
-          }
-        ];
+        (builtins.fromTOML (builtins.readFile "${pkgs.starship}/share/starship/presets/nerd-font-symbols.toml"))
+        {
+          bun.symbol = lib.mkForce "Bun ";
+        }
+      ];
     };
     
     fzf = {
@@ -195,13 +117,12 @@
           ruby = "latest";
           node = "lts";
         };
-      };
-      settings = {
-        experimental = true;
-        idiomatic_version_file_enable_tools = ["ruby"];
+        settings = {
+          experimental = true;
+          idiomatic_version_file_enable_tools = ["ruby"];
+        };
       };
       enableZshIntegration = true;
-      enableNushellIntegration = true;
     };
 
     tmux = {
@@ -211,7 +132,6 @@
       historyLimit = 50000;
       mouse = true;
       prefix = "C-a";
-      shell = "${pkgs.nushell}/bin/nu";
       extraConfig = ''
         set -g pane-base-index 1
         set -g renumber-windows on
@@ -242,6 +162,7 @@
     pnpm
     typescript-language-server
     nix-direnv
+    pass
     # haskell.compiler.ghc98
     # haskell-language-server
     # haskellPackages.cabal-install
