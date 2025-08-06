@@ -148,7 +148,14 @@
     };
   };
 
+  home.activation.configureDotfilesRepo = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    if [ ! "$(${pkgs.git}/bin/git --git-dir=$HOME/repos/dotfiles/ --work-tree=$HOME config --local --get status.showUntrackedFiles 2>/dev/null)" = "no" ]; then
+      $DRY_RUN_CMD ${pkgs.git}/bin/git --git-dir=$HOME/repos/dotfiles/ --work-tree=$HOME config --local status.showUntrackedFiles no
+    fi
+  '';
+
   home.packages = with pkgs; [
+    git
     helix
     eza
     bat
