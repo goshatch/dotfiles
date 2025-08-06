@@ -62,6 +62,12 @@
 
 ;; Press % to jump between matching tags
 (package! evil-matchit)
+
+;; Support for Biome
+(package! lsp-biome
+  :recipe (:host github
+           :repo "cxa/lsp-biome"))
+
 ;;
 ;; Client for Debug Adapter Protocol
 ;; https://github.com/emacs-lsp/dap-mode
@@ -103,13 +109,14 @@
 
 ;; For setting up my custom olivetti mode
 ;; (package! olivetti)
-(package! typo)
+(package! typo :recipe (:host github
+                        :repo "jorgenschaefer/typoel"))
 ;;
 ;; Russian QWERTY layout
-(package!
-  quail-russian-qwerty
-  :recipe (:local-repo "/Users/gosha/repos/quail-russian-qwerty"
-           :build (:not compile)))
+;; (package!
+;;   quail-russian-qwerty
+;;   :recipe (:local-repo "/Users/gosha/repos/quail-russian-qwerty"
+;;            :build (:not compile)))
 ;;
 ;; GUI for org-roam
 (package! websocket) ;; required by org-roam-ui

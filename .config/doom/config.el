@@ -220,7 +220,37 @@
     :stream t
     :models '(deepseek-r1:latest))
   (add-to-list 'gptel-directives
-               '(clojure-dev . "you're a senior clojure/clojurescript dev with strong fp discipline. respond in PURE code blocks except: (1) when identifying errors (add terse explanations), (2) when clarification is needed (ask briefly), or (3) when suggesting changes (provide git-style diffs). prioritize idiomatic clojure: immutable data, pure functions, thread-last macros where appropriate. flag any non-obvious performance implications or side effects. favor core functions over 3rd-party libs when reasonable.")))
+               '(clojure-dev . "you're a senior clojure/clojurescript dev with strong fp discipline. respond in PURE code blocks except: (1) when identifying errors (add terse explanations), (2) when clarification is needed (ask briefly), or (3) when suggesting changes (provide git-style diffs). prioritize idiomatic clojure: immutable data, pure functions, thread-last macros where appropriate. flag any non-obvious performance implications or side effects. favor core functions over 3rd-party libs when reasonable."))
+  (add-to-list 'gptel-directives
+               '(haskell-dev . "You are an expert Haskell programming assistant with deep knowledge of functional programming paradigms, type theory, monads, and Haskell's standard libraries.
+
+Your capabilities:
+1. Generate syntactically correct and idiomatic Haskell code based on natural language descriptions
+2. Debug existing Haskell code by identifying compiler errors, runtime issues, and logical flaws
+3. Refactor code to improve performance, readability, and maintainability
+4. Explain complex Haskell concepts with clear examples
+5. Recommend appropriate libraries and language extensions for specific tasks
+
+When analyzing or generating Haskell code, you should:
+- Prioritize pure functional approaches with immutable data
+- Leverage the type system to catch errors at compile time
+- Use appropriate abstractions (functors, applicatives, monads) without overcomplicating
+- Consider performance implications, especially regarding laziness and space leaks
+- Follow Haskell community style guidelines
+
+When I share code that has errors or issues, you should:
+1. Identify specific problems, referencing GHC error messages if provided
+2. Explain the underlying issues in clear, educational terms
+3. Provide corrected versions with explanations of your changes
+4. Suggest alternative approaches when appropriate
+
+For complex tasks, break down your solution process into:
+1. Understanding the problem requirements
+2. Designing appropriate data structures and type signatures
+3. Implementing core functionality with clear, documented code
+4. Testing considerations, including edge cases and property-based tests
+
+Always provide explanations alongside your code to help me learn and understand the functional programming concepts involved.")))
   ;; :bind
   ;; ("C-c g g" . gptel)
   ;; ("C-c g a" . gptel-add)
@@ -283,6 +313,30 @@
   (setf (alist-get 'clojurec-mode apheleia-mode-alist) 'standard-clojure)
   (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)
   (apheleia-global-mode +1))
+
+(use-package! lsp-biome
+  :after lsp-mode)
+
+;; (after! lsp-mode
+;;   ;; Function to check if ESLint config exists in project
+;;   (defun gt/eslint-config-exists-p ()
+;;     "Check if ESLint config exists in the current project."
+;;     (or (locate-dominating-file default-directory ".eslintrc")
+;;         (locate-dominating-file default-directory ".eslintrc.js")
+;;         (locate-dominating-file default-directory ".eslintrc.json")
+;;         (locate-dominating-file default-directory ".eslintrc.yml")
+;;         (locate-dominating-file default-directory ".eslintrc.yaml")
+;;         (locate-dominating-file default-directory "eslint.config.js")
+;;         (locate-dominating-file default-directory "eslint.config.mjs")
+;;         (locate-dominating-file default-directory "eslint.config.cjs")))
+
+;;   ;; Hook to conditionally enable/disable ESLint
+;;   (add-hook 'lsp-after-initialize-hook
+;;             (lambda ()
+;;               (when (or (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode 'tsx-ts-mode)
+;;                         (and (derived-mode-p 'web-mode)
+;;                              (member (file-name-extension buffer-file-name) '("js" "jsx" "ts" "tsx"))))
+;;                 (setq-local lsp-eslint-enable (gt/eslint-config-exists-p))))))
 
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
 
@@ -382,37 +436,64 @@
          (days (- days-since (* weeks 7))))
     (format "Week %s, Day %s" weeks days)))
 
-(defun gt/child-age-in-weeks (birth-date)
-  "Calculates how many weeks and days it has been since BIRTH-DATE, and returns
-a formatted string with the number of days, or without the number of days if
-the number of days is zero."
-  (let* ((days-since (- (org-time-stamp-to-now birth-date)))
-         (weeks (/ days-since 7))
-         (days (- days-since (* weeks 7)))
-         (format-string (if (eq days 0) "%s weeks" "%s weeks and %s days")))
-    (format format-string weeks days)))
+(require 'cl-lib)
+(require 'calendar)  ;; for calendar-last-day-of-month
 
-(defun gt/child-age-in-months (birth-date)
-  "Checks whether it has been exactly some months since BIRTH-DATE and prints a
-corresponding output string (e.g. '4 months'), and otherwise passes
-BIRTH-DATE to `gt/child-age-in-weeks'."
-  (let* ((parsed-birth-date (parse-time-string birth-date))
-         (birth-year (nth 5 parsed-birth-date))
-         (birth-month (nth 4 parsed-birth-date))
-         (birth-day (nth 3 parsed-birth-date))
-         (parsed-current-date (decode-time (current-time)))
-         (current-year (nth 5 parsed-current-date))
-         (current-month (nth 4 parsed-current-date))
-         (current-day (nth 3 parsed-current-date))
-         (months-diff (+ (* (- current-year birth-year) 12)
-                         (- current-month birth-month))))
-    (if (eq current-day birth-day)
-        (format "%d months" months-diff)
-      (gt/child-age-in-weeks birth-date))))
+(defun gt/join-with-oxford (parts)
+  (pcase (length parts)
+    (0 "")
+    (1 (car parts))
+    (2 (format "%s and %s" (nth 0 parts) (nth 1 parts)))
+    (_ (format "%s, and %s"
+               (string-join (butlast parts) ", ")
+               (car (last parts))))))
 
 (defun gt/child-age (birth-date)
-  "Outputs the age of a child based on BIRTH-DATE."
-  (gt/child-age-in-months birth-date))
+  "age since BIRTH-DATE:
+- <1yr → if <7d → \"D days\", else \"W weeks and D days\"
+- ≥1yr → \"Y years, M months, and D days\""
+  (let* ((b      (parse-time-string birth-date))
+         (by     (nth 5 b)) (bm (nth 4 b)) (bd (nth 3 b))
+         (c      (decode-time (current-time)))
+         (cy     (nth 5 c)) (cm (nth 4 c)) (cd (nth 3 c))
+         (raw    (round (org-time-stamp-to-now birth-date)))
+         (days   (abs raw)))
+    (cl-destructuring-bind (y m d)
+        (let* ((y (- cy by))
+               (m (- cm bm))
+               (d (- cd bd)))
+          (when (< d 0)
+            (let* ((pm   (if (= cm 1) 12 (1- cm)))
+                   (py   (if (= cm 1) (1- cy) cy))
+                   (mdays (car (calendar-last-day-of-month (list py pm)))))
+              (setq d (+ d mdays)
+                    m (1- m))))
+          (when (< m 0)
+            (setq m (+ m 12)
+                  y (1- y)))
+          (list y m d))
+      (if (< y 1)
+          (if (< days 7)
+              (format "%d day%s" days (if (= days 1) "" "s"))
+            (let* ((w     (floor days 7))
+                   (d2    (mod days 7))
+                   (parts (cl-remove-if-not
+                           #'identity
+                           (list
+                            (and (> w 0)
+                                 (format "%d week%s" w
+                                         (if (= w 1) "" "s")))
+                            (and (> d2 0)
+                                 (format "%d day%s" d2
+                                         (if (= d2 1) "" "s")))))))
+              (gt/join-with-oxford parts)))
+        (let ((parts (cl-remove-if-not
+                      #'identity
+                      (list
+                       (and (> y 0) (format "%d year%s"   y (if (= y 1) "" "s")))
+                       (and (> m 0) (format "%d month%s"  m (if (= m 1) "" "s")))
+                       (and (> d 0) (format "%d day%s"    d (if (= d 1) "" "s")))))))
+          (gt/join-with-oxford parts))))))
 
 (defun gt/org-roam-on-this-day ()
   "Return a list of links to org-roam daily notes from this day in previous
@@ -524,8 +605,10 @@ Returns an alist of (location . count) sorted by count in descending order."
 ;; NOTE: These are not the same
 (setq doom-modeline-enable-word-count t)
 
-(typo-global-mode 1)
-(add-hook 'text-mode-hook 'typo-mode)
+(use-package! typo
+  :config
+  (typo-global-mode 1)
+  (add-hook 'text-mode-hook 'typo-mode))
 
 (defun gt/visual-line-range ()
   (save-excursion
@@ -533,7 +616,7 @@ Returns an alist of (location . count) sorted by count in descending order."
      (progn (beginning-of-visual-line) (point))
      (progn (end-of-visual-line) (point)))))
 
-(use-package! quail-russian-qwerty)
+;; (use-package! quail-russian-qwerty)
 
 ;; TODO: Fix this
 ;; (use-package lsp-ltex

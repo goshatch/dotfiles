@@ -144,7 +144,7 @@
        ;;factor
        ;;faust             ; dsp, but you get to keep your soul
        ;;fortran           ; in FORTRAN, GOD is REAL (unless declared INTEGER)
-       ;;fsharp            ; ML stands for Microsoft's Language
+       (fsharp +lsp)       ; ML stands for Microsoft's Language
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
        ;;gdscript          ; the language you waited for
        (go +lsp
@@ -171,8 +171,10 @@
        (lua +lsp)          ; one-based indices? one-based indices
        (markdown +grip)    ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
-       nix                 ; I hereby declare "nix geht mehr!"
-       ;;ocaml             ; an objective camel
+       (nix +tree-sitter
+            +lsp)          ; I hereby declare "nix geht mehr!"
+       (ocaml +lsp         ; an objective camel
+              +tree-sitter)
        (org +crypt
             +dragndrop
             +gnuplot
