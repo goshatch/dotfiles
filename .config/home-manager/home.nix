@@ -171,6 +171,7 @@
     typescript-language-server
     nix-direnv
     pass
+    cmake
     # haskell.compiler.ghc98
     # haskell-language-server
     # haskellPackages.cabal-install
