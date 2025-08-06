@@ -50,7 +50,7 @@
         export CPATH="/opt/homebrew/include:$CPATH"
         export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
         export XDG_CONFIG_HOME="$HOME/.config"
-        export JAVA_HOME="$(${pkgs.coreutils}/bin/env /usr/libexec/java_home -v 21)"
+        export JAVA_HOME="${pkgs.openjdk21}/lib/openjdk"
 
         export PATH="./bin:$HOME/.bin:\
         .git/safe/../../bin:\
@@ -160,6 +160,7 @@
     gh
     bun
     pnpm
+    openjdk21
     typescript-language-server
     nix-direnv
     pass
