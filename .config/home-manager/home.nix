@@ -31,7 +31,6 @@
         dc = "docker compose";
         dcu = "docker compose up -d";
         dcr = "docker compose run";
-        psql = "pgcli";
         lg = "lazygit";
         cop = "bundle exec rubocop";
         copm = "git diff --name-only | grep '\\.rb$' | xargs bundle exec rubocop";
@@ -172,6 +171,7 @@
     nix-direnv
     pass
     cmake
+    ripgrep
     # haskell.compiler.ghc98
     # haskell-language-server
     # haskellPackages.cabal-install
