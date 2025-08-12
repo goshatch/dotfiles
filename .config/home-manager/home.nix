@@ -155,6 +155,7 @@
 
   home.packages = with pkgs; [
     git
+    delta
     helix
     eza
     bat
