@@ -138,9 +138,12 @@ We will use the wonderful [[https://protesilaos.com/modus-themes/][Modus Vivendi
       doom-theme 'modus-operandi-tinted)
 #+end_src
 
-*** Colourless themes
+*** Automatically toggle themes based on OS dark/light theme
+
 #+begin_src emacs-lisp :tangle yes
-(use-package! colourless-themes)
+(after! doom-ui
+  (setq! auto-dark-themes '((modus-vivendi) (modus-operandi-tinted)))
+  (auto-dark-mode))
 #+end_src
 
 *** Set keyboard shortcut to toggle between light/dark Modus themes.

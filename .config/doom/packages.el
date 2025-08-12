@@ -52,9 +52,9 @@
 ;; +--------+
 ;; | THEMES |
 ;; +--------+
-(package! colourless-themes
-  :recipe (:host sourcehut
-           :repo "peregrinator/colourless-themes"))
+
+;; Automatically toggle between light and dark themes depending on OS theme
+(package! auto-dark)
 
 ;; +-------------+
 ;; | PROGRAMMING |

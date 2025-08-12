@@ -61,7 +61,9 @@
         (fg-mode-line-active fg-main))
       doom-theme 'modus-operandi-tinted)
 
-(use-package! colourless-themes)
+(after! doom-ui
+  (setq! auto-dark-themes '((modus-vivendi) (modus-operandi-tinted)))
+  (auto-dark-mode))
 
 (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
 (define-key doom-leader-map (kbd "t m")
