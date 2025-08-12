@@ -1,4 +1,4 @@
-theme = "solarized_light"
+theme = "base16_transparent"
 
 [editor]
 cursorline = true
