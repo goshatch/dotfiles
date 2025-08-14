@@ -354,22 +354,19 @@ Always provide explanations alongside your code to help me learn and understand 
 
 (setq org-log-done 'time)
 
-(setq org-agenda-files
-      (list (concat org-directory "work/")
-            (concat org-directory "projects/")))
-
 (defun gt/open-agenda ()
   (interactive)
   (org-agenda nil "a"))
 
 (use-package! org
+  :config
+  (setq org-agenda-files
+        (list (concat org-directory "work/")
+              (concat org-directory "projects/"))
+        org-agenda-start-with-log-mode t
+        org-agenda-start-with-clockreport-mode t)
   :bind
   ("C-c a" . gt/open-agenda))
-
-(add-hook
- 'org-agenda-mode-hook
- (lambda ()
-   (define-key org-agenda-mode-map (kbd "C-c C-l") 'org-agenda-log-mode)))
 
 (defun gt/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."

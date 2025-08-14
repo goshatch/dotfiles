@@ -599,15 +599,7 @@ Log time items are closed
 #+end_src
 
 ** Agenda
-Build the agenda from work task files
-
-#+begin_src emacs-lisp :tangle yes
-(setq org-agenda-files
-      (list (concat org-directory "work/")
-            (concat org-directory "projects/")))
-#+end_src
-
-Global key binding to the default agenda view:
+Build the agenda from work and project files, and add a global key binding to the default agenda view:
 
 #+begin_src emacs-lisp :tangle yes
 (defun gt/open-agenda ()
@@ -615,17 +607,14 @@ Global key binding to the default agenda view:
   (org-agenda nil "a"))
 
 (use-package! org
+  :config
+  (setq org-agenda-files
+        (list (concat org-directory "work/")
+              (concat org-directory "projects/"))
+        org-agenda-start-with-log-mode t
+        org-agenda-start-with-clockreport-mode t)
   :bind
   ("C-c a" . gt/open-agenda))
-#+end_src
-
-Add a hotkey to toggle the log mode in the agenda
-
-#+begin_src emacs-lisp :tangle yes
-(add-hook
- 'org-agenda-mode-hook
- (lambda ()
-   (define-key org-agenda-mode-map (kbd "C-c C-l") 'org-agenda-log-mode)))
 #+end_src
 
 ** Links DWIM
