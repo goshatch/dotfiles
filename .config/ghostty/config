@@ -1,5 +1,5 @@
 font-family = "PragmataPro"
-theme = dark:"Builtin Pastel Dark",light:"flexoki-light"
+theme = dark:"rose-pine",light:"rose-pine-dawn"
 window-colorspace = display-p3
 cursor-style = block
 cursor-style-blink = false
