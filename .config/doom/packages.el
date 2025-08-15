@@ -102,6 +102,13 @@
 ;;
 ;; Project TODOs in Magit
 (package! magit-todos)
+;;
+;; Agentic editing
+(package! eca
+  :recipe (:host github
+           :repo "editor-code-assistant/eca-emacs"
+           :files ("*.el")))
+
 
 ;; +---------+
 ;; | WRITING |
