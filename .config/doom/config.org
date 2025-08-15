@@ -514,6 +514,8 @@ Use ~lsp-ui-peek~ for definitions and references.
 #+end_src
 
 *** Apheleia
+Use [[https://github.com/oakmac/standard-clojure-style-js?tab=readme-ov-file][Standard Clojure Style formatter]] for Clojure code
+
 #+begin_src emacs-lisp :tangle yes
 (use-package! apheleia
   :ensure apheleia
@@ -525,6 +527,18 @@ Use ~lsp-ui-peek~ for definitions and references.
   (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)
   (apheleia-global-mode +1))
 #+end_src
+
+Disable Clojure autoformatting on work machine
+
+#+begin_src emacs-lisp :tangle yes
+(when (string= (system-name) "banqiao.local")
+  (append '(clojure-mode
+            clojurec-mode
+            clojure-ts-mode
+            clojurescript-mode)
+          +format-on-save-disabled-modes))
+#+end_src
+
 
 *** Biome support
 #+begin_src emacs-lisp :tangle yes

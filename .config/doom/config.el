@@ -316,6 +316,13 @@ Always provide explanations alongside your code to help me learn and understand 
   (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)
   (apheleia-global-mode +1))
 
+(when (string= (system-name) "banqiao.local")
+  (append '(clojure-mode
+            clojurec-mode
+            clojure-ts-mode
+            clojurescript-mode)
+          +format-on-save-disabled-modes))
+
 (use-package! lsp-biome
   :after lsp-mode)
 
