@@ -11,10 +11,6 @@
 - [ ] document font fallback chain more clearly
 - [ ] extract `gt/base-font-size` usage to a macro or theme var
 *** Theme
-**** Colourless themes
-- [ ] replace deprecated themes with currently maintained ones
-**** Set keyboard shortcut to toggle between light/dark Modus themes
-- [ ] consider using built-in `modus-themes-toggle` fn if not already
 **** Always use midnight mode when opening a PDF file
 - [ ] move to file-type specific hook, maybe via `+pdf` module
 *** Some small tweaks
@@ -343,6 +339,11 @@ Get secrets from authinfo:
       nil)))
 #+end_src
 
+Is this a work machine?
+#+begin_src emacs-lisp :tangle yes
+(defun gt/work-machine? ()
+    (string= (system-name) "banqiao.local"))
+#+end_src
 * Git
 ** Magit
 Show more recent commits
@@ -531,12 +532,13 @@ Use [[https://github.com/oakmac/standard-clojure-style-js?tab=readme-ov-file][St
 Disable Clojure autoformatting on work machine
 
 #+begin_src emacs-lisp :tangle yes
-(when (string= (system-name) "banqiao.local")
-  (append '(clojure-mode
-            clojurec-mode
-            clojure-ts-mode
-            clojurescript-mode)
-          +format-on-save-disabled-modes))
+(when (gt/work-machine?)
+  (setq +format-on-save-disabled-modes
+        (cl-union '(clojure-mode
+                    clojurec-mode
+                    clojure-ts-mode
+                    clojurescript-mode)
+                  +format-on-save-disabled-modes)))
 #+end_src
 
 
@@ -1032,6 +1034,14 @@ Don’t play sounds on Pomodoro events (notifications are enough)
 
 #+begin_src emacs-lisp :tangle yes
 (setq org-pomodoro-play-sounds nil)
+#+end_src
+
+*** Time format
+For work, we want hours only (not days, weeks, months)
+
+#+begin_src emacs-lisp :tangle yes
+(when (gt/work-machine?)
+  (setq org-duration-format (quote h:mm)))
 #+end_src
 
 ** Tweaks

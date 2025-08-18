@@ -177,6 +177,9 @@
         (funcall (plist-get (car result) :secret))
       nil)))
 
+(defun gt/work-machine? ()
+    (string= (system-name) "banqiao.local"))
+
 (use-package! magit
   :config
   (setq magit-log-section-commit-count 20))
@@ -316,12 +319,13 @@ Always provide explanations alongside your code to help me learn and understand 
   (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)
   (apheleia-global-mode +1))
 
-(when (string= (system-name) "banqiao.local")
-  (append '(clojure-mode
-            clojurec-mode
-            clojure-ts-mode
-            clojurescript-mode)
-          +format-on-save-disabled-modes))
+(when (gt/work-machine?)
+  (setq +format-on-save-disabled-modes
+        (cl-union '(clojure-mode
+                    clojurec-mode
+                    clojure-ts-mode
+                    clojurescript-mode)
+                  +format-on-save-disabled-modes)))
 
 (use-package! lsp-biome
   :after lsp-mode)
@@ -692,6 +696,9 @@ Returns an alist of (location . count) sorted by count in descending order."
 (setq org-pomodoro-keep-killed-pomodoro-time t)
 
 (setq org-pomodoro-play-sounds nil)
+
+(when (gt/work-machine?)
+  (setq org-duration-format (quote h:mm)))
 
 (setq alert-notifier-command (executable-find "terminal-notifier"))
 
