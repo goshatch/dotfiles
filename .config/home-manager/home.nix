@@ -12,6 +12,11 @@
   };
 
   programs = {
+    try = {
+      enable = true;
+      path = "~/repos/tries";
+    };
+
     zsh = {
       enable = true;
       enableCompletion = true;
