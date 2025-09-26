@@ -178,7 +178,7 @@
       nil)))
 
 (defun gt/work-machine? ()
-    (string= (system-name) "banqiao.local"))
+    (string-prefix-p "banqiao" (system-name)))
 
 (use-package! magit
   :config
@@ -312,11 +312,29 @@ Always provide explanations alongside your code to help me learn and understand 
 (use-package! apheleia
   :ensure apheleia
   :config
-  (setf (alist-get 'standard-clojure apheleia-formatters) '("standard-clj" "fix" "-"))
-  (setf (alist-get 'clojure-mode apheleia-mode-alist) 'standard-clojure)
-  (setf (alist-get 'clojure-ts-mode apheleia-mode-alist) 'standard-clojure)
-  (setf (alist-get 'clojurec-mode apheleia-mode-alist) 'standard-clojure)
-  (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)
+  (if (gt/work-machine?)
+      ;; On work machine: remove Clojure modes from Apheleia
+      (progn
+        (setq apheleia-mode-alist 
+              (cl-remove-if (lambda (pair)
+                              (memq (car pair) '(clojure-mode 
+                                                 clojurec-mode 
+                                                 clojurescript-mode
+                                                 clojure-ts-mode
+                                                 clojure-ts-clojurescript-mode
+                                                 clojure-ts-clojurec-mode
+                                                 clojure-ts-clojuredart-mode)))
+                            apheleia-mode-alist)))
+    ;; On personal machines: use standard-clj
+    (progn
+      (setf (alist-get 'standard-clojure apheleia-formatters) '("standard-clj" "fix" "-"))
+      (setf (alist-get 'clojure-mode apheleia-mode-alist) 'standard-clojure)
+      (setf (alist-get 'clojure-ts-mode apheleia-mode-alist) 'standard-clojure)
+      (setf (alist-get 'clojure-ts-clojurescript-mode apheleia-mode-alist) 'standard-clojure)
+      (setf (alist-get 'clojure-ts-clojurec-mode apheleia-mode-alist) 'standard-clojure)
+      (setf (alist-get 'clojure-ts-clojuredart-mode apheleia-mode-alist) 'standard-clojure)
+      (setf (alist-get 'clojurec-mode apheleia-mode-alist) 'standard-clojure)
+      (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)))
   (apheleia-global-mode +1))
 
 (when (gt/work-machine?)
@@ -325,7 +343,27 @@ Always provide explanations alongside your code to help me learn and understand 
                     clojurec-mode
                     clojure-ts-mode
                     clojurescript-mode)
-                  +format-on-save-disabled-modes)))
+                  +format-on-save-disabled-modes))
+
+  ;; Configure Clojure commenting to match project style guide
+  (dolist (mode-hook '(clojure-mode-hook
+                       clojure-ts-mode-hook
+                       clojurescript-mode-hook
+                       clojurec-mode-hook))
+    (add-hook mode-hook
+              (lambda ()
+                ;; Use single semicolon for comments (not double)
+                (setq-local comment-start ";")
+                ;; Don't add extra semicolons when using M-;
+                (setq-local comment-add 0)
+                ;; Override comment-indent-function directly for this buffer
+                (setq-local comment-indent-function
+                            (lambda ()
+                              (if (bolp) 0 (current-indentation))))
+                ;; Set line width to 90 characters (project style guide)
+                (setq-local fill-column 90)
+                ;; Also set whitespace-mode to highlight long lines at 90
+                (setq-local whitespace-line-column 90)))))
 
 (use-package! lsp-biome
   :after lsp-mode)
@@ -699,6 +737,9 @@ Returns an alist of (location . count) sorted by count in descending order."
 
 (when (gt/work-machine?)
   (setq org-duration-format (quote h:mm)))
+
+(when (gt/work-machine?)
+  (setq org-clock-idle-time 15))
 
 (setq alert-notifier-command (executable-find "terminal-notifier"))
 
