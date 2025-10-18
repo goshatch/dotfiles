@@ -142,6 +142,8 @@ readability."
        `(rainbow-delimiters-depth-7-face ((t (:foreground "gray60"))))
        `(rainbow-delimiters-depth-8-face ((t (:foreground "gray60"))))
        `(rainbow-delimiters-depth-9-face ((t (:foreground "gray60"))))
+       ;; Clojure keywords (symbols like :width) use magenta-cooler
+       `(clojure-keyword-face ((t (:foreground ,magenta-cooler))))
        ;; Muted color for #_ discard forms (removed code)
        `(clojure-character-face ((t (:foreground ,fg-dim))))))))
 
@@ -165,7 +167,7 @@ readability."
     (rx-construct fg-main))
   "Minimal syntax highlighting overrides for all Modus themes.")
 
-(setq modus-themes-bold-constructs t
+(setq modus-themes-bold-constructs nil
       modus-themes-common-palette-overrides
       (append '((fringe unspecified)
                 (border-mode-line-inactive unspecified)
