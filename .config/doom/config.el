@@ -44,22 +44,106 @@
 
 (setq-default line-spacing 0.0)
 
+;; Add backgrounds to syntax elements and muted color for #_ discard forms
+(defun gt/modus-themes-custom-faces ()
+  "Add subtle backgrounds to strings, function names, and comments for better
+readability."
+  (modus-themes-with-colors
+    (let ((is-dark (eq (car custom-enabled-themes) 'modus-vivendi)))
+      (custom-set-faces
+       `(font-lock-string-face ((t (:foreground ,string
+                                    :background ,(if is-dark bg-main bg-green-nuanced)))))
+       `(font-lock-function-name-face ((t (:foreground ,fnname
+                                           :background ,(if is-dark bg-main bg-cyan-nuanced)))))
+       `(font-lock-comment-face ((t (:foreground ,comment
+                                     :background ,(if is-dark bg-main bg-yellow-nuanced)))))
+       `(font-lock-doc-face ((t (:foreground ,docstring
+                                 :background ,(if is-dark bg-main bg-green-nuanced)))))
+       `(fill-column-indicator ((t (:foreground ,(if is-dark "#333333" "#dddddd")
+                                    :background ,bg-main))))
+       `(rainbow-delimiters-depth-1-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-2-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-3-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-4-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-5-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-6-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-7-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-8-face ((t (:foreground "gray60"))))
+       `(rainbow-delimiters-depth-9-face ((t (:foreground "gray60"))))
+       ;; Muted color for #_ discard forms (removed code)
+       `(clojure-character-face ((t (:foreground ,fg-dim))))))))
+
+(add-hook 'modus-themes-after-load-theme-hook #'gt/modus-themes-custom-faces)
+
+;; Custom syntax highlighting palette (inspired by Tonsky's blog)
+(defvar gt/modus-syntax-overrides
+  '((comment yellow-cooler)
+    (docstring green-cooler)
+    (string green-cooler)
+    (fnname cyan-cooler)
+    ;; Make numbers the same color as strings
+    (number green-cooler)
+    ;; Disable colors for other syntax elements
+    (keyword fg-main)
+    (builtin fg-main)
+    (constant fg-main)
+    (type fg-main)
+    (variable fg-main)
+    (preprocessor fg-main)
+    (rx-construct fg-main))
+  "Minimal syntax highlighting overrides for all Modus themes.")
+
 (setq modus-themes-bold-constructs t
       modus-themes-common-palette-overrides
-      '((fringe unspecified)
-        (comment yellow-cooler)
-        (border-mode-line-inactive unspecified)
-        (border-mode-line-active unspecified)
-        (fg-line-number-inactive "gray50")
-        (fg-line-number-active fg-main)
-        (bg-line-number-inactive unspecified)
-        (bg-line-number-active unspecified)
-        (bg-paren-match bg-magenta-intense)
-        (underline-paren-match fg-main)
-        (fg-region fg-main)
-        (bg-mode-line-active bg-cyan-subtle)
-        (fg-mode-line-active fg-main))
+      (append '((fringe unspecified)
+                (border-mode-line-inactive unspecified)
+                (border-mode-line-active unspecified)
+                (fg-line-number-inactive "gray50")
+                (fg-line-number-active fg-main)
+                (bg-line-number-inactive unspecified)
+                (bg-line-number-active unspecified)
+                (bg-paren-match bg-magenta-intense)
+                (underline-paren-match fg-main)
+                (fg-region fg-main)
+                (bg-mode-line-active bg-cyan-subtle)
+                (fg-mode-line-active fg-main))
+              gt/modus-syntax-overrides)
       doom-theme 'modus-operandi-tinted)
+
+;; (setq modus-themes-bold-constructs t
+;;       modus-themes-common-palette-overrides
+;;       '((fringe unspecified)
+;;         (comment yellow-cooler)
+;;         (border-mode-line-inactive unspecified)
+;;         (border-mode-line-active unspecified)
+;;         (fg-line-number-inactive "gray50")
+;;         (fg-line-number-active fg-main)
+;;         (bg-line-number-inactive unspecified)
+;;         (bg-line-number-active unspecified)
+;;         (bg-paren-match bg-magenta-intense)
+;;         (underline-paren-match fg-main)
+;;         (fg-region fg-main)
+;;         (bg-mode-line-active bg-cyan-subtle)
+;;         (fg-mode-line-active fg-main))
+;;       doom-theme 'modus-operandi-tinted)
+
+;; Apply customizations after initial theme load
+(add-hook 'doom-load-theme-hook #'gt/modus-themes-custom-faces)
+
+;; Highlight numbers with the same color and background as strings
+(use-package! highlight-numbers
+  :hook (prog-mode . highlight-numbers-mode)
+  :config
+  (defun gt/set-number-color ()
+    "Set numbers to the same color and background as strings."
+    (modus-themes-with-colors
+      (let ((is-dark (eq (car custom-enabled-themes) 'modus-vivendi)))
+        (set-face-attribute 'highlight-numbers-number nil
+                            :foreground string
+                            :background (if is-dark bg-main bg-green-nuanced)))))
+
+  (add-hook 'modus-themes-after-load-theme-hook #'gt/set-number-color)
+  (add-hook 'doom-load-theme-hook #'gt/set-number-color))
 
 (after! doom-ui
   (setq! auto-dark-themes '((modus-vivendi) (modus-operandi-tinted)))
@@ -71,7 +155,7 @@
 
 ;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
 
-(defvar x-gtk-use-system-tooltips use-system-tooltips)
+;; (defvar x-gtk-use-system-tooltips use-system-tooltips)
 
 (setq
  frame-title-format
@@ -201,6 +285,9 @@
 
 ; FIXME: We really should not have to do this manually!
 (setq typescript-indent-level 2)
+
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (use-package! mise
  :config
@@ -513,7 +600,7 @@ Always provide explanations alongside your code to help me learn and understand 
           (when (< d 0)
             (let* ((pm   (if (= cm 1) 12 (1- cm)))
                    (py   (if (= cm 1) (1- cy) cy))
-                   (mdays (car (calendar-last-day-of-month (list py pm)))))
+                   (mdays (calendar-last-day-of-month pm py)))
               (setq d (+ d mdays)
                     m (1- m))))
           (when (< m 0)
