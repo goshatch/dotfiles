@@ -28,7 +28,9 @@
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
-       (vertico +icons)    ; the search engine of the future
+       (vertico
+        +childframe
+        +icons)            ; the search engine of the future
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -104,7 +106,9 @@
        (eval +overlay)     ; run code, run (also, repls)
        lookup              ; navigate your code and its documentation
        llm                 ; when I said you needed friends, I didn't mean...
-       (lsp +peek)         ; M-x vscode
+       (lsp +booster
+            +eglot
+            +peek)         ; M-x vscode
        (magit +forge)      ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        (pass +auth)        ; password manager for nerds
@@ -134,9 +138,9 @@
        data                ; config/data formats
        ;;(dart +flutter)   ; paint ui and not much else
        ;;dhall
-       (elixir
-        +lsp
-        +tree-sitter)      ; erlang done right
+       ;;(elixir
+       ;; +lsp
+       ;; +tree-sitter)    ; erlang done right
        ;;elm               ; care for a cup of TEA?
        emacs-lisp          ; drown in parentheses
        ;;erlang            ; an elegant language for a more civilized age
@@ -144,11 +148,11 @@
        ;;factor
        ;;faust             ; dsp, but you get to keep your soul
        ;;fortran           ; in FORTRAN, GOD is REAL (unless declared INTEGER)
-       (fsharp +lsp)       ; ML stands for Microsoft's Language
+       ;;(fsharp +lsp)     ; ML stands for Microsoft's Language
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
        ;;gdscript          ; the language you waited for
-       (go +lsp
-           +tree-sitter)   ; the hipster dialect
+       ;;(go +lsp
+       ;;    +tree-sitter) ; the hipster dialect
        ;;(graphql +lsp)    ; Give queries a REST
        (haskell            ; a language that's lazier than I am
         +lsp
