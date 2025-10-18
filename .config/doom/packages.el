@@ -55,6 +55,10 @@
 
 ;; Automatically toggle between light and dark themes depending on OS theme
 (package! auto-dark)
+;; Highlight numbers!
+(package! highlight-numbers)
+;; Colour parentheses
+(package! rainbow-delimiters)
 
 ;; +-------------+
 ;; | PROGRAMMING |
