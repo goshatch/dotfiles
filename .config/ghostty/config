@@ -9,3 +9,5 @@ window-padding-x = 2
 window-padding-balance = true
 macos-titlebar-style = "tabs"
 keybind = shift+enter=text:\n
+clipboard-paste-protection = false
+clipboard-paste-bracketed-safe = true
