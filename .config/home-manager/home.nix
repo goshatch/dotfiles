@@ -160,6 +160,7 @@
 
   home.packages = with pkgs; [
     git
+    jujutsu
     delta
     helix
     eza
