@@ -72,6 +72,14 @@
   :recipe (:host github
            :repo "cxa/lsp-biome"))
 
+;; Support for the Gleam programming language
+(package! gleam-ts-mode
+  :recipe (:host github
+           :repo "gleam-lang/gleam-mode"
+           :branch "main"
+
+           :files ("gleam-ts-*.el")))
+
 ;;
 ;; Client for Debug Adapter Protocol
 ;; https://github.com/emacs-lsp/dap-mode

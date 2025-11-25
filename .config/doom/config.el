@@ -44,108 +44,30 @@
 
 (setq-default line-spacing 0.0)
 
-;; Add backgrounds to syntax elements and muted color for #_ discard forms
-(defun gt/modus-themes-custom-faces ()
-  "Add subtle backgrounds to strings, function names, and comments for better
-readability."
-  (modus-themes-with-colors
-    (let ((is-dark (eq (car custom-enabled-themes) 'modus-vivendi)))
-      (custom-set-faces
-       `(font-lock-string-face ((t (:foreground ,string
-                                    :background ,(if is-dark bg-main bg-green-nuanced)))))
-       `(font-lock-function-name-face ((t (:foreground ,fnname
-                                           :background ,(if is-dark bg-main bg-cyan-nuanced)))))
-       `(font-lock-comment-face ((t (:foreground ,comment
-                                     :background ,(if is-dark bg-main bg-yellow-nuanced)))))
-       `(font-lock-doc-face ((t (:foreground ,docstring
-                                 :background ,(if is-dark bg-main bg-green-nuanced)))))
-       `(fill-column-indicator ((t (:foreground ,(if is-dark "#333333" "#dddddd")
-                                    :background ,bg-main))))
-       `(rainbow-delimiters-depth-1-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-2-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-3-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-4-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-5-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-6-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-7-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-8-face ((t (:foreground "gray60"))))
-       `(rainbow-delimiters-depth-9-face ((t (:foreground "gray60"))))
-       ;; Clojure keywords (symbols like :width) use magenta-cooler
-       `(clojure-keyword-face ((t (:foreground ,magenta-cooler))))
-       ;; Muted color for #_ discard forms (removed code)
-       `(clojure-character-face ((t (:foreground ,fg-dim))))))))
-
-(add-hook 'modus-themes-after-load-theme-hook #'gt/modus-themes-custom-faces)
-
-;; Custom syntax highlighting palette (inspired by Tonsky's blog)
-(defvar gt/modus-syntax-overrides
-  '((comment yellow-cooler)
-    (docstring green-cooler)
-    (string green-cooler)
-    (fnname cyan-cooler)
-    ;; Make numbers the same color as strings
-    (number green-cooler)
-    ;; Disable colors for other syntax elements
-    (keyword fg-main)
-    (builtin fg-main)
-    (constant fg-main)
-    (type fg-main)
-    (variable fg-main)
-    (preprocessor fg-main)
-    (rx-construct fg-main))
-  "Minimal syntax highlighting overrides for all Modus themes.")
-
-(setq modus-themes-bold-constructs nil
+(setq modus-themes-bold-constructs t
       modus-themes-common-palette-overrides
-      (append '((fringe unspecified)
-                (border-mode-line-inactive unspecified)
-                (border-mode-line-active unspecified)
-                (fg-line-number-inactive "gray50")
-                (fg-line-number-active fg-main)
-                (bg-line-number-inactive unspecified)
-                (bg-line-number-active unspecified)
-                (bg-paren-match bg-magenta-intense)
-                (underline-paren-match fg-main)
-                (fg-region fg-main)
-                (bg-mode-line-active bg-cyan-subtle)
-                (fg-mode-line-active fg-main))
-              gt/modus-syntax-overrides)
+      '((fringe unspecified)
+        (comment yellow-cooler)
+        (border-mode-line-inactive unspecified)
+        (border-mode-line-active unspecified)
+        (fg-line-number-inactive "gray50")
+        (fg-line-number-active fg-main)
+        (bg-line-number-inactive unspecified)
+        (bg-line-number-active unspecified)
+        (bg-paren-match bg-magenta-intense)
+        (underline-paren-match fg-main)
+        (fg-region fg-main)
+        (bg-mode-line-active bg-cyan-subtle)
+        (fg-mode-line-active fg-main))
       doom-theme 'modus-operandi-tinted)
 
-;; (setq modus-themes-bold-constructs t
-;;       modus-themes-common-palette-overrides
-;;       '((fringe unspecified)
-;;         (comment yellow-cooler)
-;;         (border-mode-line-inactive unspecified)
-;;         (border-mode-line-active unspecified)
-;;         (fg-line-number-inactive "gray50")
-;;         (fg-line-number-active fg-main)
-;;         (bg-line-number-inactive unspecified)
-;;         (bg-line-number-active unspecified)
-;;         (bg-paren-match bg-magenta-intense)
-;;         (underline-paren-match fg-main)
-;;         (fg-region fg-main)
-;;         (bg-mode-line-active bg-cyan-subtle)
-;;         (fg-mode-line-active fg-main))
-;;       doom-theme 'modus-operandi-tinted)
+(defun gt/set-fill-column-colors ()
+  (set-face-attribute 'fill-column-indicator nil
+                      :foreground (modus-themes-get-color-value 'bg-inactive)
+                      :background (modus-themes-get-color-value 'unspecified)))
 
-;; Apply customizations after initial theme load
-(add-hook 'doom-load-theme-hook #'gt/modus-themes-custom-faces)
-
-;; Highlight numbers with the same color and background as strings
-(use-package! highlight-numbers
-  :hook (prog-mode . highlight-numbers-mode)
-  :config
-  (defun gt/set-number-color ()
-    "Set numbers to the same color and background as strings."
-    (modus-themes-with-colors
-      (let ((is-dark (eq (car custom-enabled-themes) 'modus-vivendi)))
-        (set-face-attribute 'highlight-numbers-number nil
-                            :foreground string
-                            :background (if is-dark bg-main bg-green-nuanced)))))
-
-  (add-hook 'modus-themes-after-load-theme-hook #'gt/set-number-color)
-  (add-hook 'doom-load-theme-hook #'gt/set-number-color))
+(add-hook 'modus-themes-after-load-theme-hook #'gt/set-fill-column-colors)
+(add-hook 'doom-load-theme-hook #'gt/set-fill-column-colors)
 
 (after! doom-ui
   (setq! auto-dark-themes '((modus-vivendi) (modus-operandi-tinted)))
@@ -354,43 +276,21 @@ Always provide explanations alongside your code to help me learn and understand 
   ;; ("C-c g o t" . gptel-org-set-topic)
   ;; ("C-c g o p" . gptel-org-set-properties))
 
-(after! lsp-mode
-  (require 'lsp-sorbet)
-  (add-to-list 'lsp-disabled-clients 'sorbet-ls)
+(use-package! gleam-ts-mode
+  :mode (rx ".gleam" eos))
 
-  (defun gt/project-has-sorbet-p ()
-    "Does this project use Sorbet?"
-    (or (locate-dominating-file default-directory "sorbet")
-        (when-let* ((root (locate-dominating-file default-directory "Gemfile.lock"))
-                    (gemfile-lock (expand-file-name "Gemfile.lock" root)))
-          (with-temp-buffer
-            (insert-file-contents gemfile-lock)
-            (search-forward-regexp "^ *sorbet \\|^ *sorbet-static " nil t)))))
+(after! treesit
+  (add-to-list 'auto-mode-alist '("\\.gleam$" . gleam-ts-mode)))
 
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection
-                     (lambda ()
-                       (when (gt/project-has-sorbet-p)
-                         (if (file-exists-p "Gemfile")
-                             '("bundle" "exec" "srb" "tc" "--lsp")
-                           '("srb" "tc" "--lsp")))))
-    :activation-fn (lambda (filename _mode)
-                     (and (eq major-mode 'ruby-mode) (gt/project-has-sorbet-p)))
-    :priority -1
-    :add-on? t
-    :server-id 'gt/sorbet-ls))
+(after! gleam-ts-mode
+  (unless (treesit-language-available-p 'gleam)
+    (gleam-ts-install-grammar)))
 
-  (setq lsp-rubocop-use-bundler t
-        lsp-sorbet-use-bundler t
-        lsp-sorbet-as-add-on t)
-                                        ; Use HTML lsp server for .html.erb files
-  (add-to-list 'lsp-language-id-configuration '("\\.html\\.erb$" . "html")))
+(after! eglot
+  (add-to-list 'eglot-server-programs
+               '(gleam-ts-mode . ("gleam" "lsp"))))
 
-(add-hook 'ruby-mode-hook
-          (lambda ()
-            (setq-local lsp-enabled-clients '(ruby-lsp-ls gt/sorbet-ls))
-            (lsp)))
+(add-hook 'gleam-ts-mode-hook #'eglot-ensure)
 
 (defun gt/setup-lsp-ui-peek ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
@@ -398,64 +298,8 @@ Always provide explanations alongside your code to help me learn and understand 
 
 (add-hook 'lsp-ui-mode-hook #'gt/setup-lsp-ui-peek)
 
-(use-package! apheleia
-  :ensure apheleia
-  :config
-  (if (gt/work-machine?)
-      ;; On work machine: remove Clojure modes from Apheleia
-      (progn
-        (setq apheleia-mode-alist 
-              (cl-remove-if (lambda (pair)
-                              (memq (car pair) '(clojure-mode 
-                                                 clojurec-mode 
-                                                 clojurescript-mode
-                                                 clojure-ts-mode
-                                                 clojure-ts-clojurescript-mode
-                                                 clojure-ts-clojurec-mode
-                                                 clojure-ts-clojuredart-mode)))
-                            apheleia-mode-alist)))
-    ;; On personal machines: use standard-clj
-    (progn
-      (setf (alist-get 'standard-clojure apheleia-formatters) '("standard-clj" "fix" "-"))
-      (setf (alist-get 'clojure-mode apheleia-mode-alist) 'standard-clojure)
-      (setf (alist-get 'clojure-ts-mode apheleia-mode-alist) 'standard-clojure)
-      (setf (alist-get 'clojure-ts-clojurescript-mode apheleia-mode-alist) 'standard-clojure)
-      (setf (alist-get 'clojure-ts-clojurec-mode apheleia-mode-alist) 'standard-clojure)
-      (setf (alist-get 'clojure-ts-clojuredart-mode apheleia-mode-alist) 'standard-clojure)
-      (setf (alist-get 'clojurec-mode apheleia-mode-alist) 'standard-clojure)
-      (setf (alist-get 'clojurescript-mode apheleia-mode-alist) 'standard-clojure)))
-  (apheleia-global-mode +1))
-
-(when (gt/work-machine?)
-  (setq +format-on-save-disabled-modes
-        (cl-union '(clojure-mode
-                    clojurec-mode
-                    clojure-ts-mode
-                    clojurescript-mode)
-                  +format-on-save-disabled-modes))
-
-  ;; Configure Clojure commenting to match project style guide
-  (dolist (mode-hook '(clojure-mode-hook
-                       clojure-ts-mode-hook
-                       clojurescript-mode-hook
-                       clojurec-mode-hook))
-    (add-hook mode-hook
-              (lambda ()
-                ;; Use single semicolon for comments (not double)
-                (setq-local comment-start ";")
-                ;; Don't add extra semicolons when using M-;
-                (setq-local comment-add 0)
-                ;; Override comment-indent-function directly for this buffer
-                (setq-local comment-indent-function
-                            (lambda ()
-                              (if (bolp) 0 (current-indentation))))
-                ;; Set line width to 90 characters (project style guide)
-                (setq-local fill-column 90)
-                ;; Also set whitespace-mode to highlight long lines at 90
-                (setq-local whitespace-line-column 90)))))
-
 (use-package! lsp-biome
-  :after lsp-mode)
+  :after eglot)
 
 ;; (after! lsp-mode
 ;;   ;; Function to check if ESLint config exists in project
@@ -477,6 +321,10 @@ Always provide explanations alongside your code to help me learn and understand 
 ;;                         (and (derived-mode-p 'web-mode)
 ;;                              (member (file-name-extension buffer-file-name) '("js" "jsx" "ts" "tsx"))))
 ;;                 (setq-local lsp-eslint-enable (gt/eslint-config-exists-p))))))
+
+(use-package! flymake
+  :config
+  (setq flymake-show-diagnostics-at-end-of-line 'short))
 
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
 
