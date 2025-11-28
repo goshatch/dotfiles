@@ -1,12 +1,29 @@
+;;; config.el --- Gosha's Doom Emacs Config -*- lexical-binding: t; -*-
+
+;;;; Identity
+;; Some functionality uses this to identify you, e.g. GPG configuration,
+;; email clients, file templates, and snippets.
+
 (setq user-full-name "Gosha Tcherednitchenko"
       user-mail-address "mail@gosha.net")
+
+;;;; Some sensible defaults
+;; We want to raise the ~undo-limit~ to 80Mb, use granular undo,
+;; and replace ~...~ with a unicode ellipse.
 
 (setq undo-limit 80000000
       ;; evil-want-fine-undo t
       truncate-string-ellipsis "…")
 
+;;;; User Interface
+
+;;;;; Typography
+;; Let's provide a base font size, from which all others will be calculated.
+
 (defvar gt/base-font-size 13
   "The base font size from which all others are calculated")
+
+;; Setting up the default font faces:
 
 (setq doom-font
       (font-spec :family "PragmataPro Mono"
@@ -21,11 +38,16 @@
 (setq doom-variable-pitch-font
       (font-spec :family "PT Serif" :weight 'regular :height 160 :width 'normal))
 
+;; If we are on a Mac, use the Apple emoji font; otherwise (on Linux)
+;; use the Twitter Color Emoji font.
+
 (setq doom-symbol-font
       (if (featurep :system 'macos)
           (font-spec :family "Apple Color Emoji")
         (font-spec :family "Twitter Color Emoji"))
       )
+
+;; Specify a font for CJK text, for better performance — but only in GUI mode.
 
 (if (display-graphic-p)
     (progn
@@ -36,13 +58,26 @@
         (dolist (charset '(han cjk-misc bopomofo))
           (set-fontset-font t charset (font-spec :family "Noto Sans CJK TC" :size gt/base-font-size) nil 'append)))))
 
+;; TODO: Have a different config for Mac and Linux:
+;; - On macOS, use the beautiful system fonts
+;; - On Linux, use Noto Sans CJK
+
+;; Force using the Russian-specific font (Iosevka) for cyrillic text:
+
 (if (display-graphic-p)
     (set-fontset-font
      (frame-parameter nil 'font)
      'cyrillic
      gt/ru-font))
 
+;; Add a little more line height:
+
 (setq-default line-spacing 0.0)
+
+;;;;; Theme
+;; We will use the wonderful Modus Vivendi theme by Protesilaos Stavrou,
+;; with some slight customisations:
+;; https://protesilaos.com/modus-themes/
 
 (setq modus-themes-bold-constructs t
       modus-themes-common-palette-overrides
@@ -61,6 +96,8 @@
         (fg-mode-line-active fg-main))
       doom-theme 'modus-operandi-tinted)
 
+;;;;;; Better fill column indicator colours
+
 (defun gt/set-fill-column-colors ()
   (set-face-attribute 'fill-column-indicator nil
                       :foreground (modus-themes-get-color-value 'bg-inactive)
@@ -69,17 +106,31 @@
 (add-hook 'modus-themes-after-load-theme-hook #'gt/set-fill-column-colors)
 (add-hook 'doom-load-theme-hook #'gt/set-fill-column-colors)
 
+;;;;;; Automatically toggle themes based on OS dark/light theme
+
 (after! doom-ui
   (setq! auto-dark-themes '((modus-vivendi) (modus-operandi-tinted)))
   (auto-dark-mode))
+
+;;;;;; Set keyboard shortcut to toggle between light/dark Modus themes
 
 (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
 (define-key doom-leader-map (kbd "t m")
   'modus-themes-toggle)
 
+;;;;;; Always use midnight mode when opening a PDF file
+
 ;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
 
+;;;;; Some small tweaks
+
+;;;;;; TODO Remove this once Emacs 30.1 ships
+;; This needed to be redefined in order to build the pdf-tools
+
 ;; (defvar x-gtk-use-system-tooltips use-system-tooltips)
+
+;;;;;; Frame title
+;; Set the frame title to include the name of the current ~persp-mode~ workspace:
 
 (setq
  frame-title-format
@@ -89,7 +140,20 @@
    " — Emacs"
    ))
 
+;;;;;; Disable the menu bar
+
 (menu-bar-mode -1)
+
+;;;;;; Vim-style tabs: tab-bar-mode
+;; I miss the way Vim tabs work, and it seems like ~tab-bar-mode~ is a good
+;; solution to implement something like this.
+;;
+;; Links: documentation (https://www.gnu.org/software/emacs/manual/html_node/emacs/Tab-Bars.html),
+;; BSAG blog post (https://www.rousette.org.uk/archives/using-the-tab-bar-in-emacs/).
+;;
+;; Also integrate ~tab-bar-mode~ and ~persp-mode~, as stolen from here:
+;; https://github.com/LemonBreezes/.doom.d/blob/master/lisp/persp-mode-tab-bar-integration.el
+;; (originally found here: https://github.com/Bad-ptr/persp-mode.el/issues/122#issuecomment-1224884651).
 
 (use-package! tab-bar
   :after emacs
@@ -119,12 +183,21 @@
               (tab-bar--update-tab-bar-lines t)))
   (tab-bar-mode 1))
 
+;;;;;; Split windows to the right and down by default
+
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
 
+;;;;;; Projectile tweaks
+;; Automatically find projects in $HOME/repos
+
 (setq projectile-project-search-path '("~/repos"))
 
+;; Default action on opening a project is dired
+
 (setq projectile-switch-project-action #'projectile-dired)
+
+;; Recognize Rails/RSpec projects
 
 (after! projectile
   (projectile-register-project-type
@@ -137,9 +210,16 @@
    :test-suffix "_spec")
     )
 
+;;;;;; Vterm
+;; Send C-c to the terminal
+
 (map! :after vterm
       :map vterm-mode-map
       :ni "C-c" (vterm-send-key (kbd "C-c")))
+
+;;;;;; Indent bars
+;; See examples in indent-bars repo:
+;; https://github.com/jdtsmith/indent-bars/blob/main/examples.md
 
 (use-package! indent-bars
   :config
@@ -154,13 +234,23 @@
     indent-bars-display-on-blank-lines t)
   :hook ((prog-mode) . indent-bars-mode))
 
+;;;;;; File path in modeline
+;; Show buffer names relative to project
+
 (setq! doom-modeline-buffer-file-name-style 'relative-to-project)
+
+;;;;; Custom keybindings
+;; Some convenience from Vim:
 
 (setq evil-escape-key-sequence "jj"
       evil-escape-delay 0.3)
 
+;; Use j/k to move up/down in visual lines
+
 (evil-global-set-key 'motion "j" 'evil-next-visual-line)
 (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+;; Vim-style movement in undo-tree
 
 ; FIXME: Does not work apparently
 (after! undo-tree
@@ -174,8 +264,13 @@
     'undo-tree-visualize-switch-branch-right)
   )
 
+;; An easier way to call avy-goto-char-timer:
+
 (setq avy-all-windows t)
 (map! "C-c SPC" #'avy-goto-char-2)
+
+;;;; Utilities
+;; Get secrets from authinfo:
 
 (setq auth-sources '("~/.authinfo.gpg"))
 
@@ -185,12 +280,21 @@
         (funcall (plist-get (car result) :secret))
       nil)))
 
+;; Is this a work machine?
+
 (defun gt/work-machine? ()
     (string-prefix-p "banqiao" (system-name)))
+
+;;;; Git
+
+;;;;; Magit
+;; Show more recent commits
 
 (use-package! magit
   :config
   (setq magit-log-section-commit-count 20))
+
+;; Correctly handle escape sequences in output of e.g. pre-commit hooks
 
 (defun color-buffer (proc &rest args)
   (interactive)
@@ -201,21 +305,36 @@
 
 (advice-add 'magit-process-filter :after #'color-buffer)
 
+;; Project TODOs in Magit
+
 (use-package! magit-todos
   :after magit
   :config (magit-todos-mode 1))
 
+;;;; Programming
+;; Easily jump between the beginning and end of blocks
+
 (global-evil-matchit-mode 1)
+
+;; For some reason, typescript indent level needs to be manually set
 
 ; FIXME: We really should not have to do this manually!
 (setq typescript-indent-level 2)
 
+;; Show the fill column indicator and turn on rainbow delimiters for
+;; programming modes
+
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+;; Use Mise to manage ruby/node/etc versions
+;; https://mise.jdx.dev/
 
 (use-package! mise
  :config
  (add-hook 'doom-after-init-hook #'global-mise-mode))
+
+;;;;; LLM integration
 
 (after! gptel
   (setq
@@ -276,6 +395,8 @@ Always provide explanations alongside your code to help me learn and understand 
   ;; ("C-c g o t" . gptel-org-set-topic)
   ;; ("C-c g o p" . gptel-org-set-properties))
 
+;;;;; Gleam
+
 (use-package! gleam-ts-mode
   :mode (rx ".gleam" eos))
 
@@ -292,14 +413,38 @@ Always provide explanations alongside your code to help me learn and understand 
 
 (add-hook 'gleam-ts-mode-hook #'eglot-ensure)
 
+;;;;; Haskell
+;; Fix Doom's broken ~haskell-ts-mode~ eglot configuration. The issue is that
+;; ~set-eglot-client!~ wraps the command in an extra list, causing eglot to
+;; fail with a type error.
+
+(after! haskell-ts-mode
+  (setq lsp-haskell-session-loading "multipleComponents"))
+
+(after! haskell-ts-mode
+  (setq eglot-server-programs
+        (assoc-delete-all 'haskell-ts-mode eglot-server-programs))
+  (add-to-list 'eglot-server-programs
+               '(haskell-ts-mode "haskell-language-server-wrapper" "--lsp")))
+
+;;;;; IDE
+
+;;;;;; Navigation
+;; Use lsp-ui-peek for definitions and references.
+
 (defun gt/setup-lsp-ui-peek ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
 (add-hook 'lsp-ui-mode-hook #'gt/setup-lsp-ui-peek)
 
+;;;;;; Biome support
+
 (use-package! lsp-biome
   :after eglot)
+
+;;;;;; JavaScript/TypeScript LSP configuration
+;; Only enable ESLint when a config file is present in the project.
 
 ;; (after! lsp-mode
 ;;   ;; Function to check if ESLint config exists in project
@@ -322,23 +467,48 @@ Always provide explanations alongside your code to help me learn and understand 
 ;;                              (member (file-name-extension buffer-file-name) '("js" "jsx" "ts" "tsx"))))
 ;;                 (setq-local lsp-eslint-enable (gt/eslint-config-exists-p))))))
 
+;;;;;; Warnings display
+;; Use end of line diagnostics instead of Doom's default popon mode
+
 (use-package! flymake
   :config
   (setq flymake-show-diagnostics-at-end-of-line 'short))
 
+;;;;; Emacs metaprogramming
+;; Set the scratch buffer to open in ~lisp-interaction-mode~ by default.
+
 (setq-default doom-scratch-initial-major-mode 'lisp-interaction-mode)
+
+;;;;; Conveniences
+
+;; Make script files executable when saving
 
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 
+;; Support for ASCII Doc file format
+
 (use-package! adoc-mode)
 
+;;;; Org-mode
+;; Set the working directory for Org files.
+
 (setq org-directory "~/org/")
+
+;;;;; Spacing
+;; Add a blank line before every new heading and plain list items
 
 (setq org-blank-before-new-entry
       '((heading . t) (plain-list-item . auto)))
 
+;;;;; TO-DO items
+;; Log time items are closed
+
 (setq org-log-done 'time)
+
+;;;;; Agenda
+;; Build the agenda from work and project files, and add a global key binding
+;; to the default agenda view:
 
 (defun gt/open-agenda ()
   (interactive)
@@ -353,6 +523,10 @@ Always provide explanations alongside your code to help me learn and understand 
         org-agenda-start-with-clockreport-mode t)
   :bind
   ("C-c a" . gt/open-agenda))
+
+;;;;; Links DWIM
+;; Code lifted from Emacs DWIM: do what ✨I✨ mean:
+;; https://xenodium.com/emacs-dwim-do-what-i-mean/
 
 (defun gt/org-insert-link-dwim ()
   "Like `org-insert-link' but with personal dwim preferences."
@@ -383,7 +557,13 @@ Always provide explanations alongside your code to help me learn and understand 
   :bind
   ("C-c l" . gt/org-insert-link-dwim))
 
+;;;;; Roam
+
+;; Enable node link completion everywhere
+
 (setq org-roam-completion-everywhere t)
+
+;; Configure Roam buffer to show unlinked references as well
 
 (setq org-roam-mode-section-functions
       (list #'org-roam-backlinks-section
@@ -391,15 +571,22 @@ Always provide explanations alongside your code to help me learn and understand 
             ;; #'org-roam-unlinked-references-section
             ))
 
+;; Use Xwidgets to open UI instead of system browser
+
 (use-package! org-roam-ui
   :init
   (when (featurep 'xwidget-internal)
     (setq org-roam-ui-browser-function #'xwidget-webkit-browse-url)))
 
+;;;;;; Journaling
+;; Global hotkey to reach today's daily
+
 (use-package! org-roam
   :bind
   ("C-c j j" . org-roam-dailies-goto-today)
   ("C-c j i" . org-roam-dailies-capture-today))
+
+;; Set up a custom default template for dailies
 
 (defun gt/daily-location ()
   (let ((location
@@ -504,6 +691,8 @@ Always provide explanations alongside your code to help me learn and understand 
                   "%<%Y-%m-%d>.org"
                   "%[~/org/roam/templates/daily-template.org]"))))
 
+;; Generate a table showing number of daily notes written by location
+
 (defun gt/dailies-location-stats (directory)
   "Parse all org files in DIRECTORY and count occurrences of #+location: headers.
 Returns an alist of (location . count) sorted by count in descending order."
@@ -542,6 +731,8 @@ Returns an alist of (location . count) sorted by count in descending order."
     ;; Return locations alist
     locations))
 
+;;;;;; org-roam-ui
+
 (use-package! websocket
   :after org-roam)
 
@@ -552,6 +743,8 @@ Returns an alist of (location . count) sorted by count in descending order."
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
+
+;;;;;; Keybindings
 
 (use-package! org-roam
   :ensure t
@@ -566,6 +759,9 @@ Returns an alist of (location . count) sorted by count in descending order."
   ("C-c j j" . org-roam-dailies-goto-today)
   ("C-c j i" . org-roam-dailies-capture-today))
 
+;;;;; Writing
+;; Disable line numbers in org files and hide the emphasis markers. ~code~
+
 (use-package! org
   :config
   (setq org-hide-emphasis-markers t
@@ -575,6 +771,8 @@ Returns an alist of (location . count) sorted by count in descending order."
   (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)
 )))
 
+;; Use mixed-pitch-mode for org-mode files
+
 ;; (use-package! mixed-pitch
 ;;   :hook
 ;;   (org-mode . mixed-pitch-mode)
@@ -583,6 +781,8 @@ Returns an alist of (location . count) sorted by count in descending order."
 ;;   (setq org-hide-emphasis-markers t)
 ;;   (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-drawer))
 
+;; Word count:
+
 (use-package! wc-mode
   :config
   (global-set-key "\C-cw" 'wc-mode))
@@ -590,10 +790,14 @@ Returns an alist of (location . count) sorted by count in descending order."
 ;; NOTE: These are not the same
 (setq doom-modeline-enable-word-count t)
 
+;; Enable typo-mode for all text-mode buffers
+
 (use-package! typo
   :config
   (typo-global-mode 1)
   (add-hook 'text-mode-hook 'typo-mode))
+
+;; Highlight visual line instead of actual line (for wrapped text)
 
 (defun gt/visual-line-range ()
   (save-excursion
@@ -601,7 +805,11 @@ Returns an alist of (location . count) sorted by count in descending order."
      (progn (beginning-of-visual-line) (point))
      (progn (end-of-visual-line) (point)))))
 
+;; Russian QWERTY layout for writing
+
 ;; (use-package! quail-russian-qwerty)
+
+;; Languagetool support
 
 ;; TODO: Fix this
 ;; (use-package lsp-ltex
@@ -611,6 +819,9 @@ Returns an alist of (location . count) sorted by count in descending order."
 ;;                        (lsp)))  ; or lsp-deferred
 ;;   :init
 ;;   (setq lsp-ltex-version "16.0.0"))  ; make sure you have set this, see below
+
+;;;;; Anki
+;; Quickly insert an Anki card
 
 (defun gt/insert-anki-card ()
   "Insert a new Anki note at the bottom of the current subtree."
@@ -640,6 +851,8 @@ Returns an alist of (location . count) sorted by count in descending order."
                     (make-string subheading-level ?*))))
   (outline-up-heading 1))
 
+;; Tag autocomplete for Anki cards
+
 (defun gt/get-anki-tags ()
   "Collect all unique :ANKI_TAGS: in the current org buffer."
   (let ((tags '()))
@@ -658,6 +871,8 @@ Returns an alist of (location . count) sorted by count in descending order."
          (selected-tags (completing-read-multiple "Select tags: " tags nil t)))
     (org-set-property "ANKI_TAGS" (mapconcat 'identity selected-tags " "))))
 
+;; Key bindings
+
 (use-package! anki-editor
   :config
   (define-key org-mode-map (kbd "C-c n a a") #'gt/insert-anki-card)
@@ -668,27 +883,58 @@ Returns an alist of (location . count) sorted by count in descending order."
     "C-c n a t" "Select tags for card"
     "C-c n a p" "Push cards to Anki"))
 
+;;;;; Time Tracking
+
+;;;;;; Pomodoro
+;; Keep the time spent on a killed pomodoro
+
 (setq org-pomodoro-keep-killed-pomodoro-time t)
 
+;; Don't play sounds on Pomodoro events (notifications are enough)
+
 (setq org-pomodoro-play-sounds nil)
+
+;;;;;; Time format
+;; For work, we want hours only (not days, weeks, months)
 
 (when (gt/work-machine?)
   (setq org-duration-format (quote h:mm)))
 
+;;;;;; Resolving idle time
+;; For work, we want to automatically stop a timer after 15 minutes idle.
+
 (when (gt/work-machine?)
   (setq org-clock-idle-time 15))
 
+;;;;; Tweaks
+
+;;;;;; Pomodoro notifications
+;; Set path to terminal-notifier executable
+
 (setq alert-notifier-command (executable-find "terminal-notifier"))
+
+;;;;;; Corfu
+;; Candidate selection tweaks
 
 (use-package! corfu
   :config
   (setq corfu-preselect 'first
         corfu-preview-current 'insert))
 
+;;;;;; Inline images
+;; Set default inline image width to 500px, and show them on startup for files
+;; that have them.
+
 (setq org-image-actual-width 500
       org-startup-with-inline-images t)
 
+;;;;;; Capture frame parameters
+;; Make sure the capture frame is centered on the screen
+
 (nconc +org-capture-frame-parameters '((top . 0.5) (left . 0.5)))
+
+;;;; Reading
+;; Calibre library interaction:
 
 (use-package! calibredb
   :init
@@ -741,6 +987,8 @@ Returns an alist of (location . count) sorted by count in descending order."
         :nie "q" 'calibredb-entry-quit
         :nie "?" 'calibredb-entry-dispatch
         :nie "RET" 'calibredb-search-ret))
+
+;; Use nov.el for EPUB files
 
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
@@ -841,5 +1089,10 @@ Returns an alist of (location . count) sorted by count in descending order."
         font-size: 20px;
     }"))
 
+;;;; Ledger
+;; Use ledger-mode for hledger files:
+
 (after! ledger-mode
   (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode)))
+
+;;; config.el ends here

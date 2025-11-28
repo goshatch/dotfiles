@@ -62,7 +62,7 @@
        file-templates      ; auto-snippets for empty files
        fold                ; (nigh) universal code folding
        (format             ; automated prettiness
-        +onsave
+        ;; +onsave
         +lsp)
        ;;god               ; run Emacs commands without modifier keys
        lispy               ; vim for lisp, for people who don't like vim
@@ -107,8 +107,7 @@
        lookup              ; navigate your code and its documentation
        llm                 ; when I said you needed friends, I didn't mean...
        (lsp +booster
-            +eglot
-            +peek)         ; M-x vscode
+            +eglot)        ; M-x vscode
        (magit +forge)      ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        (pass +auth)        ; password manager for nerds
@@ -185,7 +184,7 @@
             +pandoc
             +pomodoro
             +present
-            +roam2)        ; organize your plain life in plain text
+            +roam)         ; organize your plain life in plain text
        (php +tree-sitter)  ; perl's insecure younger brother
        plantuml            ; diagrams for confusing people more
        ;;graphviz          ; diagrams for confusing yourself even more
@@ -231,5 +230,5 @@
        ;;(rss +org)        ; emacs as an RSS reader
 
        :config
-       literate
+       ;;literate
        (default +bindings +smartparens))
