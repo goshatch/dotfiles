@@ -59,6 +59,7 @@
         export PATH="./bin:$HOME/.bin:\
         .git/safe/../../bin:\
         $HOME/.cargo/bin:\
+        $HOME/.local/bin:\
         $GOPATH/bin:\
         $HOME/.qlot/bin:\
         $HOME/.config/emacs/bin:\
@@ -179,8 +180,9 @@
     pass
     cmake
     ripgrep
+    emacs-lsp-booster
     # haskell.compiler.ghc98
-    # haskell-language-server
+    haskell-language-server
     # haskellPackages.cabal-install
     # haskellPackages.hoogle
     # stack
