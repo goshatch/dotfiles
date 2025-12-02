@@ -33,7 +33,7 @@
 (gt/load-module "fonts")
 (gt/load-module "theme")
 (gt/load-module "ui")
-(gt/load-module "git")
+(gt/load-module "vc")
 (gt/load-module "projectile")
 (gt/load-module "programming")
 (gt/load-module "org")

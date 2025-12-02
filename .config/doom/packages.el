@@ -115,6 +115,11 @@
 ;; Project TODOs in Magit
 (package! magit-todos)
 ;;
+;; Jujutsu mode
+(package! jj-mode
+  :recipe (:host github
+           :repo "bolivier/jj-mode.el"))
+;;
 ;; Agentic editing
 (package! eca
   :recipe (:host github

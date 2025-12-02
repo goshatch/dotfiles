@@ -1,4 +1,4 @@
-;;; git.el --- Git and Magit configuration -*- lexical-binding: t; -*-
+;;; vc.el --- Version control configuration -*- lexical-binding: t; -*-
 
 ;;;; Magit
 ;; Show more recent commits
@@ -24,4 +24,4 @@
   :after magit
   :config (magit-todos-mode 1))
 
-;;; git.el ends here
+;;; vc.el ends here
