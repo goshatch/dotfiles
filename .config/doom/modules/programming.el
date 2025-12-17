@@ -74,19 +74,4 @@
 
 (add-hook 'gleam-ts-mode-hook #'eglot-ensure)
 
-;;;; Haskell
-;; Fix Doom's broken ~haskell-ts-mode~ eglot configuration. The issue is that
-;; ~set-eglot-client!~ wraps the command in an extra list, causing eglot to
-;; fail with a type error.
-
-(after! haskell-ts-mode
-  (setq lsp-haskell-session-loading "multipleComponents"))
-
-(after! haskell-ts-mode
-  (setq eglot-server-programs
-        (assoc-delete-all 'haskell-ts-mode eglot-server-programs))
-  (add-to-list 'eglot-server-programs
-               '(haskell-ts-mode "haskell-language-server-wrapper" "--lsp")))
-
-
 ;;; programming.el ends here
