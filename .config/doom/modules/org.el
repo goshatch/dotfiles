@@ -82,7 +82,7 @@
   "Return a list of links to org-roam daily notes from this day in previous
    years, or NIL if none are found."
   (require 'org-roam)
-  (let* ((query "SELECT id, title FROM nodes WHERE file LIKE '%daily%' AND file LIKE '%' || strftime('%m-%d', 'now') || '%' ORDER BY title DESC")
+  (let* ((query "SELECT id, title FROM nodes WHERE file LIKE '%%daily%%' AND file LIKE '%%' || strftime('%%m-%%d', 'now') || '%%' ORDER BY title DESC")
          (rows (org-roam-db-query query))
          (results '()))
     (if (null rows)
