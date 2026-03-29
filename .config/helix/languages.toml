@@ -1,12 +1,4 @@
 [[language]]
-name = "clojure"
-auto-format = true
-formatter = { command = "cljstyle", args = ["pipe"] }
-roots = ["deps.edn", "project.clj"]
-[language-server.clojure-lsp]
-command = "clojure-lsp"
-
-[[language]]
 name = "ruby"
 scope = "source.rb"
 injection-regex = "ruby"
@@ -16,33 +8,31 @@ comment-token = "#"
 indent = { tab-width = 2, unit = "  " }
 
 [[language]]
+name = "markdown"
+
+[language.soft-wrap]
+enable = true
+wrap-at-text-width = true
+
+[[language]]
 name = "haskell"
 scope = "source.hs"
 auto-format = true
 
-[language-server]
-biome = { command = "biome", args = ["lsp-proxy"] }
-
 [[language]]
-name = "javascript"
-language-servers = [ { name = "typescript-language-server", except-features = [ "format" ] }, "biome" ]
-auto-format = true
+name = "brossa"
+scope = "source.brossa"
+injection-regex = "brossa"
+file-types = ["art", "tart"]
+comment-token = "//"
+indent = { tab-width = 2, unit = "  " }
+language-servers = ["brossa-lsp"]
 
-[[language]]
-name = "typescript"
-language-servers = [ { name = "typescript-language-server", except-features = [ "format" ] }, "biome" ]
-auto-format = true
+[language-server.brossa-lsp]
+command = "brossa-lsp-server"
 
-[[language]]
-name = "tsx"
-auto-format = true
-language-servers = [ { name = "typescript-language-server", except-features = [ "format" ] }, "biome" ]
-
-[[language]]
-name = "jsx"
-auto-format = true
-language-servers = [ { name = "typescript-language-server", except-features = [ "format" ] }, "biome" ]
-
-[[language]]
-name = "json"
-language-servers = [ { name = "vscode-json-language-server", except-features = [ "format" ] }, "biome" ]
+[[grammar]]
+name = "brossa"
+# IMPORTANT: Update this path to your local tree-sitter-brossa directory
+# TOML doesn't support ~ or $HOME, so use the full absolute path
+source = { path = "/Users/gosha/repos/brossa/tools/tree-sitter-brossa" }

@@ -1,4 +1,7 @@
-theme = "base16_transparent"
+[theme]
+dark = "modus_vivendi"
+light = "modus_operandi_tinted"
+fallback = "base16_terminal"
 
 [editor]
 cursorline = true
@@ -27,14 +30,18 @@ insert = "bar"
 render = true
 character = "▏"
 
-[editor.statusline.mode]
-normal = "normal"
-insert = "insert"
-select = "select"
-
 [editor.statusline]
 left = ["mode", "spinner", "file-name"]
-right = ["file-type", "diagnostics", "position", "position-percentage", "file-encoding"]
+right = [
+  "file-type",
+  "diagnostics",
+  "position",
+  "position-percentage",
+  "file-encoding"
+]
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
 
 [keys.insert]
 "C-c" = "normal_mode"

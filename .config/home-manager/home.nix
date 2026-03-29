@@ -88,6 +88,13 @@
         # ghcup
         [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
 
+        # fetch trunk and rebase
+        greb() {
+          local trunk=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+          trunk="''${trunk:-master}"
+          git fetch origin "$trunk":"$trunk" && git rebase "$trunk"
+        }
+
         # opam
         [[ ! -r "/Users/gosha/.opam/opam-init/init.zsh" ]] || source "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null
       '';
@@ -137,6 +144,7 @@
       historyLimit = 50000;
       mouse = true;
       prefix = "C-a";
+      terminal = "screen-256color";
       extraConfig = ''
         set -g pane-base-index 1
         set -g renumber-windows on
@@ -163,7 +171,6 @@
     git
     jujutsu
     delta
-    helix
     eza
     bat
     tree
