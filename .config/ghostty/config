@@ -1,5 +1,5 @@
 font-family = "PragmataPro"
-theme = dark:"Rose Pine",light:"Rose Pine Dawn"
+theme = dark:"Modus Vivendi",light:"Modus Operandi Tinted"
 window-colorspace = display-p3
 cursor-style = block
 cursor-style-blink = false
@@ -8,6 +8,6 @@ window-padding-y = 2
 window-padding-x = 2
 window-padding-balance = true
 macos-titlebar-style = "tabs"
-keybind = shift+enter=text:\n
 clipboard-paste-protection = false
 clipboard-paste-bracketed-safe = true
+keybind = shift+enter=text:\x1b\r
