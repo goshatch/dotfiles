@@ -68,4 +68,9 @@ Removes VISIBILITY property from previous first entry and adds it to new entry."
       :localleader
       :desc "Insert work log entry" "w" #'gt/insert-work-log-entry)
 
+;; Typescript syntax highlighting in org files
+(after! org
+  (add-to-list 'org-src-lang-modes '("typescript" . typescript-ts))
+  (add-to-list 'org-src-lang-modes '("tsx" . tsx-ts)))
+
 ;;; org.banqiao.el ends here

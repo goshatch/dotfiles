@@ -24,4 +24,7 @@
   :after magit
   :config (magit-todos-mode 1))
 
+;; Get links to forges
+(use-package! git-link)
+
 ;;; vc.el ends here

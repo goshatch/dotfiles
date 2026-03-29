@@ -56,6 +56,12 @@
 
 (use-package! adoc-mode)
 
+;;;; Claude Code support
+(use-package! claude-code-ide
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :config
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+
 ;;;; Gleam
 
 (use-package! gleam-ts-mode

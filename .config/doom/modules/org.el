@@ -214,13 +214,6 @@ Returns an alist of (location . count) sorted by count in descending order."
             ;; #'org-roam-unlinked-references-section
             ))
 
-;; Use Xwidgets to open UI instead of system browser
-
-(use-package! org-roam-ui
-  :init
-  (when (featurep 'xwidget-internal)
-    (setq org-roam-ui-browser-function #'xwidget-webkit-browse-url)))
-
 ;;;;; Journaling
 ;; Global hotkey to reach today's daily
 
@@ -251,6 +244,10 @@ Returns an alist of (location . count) sorted by count in descending order."
 
 (use-package! org-roam-ui
   :after org-roam
+  :init
+  ;; Use Xwidgets to open UI instead of system browser
+  (when (featurep 'xwidget-internal)
+    (setq org-roam-ui-browser-function #'xwidget-webkit-browse-url))
   :config
   (setq org-roam-ui-sync-theme t
         org-roam-ui-follow t

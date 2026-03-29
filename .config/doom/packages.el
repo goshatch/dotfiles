@@ -59,6 +59,8 @@
 (package! highlight-numbers)
 ;; Colour parentheses
 (package! rainbow-delimiters)
+;; Stimmung themes
+(package! stimmung-themes)
 
 ;; +-------------+
 ;; | PROGRAMMING |
@@ -79,6 +81,18 @@
            :branch "main"
 
            :files ("gleam-ts-*.el")))
+
+;; Claude Code
+(package! claude-code-ide
+  :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
+
+;; Get links to GitHub/etc
+(package! git-link
+  :recipe (:host github :repo "sshaw/git-link"))
+
+;; nushell major mode
+(package! nushell-mode
+  :recipe (:host github :repo "mrkkrp/nushell-mode"))
 
 ;;
 ;; Client for Debug Adapter Protocol
@@ -144,6 +158,9 @@
 ;;
 ;; GUI for org-roam
 (package! websocket) ;; required by org-roam-ui
+(package! simple-httpd :recipe (:host github
+								:repo "skeeto/emacs-web-server"
+								:files ("simple-httpd.el"))) ;; required by org-roam-ui
 (package! org-roam-ui :recipe (:host github
                                :repo "org-roam/org-roam-ui"
                                :files ("*.el" "out")))
