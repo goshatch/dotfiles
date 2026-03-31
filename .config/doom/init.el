@@ -78,6 +78,7 @@
        electric            ; smarter, keyword-based electric-indent
        ;;eww               ; the internet is gross
        (ibuffer +icons)    ; interactive buffer management
+       tramp               ; remote files at your arthritic fingertips
        undo                ; persistent, smarter undo for your inevitable mistakes
        vc                  ; version-control and Emacs, sitting in a tree
 
@@ -127,7 +128,9 @@
        ;;beancount         ; mind the GAAP
        (cc +lsp
            +tree-sitter)   ; C > C++ == 1
-       (clojure +lsp)      ; java with a lisp
+       (clojure
+	     +lsp
+		 +tree-sitter)     ; java with a lisp
        common-lisp         ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c
