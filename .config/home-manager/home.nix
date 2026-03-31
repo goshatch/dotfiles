@@ -206,10 +206,5 @@
     cmake
     ripgrep
     emacs-lsp-booster
-    # haskell.compiler.ghc98
-    haskell-language-server
-    # haskellPackages.cabal-install
-    # haskellPackages.hoogle
-    # stack
   ];
 }
