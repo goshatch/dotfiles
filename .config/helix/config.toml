@@ -1,12 +1,15 @@
 [theme]
-dark = "modus_vivendi"
-light = "modus_operandi_tinted"
+# dark = "modus_vivendi"
+# light = "modus_operandi_tinted"
+dark = "wolf-alabaster-dark-bg"
+light = "wolf-alabaster-light-bg"
 fallback = "base16_terminal"
 
 [editor]
 cursorline = true
 bufferline = "multiple"
 end-of-line-diagnostics = "hint"
+default-yank-register = "+"
 
 [editor.auto-save]
 focus-lost = true
@@ -31,17 +34,25 @@ render = true
 character = "▏"
 
 [editor.statusline]
-left = ["mode", "spinner", "file-name"]
+left = [
+  "mode",
+  "spinner"
+]
+center = [
+  "file-modification-indicator",
+  "file-name"
+]
 right = [
   "file-type",
   "diagnostics",
+  "workspace-diagnostics",
   "position",
   "position-percentage",
   "file-encoding"
 ]
-mode.normal = "NORMAL"
-mode.insert = "INSERT"
-mode.select = "SELECT"
+mode.normal = "🦊 NOR"
+mode.insert = "🦄 INS"
+mode.select = "🐧 SEL"
 
 [keys.insert]
 "C-c" = "normal_mode"
@@ -53,3 +64,7 @@ b = ":buffer-previous"
 
 [keys.normal."]"]
 b = ":buffer-next"
+
+[keys.normal]
+b = ":echo %sh{git show --no-patch --format='%%h (%%an: %%ar): %%s' $(git blame -p %{buffer_name} -L%{cursor_line},+1 | head -1 | cut -d' ' -f1)}"
+
