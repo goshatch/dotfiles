@@ -29,7 +29,6 @@
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
        (vertico
-        +childframe
         +icons)            ; the search engine of the future
 
        :ui
@@ -71,6 +70,8 @@
        ;;parinfer          ; turn lisp into python, sort of
        ;;rotate-text       ; cycle region at point between text candidates
        snippets            ; my elves. They type so I don't have to
+       (whitespace +guess
+                   +trim)
        word-wrap           ; soft wrapping with language-aware indent
 
        :emacs
@@ -105,10 +106,14 @@
        editorconfig        ; let someone else argue about tabs vs spaces
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
-       lookup              ; navigate your code and its documentation
+       (lookup
+        +dictionary
+        +docsets
+        +offline)          ; navigate your code and its documentation
        llm                 ; when I said you needed friends, I didn't mean...
        (lsp +booster
-            +eglot)        ; M-x vscode
+            +eglot
+            +peek)         ; M-x vscode
        (magit +forge)      ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        (pass +auth)        ; password manager for nerds
@@ -130,7 +135,7 @@
            +tree-sitter)   ; C > C++ == 1
        (clojure
 	     +lsp
-		 +tree-sitter)     ; java with a lisp
+	     +tree-sitter) ; java with a lisp
        common-lisp         ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c
