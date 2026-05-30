@@ -54,6 +54,9 @@
        (window-select
         +numbers)          ; visually switch windows
        workspaces          ; tab emulation, persistence & separate workspaces
+       (whitespace
+        +guess
+        +trim)             ; a butler for your whitespace
        ;;zen               ; distraction-free coding or writing
 
        :editor
@@ -61,7 +64,7 @@
        file-templates      ; auto-snippets for empty files
        fold                ; (nigh) universal code folding
        (format             ; automated prettiness
-        ;; +onsave
+        +onsave
         +lsp)
        ;;god               ; run Emacs commands without modifier keys
        lispy               ; vim for lisp, for people who don't like vim
@@ -135,7 +138,7 @@
            +tree-sitter)   ; C > C++ == 1
        (clojure
 	     +lsp
-	     +tree-sitter) ; java with a lisp
+		 +tree-sitter)     ; java with a lisp
        common-lisp         ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c

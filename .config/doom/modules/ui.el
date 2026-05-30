@@ -35,7 +35,6 @@
   :after emacs
   :config
   (setq tab-bar-close-button-show   nil
-        tab-bar-new-button-show     nil
         tab-bar-auto-width          nil
         tab-bar-back-button         nil
         tab-bar-forward-button      nil

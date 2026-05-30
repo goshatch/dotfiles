@@ -74,14 +74,6 @@
   :recipe (:host github
            :repo "cxa/lsp-biome"))
 
-;; Support for the Gleam programming language
-(package! gleam-ts-mode
-  :recipe (:host github
-           :repo "gleam-lang/gleam-mode"
-           :branch "main"
-
-           :files ("gleam-ts-*.el")))
-
 ;; Claude Code
 (package! claude-code-ide
   :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
@@ -159,8 +151,8 @@
 ;; GUI for org-roam
 (package! websocket) ;; required by org-roam-ui
 (package! simple-httpd :recipe (:host github
-								:repo "skeeto/emacs-web-server"
-								:files ("simple-httpd.el"))) ;; required by org-roam-ui
+				:repo "skeeto/emacs-web-server"
+				:files ("simple-httpd.el"))) ;; required by org-roam-ui
 (package! org-roam-ui :recipe (:host github
                                :repo "org-roam/org-roam-ui"
                                :files ("*.el" "out")))

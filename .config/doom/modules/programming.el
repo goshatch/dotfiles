@@ -14,8 +14,8 @@
 ;; https://mise.jdx.dev/
 
 (use-package! mise
- :config
- (add-hook 'doom-after-init-hook #'global-mise-mode))
+  :config
+  (add-hook 'doom-after-init-hook #'global-mise-mode))
 
 ;;;; IDE
 
@@ -56,28 +56,15 @@
 
 (use-package! adoc-mode)
 
-;;;; Claude Code support
-(use-package! claude-code-ide
-  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
-  :config
-  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+;;;; Clojure
 
-;;;; Gleam
-
-(use-package! gleam-ts-mode
-  :mode (rx ".gleam" eos))
-
-(after! treesit
-  (add-to-list 'auto-mode-alist '("\\.gleam$" . gleam-ts-mode)))
-
-(after! gleam-ts-mode
-  (unless (treesit-language-available-p 'gleam)
-    (gleam-ts-install-grammar)))
-
-(after! eglot
-  (add-to-list 'eglot-server-programs
-               '(gleam-ts-mode . ("gleam" "lsp"))))
-
-(add-hook 'gleam-ts-mode-hook #'eglot-ensure)
+;; Ignore the semantic token provider for clojure-lsp, as it overrides the font
+;; locking provided by the Clojure modes
+(add-hook! '(clojure-mode-hook clojure-ts-mode-hook)
+  (defun +disable-eglot-semantic-tokens-h ()
+    (require 'eglot)
+    (setq-local eglot-ignored-server-capabilities
+                (cons :semanticTokensProvider
+                      (default-value 'eglot-ignored-server-capabilities)))))
 
 ;;; programming.el ends here
