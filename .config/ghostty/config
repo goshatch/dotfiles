@@ -1,5 +1,7 @@
 font-family = "PragmataPro"
 theme = dark:"Modus Vivendi",light:"Modus Operandi Tinted"
+# theme = "Modus Operandi Tinted"
+window-theme = system
 window-colorspace = display-p3
 cursor-style = block
 cursor-style-blink = false
